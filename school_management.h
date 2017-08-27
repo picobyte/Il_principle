@@ -1,3 +1,6 @@
+/*
+ * (c) Picobyte 2017, GPL2
+ */
 #ifndef SCHOOL_MANAGEMENT_H
 #define SCHOOL_MANAGEMENT_H
 
