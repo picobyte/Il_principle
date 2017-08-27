@@ -34,6 +34,7 @@ SOURCES += \
 
 HEADERS += \
         mainwindow.h \
+    person.h \
     location_view.h \
     person_interaction.h \
     aspectratiopixmaplabel.h \
