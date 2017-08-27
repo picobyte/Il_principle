@@ -35,7 +35,6 @@ SOURCES += \
 HEADERS += \
         mainwindow.h \
     location_view.h \
-    layoutwidget.h \
     person_interaction.h \
     aspectratiopixmaplabel.h \
     school_management.h \
