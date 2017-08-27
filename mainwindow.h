@@ -20,12 +20,9 @@
 #include <QPushButton>
 #include <QWidget>
 
-#include "layoutwidget.h"
 #include "location_view.h"
 #include "person_interaction.h"
 #include "school_management.h"
-//#include "theworld.h"
-//#include "person.h"
 #include "generic.h"
 
 static const char* displaystat[] = {"Education", "Happiness", "Loyalty", "Inhibition", "Lust", "Corruption", "Reputation", "Students", "Money"};
