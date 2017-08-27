@@ -45,7 +45,7 @@ public:
     QString PaperDollEventFileName;
     //FacialExpressions FaceExpression;
     QString MaleHeadFileName;
-    QString FemaleHeadFileName
+    QString FemaleHeadFileName;
     QString BodyFileName;
     QString StomachFileName;
     QString BreastFileName;

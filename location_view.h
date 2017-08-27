@@ -14,8 +14,8 @@
 #include <QStringListModel>
 #include <QApplication>
 #include <QStackedWidget>
+#include <QDir>
 
-#include "layoutwidget.h"
 #include "person_interaction.h"
 #include "person.h"
 #include "aspectratiopixmaplabel.h"

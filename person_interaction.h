@@ -12,13 +12,12 @@
 #include <QPushButton>
 #include <QApplication>
 
-#include "layoutwidget.h"
 
 namespace HHS {
     class Person_interaction;
 }
 
-class Person_interaction : public SizedHideableLayout<QGridLayout> {
+class Person_interaction : public QGridLayout {
     Q_OBJECT
 public:
     QListView *Interaction_view, *Category_view;

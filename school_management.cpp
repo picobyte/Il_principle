@@ -259,6 +259,6 @@ SchoolManagement::SchoolManagement(QWidget* parent, QRect geom): QWidget(parent)
     mainTab.addTab(&pollicyTab, QString("Pollicy"));
     mainTab.addTab(&expansionsTab, QString("Expansions"));
 
-    mainTab.setCurrentIndex(1);
+    mainTab.setCurrentIndex(0);
 }
 

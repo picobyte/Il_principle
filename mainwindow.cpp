@@ -94,7 +94,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), W(this),
     school_management = new SchoolManagement(this, geom);
     stackWidget.addWidget(school_management);
 
-    stackWidget.setCurrentIndex(1);
+    stackWidget.setCurrentIndex(0);
 
     grid.addWidget(&stackWidget, 4, 0, 50, 12);
     //loc->grid.setParent(W);

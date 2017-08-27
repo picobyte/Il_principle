@@ -30,7 +30,7 @@ SOURCES += \
     person_interaction.cpp \
     aspectratiopixmaplabel.cpp \
     school_management.cpp \
-    students_tab.cpp
+    student_tab.cpp
 
 HEADERS += \
         mainwindow.h \

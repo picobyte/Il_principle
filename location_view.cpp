@@ -31,7 +31,9 @@ Location_view::Location_view(QWidget* parent, QRect geom): QWidget(parent), grid
     geom.setWidth(geom.width()*5/6);
 
     //siteView->setSizePolicy(maximized);
-    setImg("/home/roel/dev/git/hhs/HHS_1.08-1703-Release-HF3/Schools/NormalSchool/Images/Locations/Your Home/empty.jpg");
+    QDir dir;
+    dir.setCurrent(QCoreApplication::applicationDirPath()+"/../Il_principle");
+    setImg(dir.currentPath() + "/Schools/NormalSchool/Images/Locations/Your Home/empty.jpg");
     grid.addWidget(siteView, 0, 0, 1, 2);
     geom.setHeight(siteView->heightForWidth(geom.width()));
     siteView->setGeometry(geom);
