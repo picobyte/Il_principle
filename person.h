@@ -46,3 +46,36 @@ public:
     //FacialExpressions FaceExpression;
     QString MaleHeadFileName;
     QString FemaleHeadFileName
+    QString BodyFileName;
+    QString StomachFileName;
+    QString BreastFileName;
+    QString PenisFileName;
+    QString TesticleFileName;
+    int OutfitLevel;
+    //OutfitType CurrentOutfit;
+    QString OutfitName;
+    bool OutfitUseEverywhere;
+    //SerializableAttributeDictionary<QString, double> dictStats;
+    //QList<StatusEffectInstance> StatusEffects;
+    double intBreastSize;
+    double intStomachSize;
+    double intPenisSize;
+    double intTesticleSize;
+    double intVaginaSize;
+    double intAnalSize;
+    QString intLoc;
+    QString intOldLoc;
+    QString intHome;
+    QString intBedroom;
+    QString intWork;
+    bool OutLateTonight;
+    bool OutLateLastNight;
+    bool UpEarly;
+    //InventoryCollection Inventory;
+    const char TRAIT_SEPARATOR_CHAR = ',';
+    QString Trait;
+    //SerializableAttributeDictionary<QString, int> Skills;
+    QList<uint> AttachedEventIDs;
+};
+
+#endif // PERSON_H
