@@ -24,7 +24,8 @@
 #include "generic.h"
 #include "student_tab.h"
 
-class genericTab: public QWidget
+/*
+ * class genericTab: public QWidget
 {
     Q_OBJECT
 private:
@@ -38,12 +39,39 @@ public:
         grid.addWidget(&tabLbl, 0, 0, 1, 1);
     }
 };
+*/
 
 static const char* teacher[] = {"April Raymund", "Beth Manili", "Carl Walker", "Carmen Smith", "Claire Fuzushi",
                                 "Jessica Underwood", "Nina Parker", "Ronda Bells", "Samantha Keller"};
 
 static const char* balance[] = {"Monthly Loan:", "Staff Salary:"};
 static const char* balanceExample[] = {"-$16,188", "$2,811"};
+
+static const char* clubInfo[] = {"Members:", "time:", "Club President:", "Location:", "Weekly Balance:"};
+static const char* clubInfoExample[] = {"12", "16:00-18:00", "Anette", "Sports Area", "-$50"};
+
+template <class T> class leftandRightT: public QWidget
+{    // template classes cannot have Q_OBJECT, signals or slots. see:
+    // http://doc.qt.io/qt-4.8/moc.html
+protected:
+    QGridLayout grid;
+    QLabel leftLbl, rightLbl;
+    QPushButton midBtn;
+    T leftT, rightT;
+    leftandRightT(const char*, const char*, const char*);
+};
+
+class ClubsTab: public leftandRightT<QListView>
+{
+    Q_OBJECT
+private:
+    QLabel *clubInfoLbl[ARRAY_LEN(clubInfo)];
+    QLabel *clubInfoVal[ARRAY_LEN(clubInfo)];
+    QGraphicsView clubDisplay;
+public:
+    ClubsTab();
+};
+
 
 class ExpansionsTab: public QWidget
 {
@@ -90,14 +118,12 @@ public:
     AssignmentsTab();
 };
 
-class JobsTab: public QWidget
+
+class JobsTab: public leftandRightT<QListView>
 {
     Q_OBJECT
 private:
-    QGridLayout grid;
-    QLabel applicants, hiredStaff, biographyLbl, avgSubjExpHdrLbl;
-    QPushButton hireFireBtn;
-    QListView staffList, applicantsList;
+    QLabel biographyLbl, avgSubjExpHdrLbl;
     QLabel biographyVal;
     QLabel *balanceLbl[ARRAY_LEN(balance)];
     QLabel *balanceVal[ARRAY_LEN(balance)];
@@ -118,6 +144,7 @@ private:
     AssignmentsTab assnTab;
     PollicyTab pollicyTab;
     ExpansionsTab expansionsTab;
+    ClubsTab clubsTab;
     QPushButton exitBtn;
 
 public:

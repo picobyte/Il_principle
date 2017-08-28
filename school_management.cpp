@@ -4,6 +4,45 @@
 
 #include "school_management.h"
 
+template<class T>
+leftandRightT<T>::leftandRightT(const char* leftListName, const char* rightListName, const char* btnName): grid(this),
+    leftLbl(QApplication::translate("MainWindow", leftListName, Q_NULLPTR)),
+    rightLbl(QApplication::translate("MainWindow", rightListName, Q_NULLPTR)),
+    midBtn(QApplication::translate("MainWindow", btnName, Q_NULLPTR)),
+    leftT(this), rightT(this)
+{
+    grid.setContentsMargins(0, 0, 0, 0);
+    leftLbl.setPalette(HHStyle::white_text);
+    rightLbl.setPalette(HHStyle::white_text);
+    midBtn.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+}
+
+ClubsTab::ClubsTab(): leftandRightT<QListView>("Available Clubs", "Open Club", "Active Clubs")
+{
+    grid.addWidget(&leftLbl, 0, 0, 1, 8);
+    grid.addWidget(&rightLbl, 0, 14, 1, 8);
+
+    grid.setRowStretch(1, 5);
+    grid.setRowStretch(3, 5);
+    grid.addWidget(&leftT, 1, 0, 3, 8);
+    grid.addWidget(&midBtn, 2, 8, 1, 6, Qt::AlignVCenter);
+    grid.addWidget(&rightT, 1, 14, 3, 8);
+
+    for (int i=0; i != ARRAY_LEN(clubInfo); ++i) {
+        clubInfoLbl[i] = new QLabel(clubInfo[i], this);
+        clubInfoLbl[i]->setPalette(HHStyle::white_text);
+        grid.addWidget(clubInfoLbl[i], 4+i/2, (i&1)*6, 1, 1);
+
+        clubInfoVal[i] = new QLabel(clubInfoExample[i], this);
+        clubInfoVal[i]->setAlignment(Qt::AlignLeft);
+        clubInfoVal[i]->setPalette(HHStyle::white_text);
+        grid.addWidget(clubInfoVal[i], 4+i/2, (i&1)*6+1, 1, 1);
+    }
+    clubDisplay.setAlignment(Qt::AlignCenter);
+    clubDisplay.setStyleSheet("background: transparent");
+    grid.addWidget(&clubDisplay, 4, 4, 20, 8);
+}
+
 ExpansionsTab::ExpansionsTab(): grid(this), expansionList(this),
   upgradeCostLbl(QApplication::translate("MainWindow","Upgrade Cost:", Q_NULLPTR)),
   maintenanceCostLbl(QApplication::translate("MainWindow","Maintenance Cost:", Q_NULLPTR)),
@@ -168,22 +207,16 @@ AssignmentsTab::AssignmentsTab(): grid(this),
     grid.addWidget(&genQualfPB, 4, 2, 1, 3);
 }
 
-JobsTab::JobsTab(): grid(this),
-    applicants(QApplication::translate("MainWindow", "Available Applicants", Q_NULLPTR)),
-    hiredStaff(QApplication::translate("MainWindow", "Hired Staff", Q_NULLPTR)),
+JobsTab::JobsTab(): leftandRightT<QListView>("Available Applicants", "Hire", "Hired Staff"),
     biographyLbl(QApplication::translate("MainWindow", "Biography:", Q_NULLPTR)),
-    avgSubjExpHdrLbl(QApplication::translate("MainWindow", "Average Subject Family Experience", Q_NULLPTR)),
-    hireFireBtn(QApplication::translate("MainWindow", "Hire", Q_NULLPTR)),
-    staffList(this), applicantsList(this)
+    avgSubjExpHdrLbl(QApplication::translate("MainWindow", "Average Subject Family Experience", Q_NULLPTR))
 {
-    grid.setContentsMargins(0, 0, 0, 0);
     grid.setColumnStretch(0, 3);
     grid.setColumnStretch(1, 5);
     grid.setColumnStretch(3, 4);
     grid.setColumnStretch(4, 8);
 
-    applicants.setPalette(HHStyle::white_text);
-    grid.addWidget(&applicants, 0, 0, 1, 2);
+    grid.addWidget(&leftLbl, 0, 0, 1, 2);
 
     for (int i=0; i != ARRAY_LEN(balance); ++i) {
         balanceLbl[i] = new QLabel(balance[i], this);
@@ -196,14 +229,12 @@ JobsTab::JobsTab(): grid(this),
         grid.addWidget(balanceVal[i], i, 3, 1, 1);
     }
 
-    hiredStaff.setPalette(HHStyle::white_text);
-    grid.addWidget(&hiredStaff, 0, 4, 1, 1);
+    grid.addWidget(&rightLbl, 0, 4, 1, 1);
 
     grid.setRowStretch(2, 15);
-    grid.addWidget(&applicantsList, 1, 0, 2, 2);
-    hireFireBtn.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
-    grid.addWidget(&hireFireBtn,1, 2, 2, 2, Qt::AlignVCenter);
-    grid.addWidget(&staffList, 1, 4, 2, 1);
+    grid.addWidget(&rightT, 1, 0, 2, 2);
+    grid.addWidget(&midBtn,1, 2, 2, 2, Qt::AlignVCenter);
+    grid.addWidget(&leftT, 1, 4, 2, 1);
 
     biographyLbl.setPalette(HHStyle::white_text);
     grid.addWidget(&biographyLbl, 3, 0, 1, 1);
@@ -237,7 +268,6 @@ JobsTab::JobsTab(): grid(this),
     grid.addWidget(&teacherDisplay, 3, 4, i+4, 1);
 }
 
-
 SchoolManagement::SchoolManagement(QWidget* parent, QRect geom): QWidget(parent), mainTab(this),
     studentsTab(geom),
     exitBtn(QApplication::translate("MainWindow", "Exit", Q_NULLPTR), this)
@@ -258,6 +288,7 @@ SchoolManagement::SchoolManagement(QWidget* parent, QRect geom): QWidget(parent)
     mainTab.addTab(&assnTab, QString("Teacher Assignments"));
     mainTab.addTab(&pollicyTab, QString("Pollicy"));
     mainTab.addTab(&expansionsTab, QString("Expansions"));
+    mainTab.addTab(&clubsTab, QString("Clubs"));
 
     mainTab.setCurrentIndex(0);
 }
