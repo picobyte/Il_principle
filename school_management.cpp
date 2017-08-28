@@ -17,6 +17,44 @@ leftandRightT<T>::leftandRightT(const char* leftListName, const char* rightListN
     midBtn.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 }
 
+StatsTab::StatsTab(): grid(this), statList(this)
+{
+    chart.legend()->hide();
+    for(int i = 0; i != ARRAY_LEN(series); ++i) {
+        series[i].setParent(this);
+        for(int j = 0; j != 20; ++j)
+            series[i].append(j, i*3+j);
+
+        item[i].setData(Qt::DisplayRole, QString::number(i));
+
+        if (i < 10) {
+            item[i].setData(Qt::CheckStateRole, Qt::Checked);
+        } else {
+            item[i].setData(Qt::CheckStateRole, Qt::Unchecked);
+            series[i].hide();
+        }
+        chart.addSeries(&series[i]);
+        statList.addItem(&item[i]);
+    }
+    chart.createDefaultAxes();
+    chart.setTitle("Daily aggregated stats of your school");
+    chartView = new QChartView(&chart);
+    chartView->setRenderHint(QPainter::Antialiasing);
+
+    grid.addWidget(&statList, 0, 0, 1, 1);
+    grid.addWidget(chartView, 0, 1, 1, 1);
+
+    connect(&statList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(statClicked(QListWidgetItem*)));
+}
+
+void StatsTab::statClicked(QListWidgetItem* it)
+{
+    int i = it - item;
+    //int i = it->data(Qt::DisplayRole).toString().toInt();
+    //int i = 0;
+    chart.series().at(i)->setVisible(!chart.series().at(i)->isVisible());
+}
+
 AccountingTab::AccountingTab(): grid(this),
     table(ARRAY_LEN(balanceItem), 4, this),
     balanceLbl(QApplication::translate("MainWindow", "Monthly Loss:", Q_NULLPTR)),
@@ -34,7 +72,6 @@ AccountingTab::AccountingTab(): grid(this),
                         "}");
     table.verticalHeader()->hide();
 
-    table.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     table.setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     table.setAlternatingRowColors(true);
     table.setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -348,6 +385,7 @@ SchoolManagement::SchoolManagement(QWidget* parent, QRect geom): QWidget(parent)
     mainTab.addTab(&expansionsTab, QString("Expansions"));
     mainTab.addTab(&clubsTab, QString("Clubs"));
     mainTab.addTab(&accountingTab, QString("Accounting"));
+    mainTab.addTab(&statsTab, QString("Stats"));
 
     mainTab.setCurrentIndex(0);
 }

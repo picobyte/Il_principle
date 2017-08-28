@@ -11,6 +11,9 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QListView>
+#include <QListWidget>
+#include <QtCharts/QChartView>
+#include <QtCharts/QLineSeries>
 #include <QLocale>
 #include <QProgressBar>
 #include <QPushButton>
@@ -25,23 +28,6 @@
 #include <QWidget>
 #include "generic.h"
 #include "student_tab.h"
-
-/*
- * class genericTab: public QWidget
-{
-    Q_OBJECT
-private:
-    QGridLayout grid;
-    QLabel tabLbl;
-public:
-    genericTab(): grid(this) {
-        grid.setContentsMargins(0, 0, 0, 0);
-        tabLbl.setPalette(HHStyle::white_text);
-        tabLbl.setText(QApplication::translate("MainWindow", "Tab", Q_NULLPTR));
-        grid.addWidget(&tabLbl, 0, 0, 1, 1);
-    }
-};
-*/
 
 static const char* teacher[] = {"April Raymund", "Beth Manili", "Carl Walker", "Carmen Smith", "Claire Fuzushi",
                                 "Jessica Underwood", "Nina Parker", "Ronda Bells", "Samantha Keller"};
@@ -79,6 +65,25 @@ protected:
     T leftT, rightT;
     leftandRightT(const char*, const char*, const char*);
 };
+
+QT_CHARTS_USE_NAMESPACE
+
+class StatsTab: public QWidget
+{
+    Q_OBJECT
+private:
+    QGridLayout grid;
+    QListWidget statList;
+    QChart chart;
+    QChartView *chartView;
+    QLineSeries series[30];
+    QListWidgetItem item[30];
+public:
+    StatsTab();
+public slots:
+    void statClicked(QListWidgetItem* item);
+};
+
 
 class AccountingTab: public QWidget
 {
@@ -176,6 +181,7 @@ private:
     ExpansionsTab expansionsTab;
     ClubsTab clubsTab;
     AccountingTab accountingTab;
+    StatsTab statsTab;
     QPushButton exitBtn;
 
 public:
