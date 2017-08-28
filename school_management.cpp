@@ -17,6 +17,64 @@ leftandRightT<T>::leftandRightT(const char* leftListName, const char* rightListN
     midBtn.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 }
 
+AccountingTab::AccountingTab(): grid(this),
+    table(ARRAY_LEN(balanceItem), 4, this),
+    balanceLbl(QApplication::translate("MainWindow", "Monthly Loss:", Q_NULLPTR)),
+    balanceVal(QApplication::translate("MainWindow", "-$10,000", Q_NULLPTR)),
+    vertStretch(1<<16, 1<<16,QSizePolicy::Expanding, QSizePolicy::Expanding)
+{
+    balanceLbl.setPalette(HHStyle::white_text);
+    grid.addWidget(&balanceLbl, 0, 0, 1, 1);
+    balanceVal.setPalette(HHStyle::white_text);
+    grid.addWidget(&balanceVal, 0, 1, 1, 1);
+
+    table.setStyleSheet("QTableWidget {"
+                            "background-color: rgb(254, 245, 232);"
+                            "alternate-background-color: rgb(230, 230, 230);"
+                        "}");
+    table.verticalHeader()->hide();
+
+    table.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    table.setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    table.setAlternatingRowColors(true);
+    table.setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    table.setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    grid.addWidget(&table, 1, 0, 20, 30);
+
+
+    QStringList hdrs = QString("Account,Monthly,Weekly,Dayly").split(",");
+
+    for (int i=0; i != ARRAY_LEN(balanceItem); ++i) {
+        QColor clr(balanceItemExample[i] < 0 ? 200 : 0, 0, 0);
+        QTableWidgetItem t(QApplication::translate("MainWindow", balanceItem[i], Q_NULLPTR));
+        t.setTextColor(clr);
+        table.setItem(i, 0, new QTableWidgetItem(t));
+        t.setText(QLocale().toCurrencyString(balanceItemExample[i]));
+        table.setItem(i, 1, new QTableWidgetItem(t));
+        t.setText(i > 2 && i != 5 ? QLocale().toCurrencyString(7/30*balanceItemExample[i]) : "");
+        table.setItem(i, 2, new QTableWidgetItem(t));
+        t.setText(i > 2 && i != 5 ? QLocale().toCurrencyString(balanceItemExample[i]/30) : "");
+        table.setItem(i, 3, new QTableWidgetItem(t));
+    }
+    table.setHorizontalHeaderLabels(hdrs);
+    //table.resizeColumnsToContents();
+    //table.resizeRowsToContents();
+
+    // disable resizing and selection
+    table.setFocusPolicy(Qt::NoFocus);
+    table.setEditTriggers(QAbstractItemView::NoEditTriggers);
+    table.setSelectionMode(QAbstractItemView::NoSelection);
+
+    QHeaderView* hh = table.horizontalHeader(), *hv = table.verticalHeader();
+    hh->setSectionResizeMode(QHeaderView::Fixed);
+    hv->setSectionResizeMode(QHeaderView::Fixed);
+
+    //FIXME: why is manual adjustment needed?
+    table.setFixedSize(hh->length()+ hv->width() -20, hv->length()+ hh->height() + 2);
+    grid.addItem(&vertStretch, 2, 3, 100, 100);
+}
+
 ClubsTab::ClubsTab(): leftandRightT<QListView>("Available Clubs", "Open Club", "Active Clubs")
 {
     grid.addWidget(&leftLbl, 0, 0, 1, 8);
@@ -289,6 +347,7 @@ SchoolManagement::SchoolManagement(QWidget* parent, QRect geom): QWidget(parent)
     mainTab.addTab(&pollicyTab, QString("Pollicy"));
     mainTab.addTab(&expansionsTab, QString("Expansions"));
     mainTab.addTab(&clubsTab, QString("Clubs"));
+    mainTab.addTab(&accountingTab, QString("Accounting"));
 
     mainTab.setCurrentIndex(0);
 }

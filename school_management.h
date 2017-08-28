@@ -11,6 +11,7 @@
 #include <QGridLayout>
 #include <QLabel>
 #include <QListView>
+#include <QLocale>
 #include <QProgressBar>
 #include <QPushButton>
 #include <QSpacerItem>
@@ -19,6 +20,7 @@
 #include <QStringList>
 #include <QTabWidget>
 #include <QTableWidget>
+#include <QTableWidgetItem>
 #include <QHeaderView>
 #include <QWidget>
 #include "generic.h"
@@ -50,6 +52,23 @@ static const char* balanceExample[] = {"-$16,188", "$2,811"};
 static const char* clubInfo[] = {"Members:", "time:", "Club President:", "Location:", "Weekly Balance:"};
 static const char* clubInfoExample[] = {"12", "16:00-18:00", "Anette", "Sports Area", "-$50"};
 
+static const char* balanceItem[] = {
+    "State Funding",
+    "Principal Salary",
+    "Staff Salary",
+    "Investigator",
+    "Building Maintenance",
+    "Cabaret Rental",
+    "Bathroom Spycam Pics",
+    "Changing Room Spycam Pics",
+    "Cheerleading Club Spycam Pics",
+    "Swim Club Spycam Pics",
+    "Secret Panty Exchange sales",
+    "Your Sister's rent"};
+
+static int balanceItemExample[] = {
+    18945, 2585, -34563, -3000, -1684, -600, 252, 504, 504, 352, 384, 400};
+
 template <class T> class leftandRightT: public QWidget
 {    // template classes cannot have Q_OBJECT, signals or slots. see:
     // http://doc.qt.io/qt-4.8/moc.html
@@ -59,6 +78,18 @@ protected:
     QPushButton midBtn;
     T leftT, rightT;
     leftandRightT(const char*, const char*, const char*);
+};
+
+class AccountingTab: public QWidget
+{
+    Q_OBJECT
+private:
+    QGridLayout grid;
+    QTableWidget table;
+    QLabel balanceLbl, balanceVal;
+    QSpacerItem vertStretch;
+public:
+    AccountingTab();
 };
 
 class ClubsTab: public leftandRightT<QListView>
@@ -71,7 +102,6 @@ private:
 public:
     ClubsTab();
 };
-
 
 class ExpansionsTab: public QWidget
 {
@@ -145,6 +175,7 @@ private:
     PollicyTab pollicyTab;
     ExpansionsTab expansionsTab;
     ClubsTab clubsTab;
+    AccountingTab accountingTab;
     QPushButton exitBtn;
 
 public:
