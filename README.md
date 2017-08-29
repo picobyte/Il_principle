@@ -19,4 +19,9 @@ Of course you also need a C++ compiler, just follow the links for your OS. Also 
 
 https://doc.qt.io/qt-5/qtcharts-index.html
 
+Tool to convert xml to Json:
+
+https://github.com/hay/xml2json.git
+
+
 (c) picobyte, 2017, GPL2
