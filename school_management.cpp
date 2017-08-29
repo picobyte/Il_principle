@@ -368,7 +368,7 @@ SchoolManagement::SchoolManagement(QWidget* parent, QRect geom): QWidget(parent)
     exitBtn(QApplication::translate("MainWindow", "Exit", Q_NULLPTR), this)
 {
     //mainTab.setPalette(SimplePalette(HHStyle::bg, HHStyle::bg, QPalette::Button));
-    setStyleSheet("QTabWidget { background-color: rgb(25, 45, 52)}");
+    mainTab.setStyleSheet("QTabWidget { background-color: rgb(25, 45, 52);}");
 
     geom.setHeight(geom.height()*0.98);
     geom.setWidth(geom.width()*0.98);
