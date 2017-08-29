@@ -151,8 +151,8 @@ StudentsTab::StudentsTab(QRect geom): grid(this),
 
     grid.addWidget(&tabW, 0, 2, 30, 1);
 
-    geom.setWidth(geom.width()*22/25);
-    geom.setHeight(geom.height()*26/27);
+    geom.setWidth(geom.width()*21.5/25);
+    geom.setHeight(geom.height()*25/27);
     tab.setGeometry(geom);
     tab.addTab(&timetableW, QString("Timetable"));
     tab.addTab(&classSummaryW, QString("Class Summary"));
