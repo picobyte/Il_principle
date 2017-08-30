@@ -12,10 +12,12 @@ If you want to help, git clone the repository, and send a pull request when you 
 You need to download the HHS+ package and link the HHS+ Schools directory in the Il_principle project directory, and 
 convert the xml files to json; e.g.
 
+```bash
 git clone --recursive -j8 https://github.com/picobyte/Il_principle.git
 cd Il_principle
 ln -s /path/to/HHS+1.8.5-1797-Release/Schools/
 ./do_xml2json.sh
+```
 
 To compile, import the project in Qt creator, build and run. See Qt requirements:
 
