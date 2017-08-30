@@ -24,6 +24,7 @@
 #include "person_interaction.h"
 #include "school_management.h"
 #include "generic.h"
+#include "game.h"
 
 static const char* displaystat[] = {"Education", "Happiness", "Loyalty", "Inhibition", "Lust", "Corruption", "Reputation", "Students", "Money"};
 static unsigned wait_time[] = {10, 30, 60};
@@ -45,6 +46,7 @@ class MainWindow : public QMainWindow
     QLabel time_display, date_display, location;
     QProgressBar energy_bar, arousal_bar;
     QStackedWidget stackWidget;
+    Game game;
 
     QLabel displaystat_hdr[ARRAY_LEN(displaystat)];
     QLabel displaystat_val[ARRAY_LEN(displaystat)];

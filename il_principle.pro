@@ -31,7 +31,8 @@ SOURCES += \
     person_interaction.cpp \
     aspectratiopixmaplabel.cpp \
     school_management.cpp \
-    student_tab.cpp
+    student_tab.cpp \
+    game.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -41,7 +42,9 @@ HEADERS += \
     aspectratiopixmaplabel.h \
     school_management.h \
     generic.h \
-    student_tab.h
+    student_tab.h \
+    game.h \
+    account.h
 
 FORMS +=
 

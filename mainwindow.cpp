@@ -6,7 +6,7 @@
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), W(this),
     gridW(&W), grid(&gridW), time_display(&W), date_display(&W), location(&W),
-    energy_bar(&W), arousal_bar(&W), stackWidget(this)
+    energy_bar(&W), arousal_bar(&W), stackWidget(this), game("NormalSchool")
 {
     QRect geom = QDesktopWidget().availableGeometry(this);
     geom.setTop(10);
