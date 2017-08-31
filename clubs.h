@@ -33,8 +33,8 @@ public:
             else __IF_LIST_FROM_JSON_TYPED(it, ForGender, toString)
             else __IF_LIST_FROM_JSON_TYPED(it, ClubEventDirectories, toString)
             else __IF_LIST_FROM_JSON_TYPED(it, ClubEventIDs, toInt)
-            else __IF_OBJLIST_FROM_JSON(it, StatChange)
-            else __IF_OBJLIST_FROM_JSON(it, BodySizeChange)
+            else __IF_EASY_OBJLIST_FROM_JSON(it, StatChange)
+            else __IF_EASY_OBJLIST_FROM_JSON(it, BodySizeChange)
             else __IF_OBJ_FROM_JSON(it, StartTime)
             else __IF_OBJ_FROM_JSON(it, EndTime)
             else qWarning(it.key().append(": unhandled.").toUtf8());
@@ -81,7 +81,7 @@ public:
             else __IF_VAR_FROM_JSON_AS(it, CanBeChosen, toBool)
             else __IF_VAR_FROM_JSON_AS(it, ClubPresident, toString)
             else __IF_VAR_FROM_JSON_AS(it, PreferredPresident, toString)
-            else __IF_OBJLIST_FROM_JSON(it, ClubLevel)
+            else __IF_EASY_OBJLIST_FROM_JSON(it, ClubLevel)
             else qWarning(it.key().append(": unhandled.").toUtf8());
         }
     }

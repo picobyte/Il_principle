@@ -9,21 +9,25 @@
 #define __IF_ENUM_FROM_JSON_AS(it, _key, _enum) if (it.key() == #_key) { _key = static_cast<_enum>(it.value().toInt()); }
 
 //suitable only if nested object has the same key (1), but without an s.
-#define __IF_OBJLIST_FROM_JSON(it, _class) \
-if (it.key() == #_class "s") { \
-    QJsonObject obj = it.value().toObject();\
-    if (obj.length() != 1) qFatal("Expected one element");\
-    QJsonValueRef r = obj[#_class];\
-    if (r.isArray()) {\
-        foreach (const QJsonValue &el, r.toArray()) {\
+#define __OBJLIST_FROM_JSON(_ref, _var, _class) \
+    if (_ref.isArray()) {\
+        foreach (const QJsonValue &el, _ref.toArray()) {\
             QJsonObject v = el.toObject();\
-            _class##s.append(_class(&v));\
+            _var.append(_class(&v));\
         }\
     } else {\
-        QJsonObject v = r.toObject();\
-        _class##s.append(_class(&v));\
-    }\
-}
+        QJsonObject v = _ref.toObject();\
+        _var.append(_class(&v));\
+    }
+
+#define __IF_EASY_OBJLIST_FROM_JSON(it, _class) \
+    if (it.key() == #_class "s") { \
+        QJsonObject obj = it.value().toObject();\
+        if (obj.length() != 1) qFatal("Expected one element");\
+        QJsonValueRef ref = obj[#_class];\
+        __OBJLIST_FROM_JSON(ref, _class ## s, _class) \
+    }
+
 #define __IF_LIST_FROM_JSON_TYPE_RESOLVED(it, _arr, _var, _var_resolved) \
 if (it.key() == #_arr) { \
     QJsonObject obj = it.value().toObject();\
