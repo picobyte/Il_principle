@@ -2,7 +2,7 @@
 #define ACCOUNT_H
 
 #include <QString>
-#include <QJsonObject>;
+#include <QJsonObject>
 
 enum Payperiode
 {

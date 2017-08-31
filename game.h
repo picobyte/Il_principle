@@ -16,6 +16,7 @@
 #include <QHash>
 #include "person.h"
 #include "account.h"
+#include "clubs.h"
 
 class Game
 {
@@ -35,7 +36,7 @@ private:
     //Time GameTime;
     //Person HeadTeacher;
     QMap<QString, Account> DictOfAccounts;
-    //QMap<QString, Clubs> ListOfClubs;
+    QMap<QString, Clubs> ListOfClubs;
     QString GamePath;
     QString inteventlog;
     bool EventLogflag;

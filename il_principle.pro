@@ -44,7 +44,9 @@ HEADERS += \
     generic.h \
     student_tab.h \
     game.h \
-    account.h
+    account.h \
+    clubs.h \
+    json_macros.h
 
 FORMS +=
 

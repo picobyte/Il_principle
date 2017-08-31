@@ -1,5 +1,11 @@
 #include "game.h"
 
+#define __init_dict_if_key(it, _key, _as) \
+    if (it.key() == #_key) {\
+        QJsonObject v = it.value().toObject();\
+        _as[v["Name"].toString()] = _key(v);\
+    }
+
 bool Game::jsonLoad(QString f)
 {
     QFile loadFile(f);
@@ -17,22 +23,17 @@ bool Game::jsonLoad(QString f)
 
     QJsonObject d = loadDoc.object();
     QJsonObject::iterator it;
-    bool do_store = false;
     for (it = d.begin(); it != d.end(); ++it) {
-        if (it.key() == "Account") {
-            QJsonObject v = it.value().toObject();
-            DictOfAccounts[v["Name"].toString()] = Account(v);
-            it.value() = QJsonObject();
-        } else {
-            do_store = true;
-        }
+        __init_dict_if_key(it, Account, DictOfAccounts)
+        else __init_dict_if_key(it, Clubs, ListOfClubs)
     }
-    if (!do_store) return true;
+
     if (data.contains(f))
         qFatal(f.append(" already exists in object").toUtf8());
     data[f] = loadDoc.object();
     return true;
 }
+#undef __init_if_key
 
 bool Game::jsonSave(QString f) const
 {
