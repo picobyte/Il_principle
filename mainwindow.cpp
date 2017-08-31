@@ -106,11 +106,11 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), W(this),
 void MainWindow::dummy_startup()
 {
     Person annette;
-    annette.forename = "Annette";
+    annette.Forename = "Annette";
     loc->addPerson(&annette);
 
     Person peter_hooter;
-    peter_hooter.forename = "Peter";
+    peter_hooter.Forename = "Peter";
     loc->addPerson(&peter_hooter);
 }
 

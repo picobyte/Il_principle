@@ -2,6 +2,7 @@
 #define JSON_MACROS_H
 #include <QJsonObject>
 #include <QJsonValueRef>
+#include "generic.h"
 
 #define __IF_VAR_FROM_JSON_AS(it, _key, _toType) if (it.key() == #_key) { _key = it.value()._toType(); }
 #define __IF_ENUM_FROM_JSON_AS(it, _key, _enum) if (it.key() == #_key) { _key = static_cast<_enum>(it.value().toInt()); }

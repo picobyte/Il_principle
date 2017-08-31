@@ -60,7 +60,10 @@ public:
 
 class Clubs {
 public:
-    Clubs(QJsonObject *d = NULL) {
+    Clubs(QJsonObject *d = NULL):
+        AutomaticJoiningEnabled(true),
+        HideFromManagementPanel(false)
+    {
         if (d) init(d);
     }
     void init(QJsonObject *d)

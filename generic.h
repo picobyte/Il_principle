@@ -48,4 +48,109 @@ public:
     }
 };
 
+enum OutfitType
+{
+    DefaultOutfit,
+    Bathing,
+    Casual,
+    ClothingItem,
+    Club,
+    Formal,
+    Gym,
+    Nude,
+    Sleep,
+    Swimsuit,
+    Work
+};
+
+enum Payperiode
+{
+    OneTime,
+    Daily,
+    Weekly,
+    Monthly
+};
+
+enum Gender
+{
+    Male,
+    Female,
+    Futanari
+};
+
+namespace Body {
+enum Part
+{
+    Anal,
+    Breast,
+    Penis,
+    Stomach,
+    Testicle,
+    Vagina
+};
+}
+
+enum Fetish
+{
+    None,
+    Anal,
+    BigBreasts,
+    BigCocks,
+    Bondage,
+    Chubby,
+    Creampies,
+    Crossdressing,
+    Cumshots,
+    Cunnilingus,
+    Defloration,
+    Drugs,
+    Exhibitionism,
+    Fellatio,
+    Fingering,
+    ForcedSex,
+    Futa,
+    Glasses,
+    GroupSex,
+    Hairy,
+    Handjobs,
+    Kissing,
+    Incest,
+    Lactation,
+    Latex,
+    Loli,
+    Masochism,
+    Masturbation,
+    MindControl,
+    Muscular,
+    Nymphomania,
+    Pregnancy,
+    Sadism,
+    SexToys,
+    Shota,
+    Swallowing,
+    Swimsuits,
+    Uniforms,
+    Voyeurism,
+    Yaoi,
+    Yuri
+};
+
+enum FacialExpressions
+{
+    Normal,
+    Happy,
+    Sad,
+    Surprised,
+    Confused,
+    Angry,
+    Disgusted,
+    Mischievous,
+    Resigned,
+    Scared,
+    Shy,
+    Aroused,
+    Seductive,
+    Ahegao
+};
+
 #endif // GENERIC_H

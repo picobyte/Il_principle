@@ -4,20 +4,57 @@
 #include <QString>
 #include <QList>
 #include <QDateTime>
+#include "generic.h"
 
 class Person {
 public:
+    Person():
+        Forename(""),
+        Lastname(""),
+        CustomForename(""),
+        SpecialPerson(false),
+        TextColor(""),
+        Virgin(true),
+        AnalVirgin(true),
+        Job(""),
+        intFather(""),
+        intMother(""),
+        intLove(""),
+        Subject(""),
+        GoodInSubject(""),
+        //subjectStatLock(RuntimeHelpers.GetObjectValue(new object())),
+        ClubMember(""),
+        ImageLocation(""),
+        PaperDollEventFileName("PD_Default"),
+        MaleHeadFileName(""),
+        FemaleHeadFileName(""),
+        BodyFileName(""),
+        StomachFileName(""),
+        BreastFileName(""),
+        PenisFileName(""),
+        TesticleFileName(""),
+        CurrentOutfit(DefaultOutfit),
+        OutfitName(""),
+        intAnalSize(1.0),
+        intLoc(""),
+        intOldLoc(""),
+        intHome(""),
+        intBedroom(""),
+        intWork(""),
+        Trait("")
+    {
+    }
     long UID;
-    QString forename;
-    QString lastname;
-    QString customForename;
-    //Gender Gender;
+    QString Forename;
+    QString Lastname;
+    QString CustomForename;
+    Gender gender;
     QDateTime Birthday;
     bool SpecialPerson;
     QString TextColor;
     QString InitParams;
     //SerializableAttributeDictionary<Gender, double> GenderPreferences;
-    //QList<Fetish> Fetish;
+    QList<Fetish> fetish;
     bool Virgin;
     bool AnalVirgin;
     QString Job;
@@ -43,7 +80,7 @@ public:
     QString ClubMember;
     QString ImageLocation;
     QString PaperDollEventFileName;
-    //FacialExpressions FaceExpression;
+    FacialExpressions FaceExpression;
     QString MaleHeadFileName;
     QString FemaleHeadFileName;
     QString BodyFileName;
@@ -52,7 +89,7 @@ public:
     QString PenisFileName;
     QString TesticleFileName;
     int OutfitLevel;
-    //OutfitType CurrentOutfit;
+    OutfitType CurrentOutfit;
     QString OutfitName;
     bool OutfitUseEverywhere;
     //SerializableAttributeDictionary<QString, double> dictStats;

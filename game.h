@@ -13,6 +13,7 @@
 #include <QStringList>
 #include <QString>
 #include <QList>
+#include <QLocale>
 #include <QHash>
 #include "person.h"
 #include "account.h"
@@ -25,7 +26,7 @@ public:
     bool jsonLoad(QString);
     bool jsonSave(QString) const;
 private:
-    //CultureInfo GameCulture;
+    QLocale GameCulture;
     //StatisticsManager StatisticsManager;
     //EventStructManager StructManager;
     //NotificationManager NotifyManager;
@@ -34,7 +35,7 @@ private:
     //ClassroomAssignments ClassAssignments;
     //GameCalendar SchoolCalendar;
     //Time GameTime;
-    //Person HeadTeacher;
+    Person HeadTeacher;
     QMap<QString, Account> DictOfAccounts;
     QMap<QString, Clubs> ListOfClubs;
     QString GamePath;

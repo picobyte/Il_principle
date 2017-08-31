@@ -51,7 +51,16 @@ bool Game::jsonSave(QString f) const
     return true;
 }
 
-Game::Game(const char * school)
+Game::Game(const char * school):
+    GameCulture("en-GB"),
+    EventLogflag(false),
+    DesiredNumSchoolClasses(2),
+    TickCount(0),
+    LastWorldLocationPath(""),
+    GameInitialized(false),
+    GameLoading(false),
+    LastAutosaveDay(1),
+    CheatsUsed(false)
 {
     QDir dir;
     dir.setCurrent(QCoreApplication::applicationDirPath()+"/../Il_principle/Schools/"+school);

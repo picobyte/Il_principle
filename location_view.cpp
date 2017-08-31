@@ -136,7 +136,7 @@ Location_view::Location_view(QWidget* parent, QRect geom): QWidget(parent), grid
 void Location_view::addPerson(Person* p) {
     int rows = model.rowCount();
     model.insertRow(rows);
-    model.setData(model.index(rows), p->forename.toUtf8());
+    model.setData(model.index(rows), p->Forename.toUtf8());
 }
 void Location_view::rmPerson() {
     model.removeRows(pplListView.currentIndex().row(), 1);

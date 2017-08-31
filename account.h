@@ -4,14 +4,6 @@
 #include <QString>
 #include "json_macros.h"
 
-enum Payperiode
-{
-    OneTime,
-    Daily,
-    Weekly,
-    Monthly
-};
-
 class Account
 {
 public:
