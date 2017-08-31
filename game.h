@@ -12,12 +12,17 @@
 #include <QDirIterator>
 #include <QStringList>
 #include <QString>
+#include <QSet>
 #include <QList>
 #include <QLocale>
 #include <QHash>
 #include "person.h"
 #include "account.h"
 #include "clubs.h"
+#include "stat.h"
+#include "skill.h"
+#include "rule.h"
+#include "schoolsubject.h"
 
 class Game
 {
@@ -26,6 +31,8 @@ public:
     bool jsonLoad(QString);
     bool jsonSave(QString) const;
 private:
+    QSet<QString> observed_keys;
+
     QLocale GameCulture;
     //StatisticsManager StatisticsManager;
     //EventStructManager StructManager;
@@ -56,13 +63,13 @@ private:
     int DesiredNumSchoolClasses;
     //SchoolClass SpareStudentsClass;
     //QHash<QString, StatusEffect> DictOfStatusEffects;
-    //QHash<QString, Stat> DictOfStats;
-    //QHash<QString, Skill> DictOfSkills;
+    QHash<QString, Stat> DictOfStats;
+    QHash<QString, Skill> DictOfSkills;
     QList<QString> ListOfJobs;
     //QSet<SchoolUpgrade> ListOfSchoolUpgrades;
-    //QMap<QString, Rule> ListOfRules;
+    QMap<QString, Rule> ListOfRules;
     //QHash<QString, Item> ListOfBaseItems;
-    //QHash<QString, SchoolSubject> DictOfSubjects;
+    QHash<QString, SchoolSubject> DictOfSubjects;
     //QList<PersonScheduleHandler> ListOfScheduleHandlers;
     QHash<QString, double> CachedGlobalStats;
     //GameScenarioConfig ScenarioConfig;

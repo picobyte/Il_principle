@@ -20,12 +20,19 @@ bool Game::jsonLoad(QString f)
 
     QJsonDocument loadDoc(f.endsWith("json") ? QJsonDocument::fromJson(saveData)
                                              : QJsonDocument::fromBinaryData(saveData));
-
     QJsonObject d = loadDoc.object();
     QJsonObject::iterator it;
     for (it = d.begin(); it != d.end(); ++it) {
+        observed_keys.insert(it.key());
+        if(it.key() != "SchoolSubject") {
+            return true;
+        }
         __init_dict_if_key(it, Account, DictOfAccounts)
         else __init_dict_if_key(it, Clubs, ListOfClubs)
+        else __init_dict_if_key(it, Stat, DictOfStats)
+        else __init_dict_if_key(it, Skill, DictOfSkills)
+        else __init_dict_if_key(it, Rule, ListOfRules)
+        //else __init_dict_if_key(it, SchoolSubject, SchoolSubjects)
     }
 
     if (data.contains(f))
@@ -67,6 +74,7 @@ Game::Game(const char * school):
     QDirIterator it(dir.path(), QStringList() << "*.json", QDir::Files, QDirIterator::Subdirectories);
     while (it.hasNext())
            jsonLoad(it.next());
+    qWarning(QString("observed keys: ").append(observed_keys.toList().join(", ")).toUtf8());
     qInfo(QString::asprintf("loaded %d Accounts", DictOfAccounts.count()).toUtf8());
 
     qInfo(QString::asprintf("%d files remaining", data.count()).toUtf8());

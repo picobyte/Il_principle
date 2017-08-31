@@ -36,6 +36,10 @@ SOURCES += \
 
 HEADERS += \
         mainwindow.h \
+    stat.h \
+    skill.h \
+    rule.h \
+    schoolsubject.h \
     person.h \
     location_view.h \
     person_interaction.h \

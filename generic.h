@@ -48,7 +48,7 @@ public:
     }
 };
 
-enum OutfitType
+enum class OutfitType
 {
     DefaultOutfit,
     Bathing,
@@ -63,7 +63,7 @@ enum OutfitType
     Work
 };
 
-enum Payperiode
+enum class Payperiode
 {
     OneTime,
     Daily,
@@ -71,7 +71,7 @@ enum Payperiode
     Monthly
 };
 
-enum Gender
+enum class Gender
 {
     Male,
     Female,
@@ -79,7 +79,7 @@ enum Gender
 };
 
 namespace Body {
-enum Part
+enum class Part
 {
     Anal,
     Breast,
@@ -90,7 +90,7 @@ enum Part
 };
 }
 
-enum Fetish
+enum class Fetish
 {
     None,
     Anal,
@@ -135,7 +135,7 @@ enum Fetish
     Yuri
 };
 
-enum FacialExpressions
+enum class FacialExpressions
 {
     Normal,
     Happy,

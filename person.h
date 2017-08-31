@@ -1,15 +1,14 @@
 #ifndef PERSON_H
 #define PERSON_H
-#include "json_macros.h"
 
 #include <QString>
 #include <QList>
 #include <QDateTime>
-#include "generic.h"
+#include "json_macros.h"
 
 class Person {
 public:
-    Person():
+    Person(QJsonObject *d = NULL):
         Forename(""),
         Lastname(""),
         CustomForename(""),
@@ -34,7 +33,7 @@ public:
         BreastFileName(""),
         PenisFileName(""),
         TesticleFileName(""),
-        CurrentOutfit(DefaultOutfit),
+        CurrentOutfit(OutfitType::DefaultOutfit),
         OutfitName(""),
         intAnalSize(1.0),
         intLoc(""),
@@ -44,6 +43,7 @@ public:
         intWork(""),
         Trait("")
     {
+            if (d) init(d);
     }
     long UID;
     QString Forename;
@@ -110,14 +110,10 @@ public:
     bool OutLateLastNight;
     bool UpEarly;
     //InventoryCollection Inventory;
-    const char TRAIT_SEPARATOR_CHAR = ',';
     QString Trait;
     //SerializableAttributeDictionary<QString, int> Skills;
     QList<uint> AttachedEventIDs;
-	Person(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
+    const static char TRAIT_SEPARATOR_CHAR = ',';
 	void init(QJsonObject *d)
 	{
 		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
@@ -125,21 +121,21 @@ public:
 			__IF_VAR_FROM_JSON_AS(it, Forename, toString)
 			else __IF_VAR_FROM_JSON_AS(it, Lastname, toString)
 			else __IF_VAR_FROM_JSON_AS(it, CustomForename, toString)
-			//Gender Gender
+            else __IF_ENUM_FROM_JSON_AS(it, gender, Gender)
 			//DateTime Birthday
 			else __IF_VAR_FROM_JSON_AS(it, SpecialPerson, toBool)
 			else __IF_VAR_FROM_JSON_AS(it, TextColor, toString)
 			else __IF_VAR_FROM_JSON_AS(it, InitParams, toString)
-SerializableAttributeQHash<Gender, double> GenderPreferences;
-			//QList<Fetish> Fetish
-			else __IF_VAR_FROM_JSON_AS(it, Virgin, toBool)
+            //SerializableAttributeQHash<Gender, double> GenderPreferences;
+            else __IF_LIST_FROM_JSON_ENUM(it, fetish, static_cast<Fetish>)
+            else __IF_VAR_FROM_JSON_AS(it, Virgin, toBool)
 			else __IF_VAR_FROM_JSON_AS(it, AnalVirgin, toBool)
 			else __IF_VAR_FROM_JSON_AS(it, Job, toString)
-uint intJobSlot;
+            else __IF_VAR_FROM_JSON_AS(it, intJobSlot, toInt)
 			else __IF_VAR_FROM_JSON_AS(it, Salary, toInt)
 			// readonly object unemployedQListLock = RuntimeHelpers.GetObjectValue(new object())
 			// readonly object jobLock = RuntimeHelpers.GetObjectValue(new object())
-QList<string> Children;
+            else __IF_LIST_FROM_JSON_TYPED(it, Children, toString)
 			else __IF_VAR_FROM_JSON_AS(it, intFather, toString)
 			else __IF_VAR_FROM_JSON_AS(it, intMother, toString)
 			else __IF_VAR_FROM_JSON_AS(it, intLove, toString)
@@ -147,9 +143,9 @@ QList<string> Children;
 			else __IF_VAR_FROM_JSON_AS(it, Schoolclass, toInt)
 			else __IF_VAR_FROM_JSON_AS(it, Subject, toString)
 			else __IF_VAR_FROM_JSON_AS(it, GoodInSubject, toString)
-QList<string> TeacherSubjects;
-SerializableAttributeQHash<SchoolSubjectFamily, double> SubjectFamilyExp;
-SerializableAttributeQHash<string, double> SubjectInstanceExp;
+            else __IF_LIST_FROM_JSON_TYPED(it, TeacherSubjects, toString)
+            //SerializableAttributeQHash<SchoolSubjectFamily, double> SubjectFamilyExp;
+            //SerializableAttributeQHash<string, double> SubjectInstanceExp;
 			//readonly object subjectStatLock
 			//SerializableStringToDoubleDict DictProposalSupport
 			else __IF_VAR_FROM_JSON_AS(it, HasDetention, toBool)
@@ -169,7 +165,7 @@ SerializableAttributeQHash<string, double> SubjectInstanceExp;
 			//OutfitType CurrentOutfit
 			else __IF_VAR_FROM_JSON_AS(it, OutfitName, toString)
 			else __IF_VAR_FROM_JSON_AS(it, OutfitUseEverywhere, toBool)
-SerializableAttributeQHash<string, double> dictStats;
+            //SerializableAttributeQHash<string, double> dictStats;
 			//QList<StatusEffectInstance> StatusEffects
 			else __IF_VAR_FROM_JSON_AS(it, intBreastSize, toDouble)
 			else __IF_VAR_FROM_JSON_AS(it, intStomachSize, toDouble)
@@ -186,10 +182,9 @@ SerializableAttributeQHash<string, double> dictStats;
 			else __IF_VAR_FROM_JSON_AS(it, OutLateLastNight, toBool)
 			else __IF_VAR_FROM_JSON_AS(it, UpEarly, toBool)
 			//InventoryCollection Inventory
-			// char TRAIT_SEPARATOR_CHAR = ','
 			else __IF_VAR_FROM_JSON_AS(it, Trait, toString)
-SerializableAttributeQHash<string, int> Skills;
-QList<uint> AttachedEventIDs;
+            //SerializableAttributeQHash<string, int> Skills;
+            else __IF_LIST_FROM_JSON_TYPED(it, AttachedEventIDs, toInt)
 		}
 	}
 };
