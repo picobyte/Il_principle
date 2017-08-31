@@ -2,7 +2,7 @@
 #define ACCOUNT_H
 
 #include <QString>
-#include <QJsonObject>
+#include "json_macros.h"
 
 enum Payperiode
 {
@@ -15,16 +15,20 @@ enum Payperiode
 class Account
 {
 public:
-    Account() {}
-    Account(QJsonObject &v):
-        //Name(v["Name"].toString()),
-        SortOrder(v["SortOrder"].toInt()),
-        PayPeriode(static_cast<Payperiode>(v["PayPeriode"].toInt())),
-        Payment(v["Payment"].toInt()),
-        Active(v["Active"].toBool()),
-        NoWeekend(v["NoWeekend"].toBool())
-    {}
-    //QString Name;
+    Account(QJsonObject *d = NULL) {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, Name, toString)
+            else __IF_ENUM_FROM_JSON_AS(it, PayPeriode, Payperiode)
+            else __IF_VAR_FROM_JSON_AS(it, Payment, toInt)
+            else __IF_VAR_FROM_JSON_AS(it, Active, toBool)
+            else __IF_VAR_FROM_JSON_AS(it, NoWeekend, toBool)
+        }
+    }
+    QString Name;
     int SortOrder;
     Payperiode PayPeriode;
     int Payment;

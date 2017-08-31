@@ -42,9 +42,12 @@ HEADERS += \
     aspectratiopixmaplabel.h \
     school_management.h \
     generic.h \
+    timedata.h \
     student_tab.h \
     game.h \
     account.h \
+    bodysizechange.h \
+    statchange.h \
     clubs.h \
     json_macros.h
 

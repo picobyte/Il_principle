@@ -3,7 +3,7 @@
 #define __init_dict_if_key(it, _key, _as) \
     if (it.key() == #_key) {\
         QJsonObject v = it.value().toObject();\
-        _as[v["Name"].toString()] = _key(v);\
+        _as[v["Name"].toString()] = _key(&v);\
     }
 
 bool Game::jsonLoad(QString f)
