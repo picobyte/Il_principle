@@ -34,32 +34,25 @@ public:
 	}
 	const int get_AllowedRuleChoiceCount() const
 	{
-		checked
+		int AllowedRuleChoiceCount;
+		if (Status != RuleStatus.Available)
 		{
-			int AllowedRuleChoiceCount;
-			if (Status != RuleStatus.Available)
-			{
-				AllowedRuleChoiceCount = 0;
-			}
-			else
-			{
-				int count = 0;
-				try
-				{
-					IEnumerator<RuleChoice> enumerator = RuleChoices.GetEnumerator();
-					while (enumerator.MoveNext())
-					{
-						if (enumerator.Current.Status == RuleStatus.Available)
-						{
-							count++;
-						}
-					}
-				}
-				finally {}
-				AllowedRuleChoiceCount = count;
-			}
-			return AllowedRuleChoiceCount;
+			AllowedRuleChoiceCount = 0;
 		}
+		else
+		{
+			int count = 0;
+			IEnumerator<RuleChoice> enumerator = RuleChoices.GetEnumerator();
+			while (enumerator.MoveNext())
+			{
+				if (enumerator.Current.Status == RuleStatus.Available)
+				{
+					count++;
+				}
+			}
+			AllowedRuleChoiceCount = count;
+		}
+		return AllowedRuleChoiceCount;
 	}
 
 	Rule(QJsonObject *d = NULL) : Name(""), Description("")

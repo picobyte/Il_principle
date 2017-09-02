@@ -39,8 +39,9 @@ public:
             return QLocale().toCurrencyString(Payment * 4);
         case Payperiode::Monthly:
             return QLocale().toCurrencyString(Payment);
+        default:
+            return "";
         }
-        return "";
 	}
 	const bool get_LessThanZero() const
 	{
