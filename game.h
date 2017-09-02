@@ -26,6 +26,7 @@
 #include "schoolsubject.h"
 #include "item.h"
 #include "statuseffect.h"
+#include "schoolupgrade.h"
 //#include
 
 
@@ -70,7 +71,7 @@ private:
     QHash<QString, Stat> DictOfStats;
     QHash<QString, Skill> DictOfSkills;
     QList<QString> ListOfJobs;
-    //QSet<SchoolUpgrade> ListOfSchoolUpgrades;
+    QSet<SchoolUpgrade> ListOfSchoolUpgrades;
     QMap<QString, Rule> ListOfRules;
     QHash<QString, Item> ListOfBaseItems;
     QHash<QString, SchoolSubject> DictOfSubjects;

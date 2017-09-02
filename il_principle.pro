@@ -32,7 +32,8 @@ SOURCES += \
     aspectratiopixmaplabel.cpp \
     school_management.cpp \
     student_tab.cpp \
-    game.cpp
+    game.cpp \
+    schoolupgrade.cpp
 
 HEADERS += \
         mainwindow.h \
@@ -51,6 +52,10 @@ HEADERS += \
     generic.h \
     timedata.h \
     gametime.h \
+    rulechoicepersongroupchange.h \
+    rulechange.h \
+    locationpropertychange.h \
+    schoolupgrade.h \
     student_tab.h \
     statuseffect.h \
     game.h \

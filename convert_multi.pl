@@ -1,9 +1,17 @@
 #!/usr/bin/env perl
 # (c) picobyte 2017
 
+#usage: perl convert_multi.pl location.h ../hhs_/Location.cs
+
 use warnings;
 use strict;
 use Scalar::Util qw/openhandle/;
+
+my %enums = (map {$_ => ''} qw/OutfitType Payperiode Gender BodyPart Fetish FacialExpressions/);
+
+my %typex = (unsigned => 'toInt', int => 'toInt', bool => 'toBool', double => 'toDouble', QString => 'toString');
+my $typexr = join("|", keys %typex);
+$typexr = qr/\b($typexr)\b/;
 
 my $C_H;
 while (my $f = shift) {
@@ -29,6 +37,7 @@ while (my $f = shift) {
             s/\bDictionary\b/QHash/g;
             s/\bObservableDictionary\b/QMap/g;
             s/\bnull\b/NULL/g;
+            s/\buint\b/unsigned/g;
             s/\bstring\b/QString/g;
             if ($in_get) {
                 if (s/^\t\t\t\}$//) {
@@ -49,7 +58,7 @@ while (my $f = shift) {
             } elsif ($mem_fun) {
                 if (s/^\t\t\}$//) {
                     if (@$mem_fun > 2) {
-                        $mem_fun->[0] = join(" ", @$mem_fun[0]);
+                        $mem_fun->[0] = "\t".join(" ", @{$mem_fun->[0]});
                         print OUT join("\n", @$mem_fun, "\t}")."\n";
                     }
                     $mem_fun = undef;
@@ -76,13 +85,29 @@ while (my $f = shift) {
                     print OUT "\t\tfor (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {\n";
                     my $else = "";
                     foreach my $el (@vars) {
-                        if ($el =~ /(?:int|bool|double|QString)/) {
-                            $el =~ s/^(?|(i)(nt)|(b)(ool)|(d)(ouble)|Q(S)(tring)) (\w+);$/\t\t\t${else}__IF_VAR_FROM_JSON_AS(it, $3, to\U$1\L$2)/;
-                            $else = "else ";
+                        if ($el =~ /(\w+) (\w+);/) {
+                            if (exists $typex{$1}) {
+                                $el = "\t\t\t${else}__IF_VAR_FROM_JSON_AS(it, $2, $typex{$1})";
+                            } elsif(exists $enums{$1}) {
+                                $el = "\t\t\t${else}__IF_ENUM_FROM_JSON_AS(it, $2, $1)";
+                            } else {
+                                $el = "\t\t\t${else}__IF_OBJ_FROM_JSON_AS(it, $2)";
+                            }
+                        } elsif ($el =~ /QList\<(\w+)\> (\w+);/) {
+                            if (exists $typex{$1}) {
+                                $el = "\t\t\t${else}__IF_LIST_FROM_JSON_TYPED(it, $2, $typex{$1})";
+                            } elsif(exists $enums{$1}) {
+                                $el = "\t\t\t${else}__IF_LIST_FROM_JSON_ENUM(it, $2, $1)";
+                            } else {
+                                $el = "\t\t\t${else}__IF_OBJLIST_FROM_JSON(it, $2, $1)";
+                            }
                         } else {
                             $el =~ s/^(.*);$/\t\t\t\/\/$1/;
+                            print OUT $el, "\n";
+                            next;
                         }
-                        #$el =~ s/(Array|Object|Variant) (\w+);$/$2(v["$2"].to${1:+\U:\L}())/;
+                        $el =~ s/\bBodyPart\b/Body::Part/g;
+                        $else = "else ";
                         print OUT $el, "\n";
                     }
                     print OUT "\t\t}\n\t}\n};";

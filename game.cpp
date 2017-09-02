@@ -24,7 +24,7 @@ bool Game::jsonLoad(QString f)
     QJsonObject::iterator it;
     for (it = d.begin(); it != d.end(); ++it) {
         observed_keys.insert(it.key());
-        if(it.key() != "StatusEffect") {
+        if(it.key() != "SchoolUpgrade") {
             return true;
         }
         __init_dict_if_key(it, Account, DictOfAccounts)
@@ -35,6 +35,11 @@ bool Game::jsonLoad(QString f)
         else __init_dict_if_key(it, SchoolSubject, DictOfSubjects)
         else __init_dict_if_key(it, Item, ListOfBaseItems)
         else __init_dict_if_key(it, StatusEffect, DictOfStatusEffects)
+        else if (it.key() == "SchoolUpgrade") {
+            QJsonObject v = it.value().toObject();
+            SchoolUpgrade su(&v);
+            ListOfSchoolUpgrades.insert(su);
+        }
     }
 
     if (data.contains(f))

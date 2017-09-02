@@ -65,13 +65,9 @@ public:
     void init(QJsonObject *d)
     {
         for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-            if (it.key() == "SchoolSubjectInfluence_Stat") {
-                __OBJLIST_FROM_JSON(it.value(), stat, SchoolSubjectInfluence_Stat)
-            } else if (it.key() == "SchoolSubjectInfluence_Family") {
-                __OBJLIST_FROM_JSON(it.value(), family, SchoolSubjectInfluence_Family)
-            } else {
-                qWarning(it.key().append(": unhandled.").toUtf8());
-            }
+            __IF_OBJLIST_FROM_JSON(it.value(), stat, SchoolSubjectInfluence_Stat)
+            else __IF_OBJLIST_FROM_JSON(it.value(), family, SchoolSubjectInfluence_Family)
+            else qWarning(it.key().append(": unhandled.").toUtf8());
         }
     }
 };
