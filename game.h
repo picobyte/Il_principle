@@ -13,6 +13,7 @@
 #include <QStringList>
 #include <QString>
 #include <QSet>
+#include <QTime>
 #include <QList>
 #include <QLocale>
 #include <QHash>
@@ -23,6 +24,10 @@
 #include "skill.h"
 #include "rule.h"
 #include "schoolsubject.h"
+#include "item.h"
+#include "statuseffect.h"
+//#include
+
 
 class Game
 {
@@ -41,7 +46,6 @@ private:
     //TheWorld TheSchool;
     //ClassroomAssignments ClassAssignments;
     //GameCalendar SchoolCalendar;
-    //Time GameTime;
     Person HeadTeacher;
     QMap<QString, Account> DictOfAccounts;
     QMap<QString, Clubs> ListOfClubs;
@@ -62,13 +66,13 @@ private:
     //QList<SchoolClass> ListSchoolClasses;
     int DesiredNumSchoolClasses;
     //SchoolClass SpareStudentsClass;
-    //QHash<QString, StatusEffect> DictOfStatusEffects;
+    QHash<QString, StatusEffect> DictOfStatusEffects;
     QHash<QString, Stat> DictOfStats;
     QHash<QString, Skill> DictOfSkills;
     QList<QString> ListOfJobs;
     //QSet<SchoolUpgrade> ListOfSchoolUpgrades;
     QMap<QString, Rule> ListOfRules;
-    //QHash<QString, Item> ListOfBaseItems;
+    QHash<QString, Item> ListOfBaseItems;
     QHash<QString, SchoolSubject> DictOfSubjects;
     //QList<PersonScheduleHandler> ListOfScheduleHandlers;
     QHash<QString, double> CachedGlobalStats;

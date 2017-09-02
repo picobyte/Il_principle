@@ -40,6 +40,9 @@ HEADERS += \
     skill.h \
     rule.h \
     schoolsubject.h \
+    item.h \
+    modifier.h \
+    statuseffect.h \
     person.h \
     location_view.h \
     person_interaction.h \
@@ -47,13 +50,16 @@ HEADERS += \
     school_management.h \
     generic.h \
     timedata.h \
+    gametime.h \
     student_tab.h \
+    statuseffect.h \
     game.h \
     account.h \
     bodysizechange.h \
     statchange.h \
     clubs.h \
-    json_macros.h
+    json_macros.h \
+    gametime.h
 
 FORMS +=
 

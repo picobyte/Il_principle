@@ -1,6 +1,7 @@
 #ifndef STATUSEFFECTINSTANCE_H
 #define STATUSEFFECTINSTANCE_H
 #include "json_macros.h"
+#include "gametime.h"
 
 class StatusEffectInstance {
 public:
@@ -9,7 +10,7 @@ public:
 	int Duration;
 	bool IsExpired()
 	{
-		return Game.GameTime.CurrentTimestamp > checked(StartTimestamp + Duration);
+                return GameTime::CurrentTimestamp > StartTimestamp + Duration;
 	}
 
 	StatusEffectInstance(QJsonObject *d = NULL)

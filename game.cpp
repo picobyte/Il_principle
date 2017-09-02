@@ -24,7 +24,7 @@ bool Game::jsonLoad(QString f)
     QJsonObject::iterator it;
     for (it = d.begin(); it != d.end(); ++it) {
         observed_keys.insert(it.key());
-        if(it.key() != "SchoolSubject") {
+        if(it.key() != "StatusEffect") {
             return true;
         }
         __init_dict_if_key(it, Account, DictOfAccounts)
@@ -32,7 +32,9 @@ bool Game::jsonLoad(QString f)
         else __init_dict_if_key(it, Stat, DictOfStats)
         else __init_dict_if_key(it, Skill, DictOfSkills)
         else __init_dict_if_key(it, Rule, ListOfRules)
-        //else __init_dict_if_key(it, SchoolSubject, SchoolSubjects)
+        else __init_dict_if_key(it, SchoolSubject, DictOfSubjects)
+        else __init_dict_if_key(it, Item, ListOfBaseItems)
+        else __init_dict_if_key(it, StatusEffect, DictOfStatusEffects)
     }
 
     if (data.contains(f))
@@ -75,7 +77,7 @@ Game::Game(const char * school):
     while (it.hasNext())
            jsonLoad(it.next());
     qWarning(QString("observed keys: ").append(observed_keys.toList().join(", ")).toUtf8());
-    qInfo(QString::asprintf("loaded %d Accounts", DictOfAccounts.count()).toUtf8());
+    //qInfo(QString::asprintf("loaded %d Accounts", DictOfAccounts.count()).toUtf8());
 
     qInfo(QString::asprintf("%d files remaining", data.count()).toUtf8());
     dir.setCurrent(QCoreApplication::applicationDirPath()+"/../Il_principle/save");

@@ -9,6 +9,10 @@
 class ModifierBase {
 public:
 	ModifierBase(QJsonObject *d = NULL) {}
+    static double GetAlphaFromElapsedTime(StatusEffectInstance instance)
+    {
+        return (double)(GameTime::CurrentTimestamp - instance.StartTimestamp / (double)(instance.StartTimestamp + instance.Duration - instance.StartTimestamp));
+    }
 };
 
 class Modifier_AddGenderPrefValue : public ModifierBase {
@@ -82,7 +86,7 @@ public:
 	double EndValue;
 	 double GetValue(Person per, StatusEffectInstance instance)
 	{
-        return Value + ModifierBase.GetAlphaFromElapsedTime(instance) * (EndValue - Value);
+        return Value + GetAlphaFromElapsedTime(instance) * (EndValue - Value);
 	}
 
 	Modifier_AddStatValueLerp(QJsonObject *d = NULL)
@@ -104,7 +108,7 @@ public:
 	double TimeOffset;
     double GetValue(Person per, StatusEffectInstance instance)
 	{
-        return sin(((double)(Game.GameTime.CurrentTimestamp - instance.StartTimestamp) / Period - TimeOffset) * 2.0 * M_PI) * Amplitude + Value;
+        return sin(((double)(GameTime::CurrentTimestamp - instance.StartTimestamp) / Period - TimeOffset) * 2.0 * M_PI) * Amplitude + Value;
 	}
 
 	Modifier_AddStatValueSine(QJsonObject *d = NULL)
@@ -145,7 +149,7 @@ public:
 
 class Modifier_BodySizeChange : public ModifierBase {
 public:
-    BodyPart bodyPart;
+    Body::Part bodyPart;
 	double Change;
 	double Minimum;
 	double Maximum;
@@ -169,7 +173,7 @@ public:
 	void init(QJsonObject *d)
 	{
 		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-            __IF_ENUM_FROM_JSON_AS(it, bodyPart, BodyPar)
+            __IF_ENUM_FROM_JSON_AS(it, bodyPart, Body::Part)
             else __IF_VAR_FROM_JSON_AS(it, Change, toDouble)
 			else __IF_VAR_FROM_JSON_AS(it, Minimum, toDouble)
 			else __IF_VAR_FROM_JSON_AS(it, Maximum, toDouble)
@@ -233,18 +237,14 @@ class Modifier_DecreaseStatMultiplier : public ModifierBase {
 public:
 	QString StatName;
 	double ScaleFactor;
-	Modifier_DecreaseStatMultiplier()
+    Modifier_DecreaseStatMultiplier(QJsonObject *d = NULL)
 	{
+        if (d) init(d);
 		ScaleFactor = 1.0;
 	}
 	virtual double GetScaleFactor()
 	{
 		return ScaleFactor;
-	}
-
-	Modifier_DecreaseStatMultiplier(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
 	}
 	void init(QJsonObject *d)
 	{
@@ -258,9 +258,9 @@ public:
 class Modifier_DecreaseStatMultiplierLerp : public Modifier_DecreaseStatMultiplier {
 public:
 	double EndScaleFactor;
-	 double GetScaleFactor()
+     double GetScaleFactor(Person per, StatusEffectInstance instance)
 	{
-		return base.ScaleFactor + ModifierBase.GetAlphaFromElapsedTime(instance) * (EndScaleFactor - base.ScaleFactor);
+        return ScaleFactor + GetAlphaFromElapsedTime(instance) * (EndScaleFactor - ScaleFactor);
 	}
 
 	Modifier_DecreaseStatMultiplierLerp(QJsonObject *d = NULL)
@@ -280,9 +280,9 @@ public:
 	double Amplitude;
 	double Period;
 	double TimeOffset;
-	 double GetScaleFactor()
+     double GetScaleFactor(Person per, StatusEffectInstance instance)
 	{
-        return sin(((double)(Game.GameTime.CurrentTimestamp - instance.StartTimestamp) / Period - TimeOffset) * 2.0 * M_PI) * Amplitude + base.ScaleFactor;
+        return sin(((double)(GameTime::CurrentTimestamp - instance.StartTimestamp) / Period - TimeOffset) * 2.0 * M_PI) * Amplitude + ScaleFactor;
 	}
 
 	Modifier_DecreaseStatMultiplierSine(QJsonObject *d = NULL)
@@ -319,7 +319,7 @@ public:
 	void init(QJsonObject *d)
 	{
 		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-            __IF_ENUM_FROM_JSON_AS(it, schoolSubjectFamily, SubjectFamilyNam)
+            __IF_ENUM_FROM_JSON_AS(it, subjectFamilyName, SchoolSubjectFamily)
             else __IF_VAR_FROM_JSON_AS(it, ScaleFactor, toDouble)
 		}
 	}
@@ -397,18 +397,14 @@ class Modifier_IncreaseStatMultiplier : public ModifierBase {
 public:
 	QString StatName;
 	double ScaleFactor;
-	Modifier_IncreaseStatMultiplier()
+    Modifier_IncreaseStatMultiplier(QJsonObject *d = NULL)
 	{
+        if (d) init(d);
 		ScaleFactor = 1.0;
 	}
 	virtual double GetScaleFactor()
 	{
 		return ScaleFactor;
-	}
-
-	Modifier_IncreaseStatMultiplier(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
 	}
 	void init(QJsonObject *d)
 	{
@@ -422,9 +418,9 @@ public:
 class Modifier_IncreaseStatMultiplierLerp : public Modifier_IncreaseStatMultiplier {
 public:
 	double EndScaleFactor;
-	 double GetScaleFactor()
+     double GetScaleFactor(Person per, StatusEffectInstance instance)
 	{
-		return base.ScaleFactor + ModifierBase.GetAlphaFromElapsedTime(instance) * (EndScaleFactor - base.ScaleFactor);
+        return ScaleFactor + GetAlphaFromElapsedTime(instance) * (EndScaleFactor - ScaleFactor);
 	}
 
 	Modifier_IncreaseStatMultiplierLerp(QJsonObject *d = NULL)
@@ -444,9 +440,9 @@ public:
 	double Amplitude;
 	double Period;
 	double TimeOffset;
-	 double GetScaleFactor()
+     double GetScaleFactor(Person per, StatusEffectInstance instance)
 	{
-        return sin(((double)(Game.GameTime.CurrentTimestamp - instance.StartTimestamp) / Period - TimeOffset) * 2.0 * M_PI) * Amplitude + base.ScaleFactor;
+        return sin(((double)(GameTime::CurrentTimestamp - instance.StartTimestamp) / Period - TimeOffset) * 2.0 * M_PI) * Amplitude + ScaleFactor;
 	}
 
 	Modifier_IncreaseStatMultiplierSine(QJsonObject *d = NULL)
@@ -560,7 +556,7 @@ public:
 	double EndValue;
 	 double GetValue(Person per, StatusEffectInstance instance)
 	{
-        return Value + ModifierBase.GetAlphaFromElapsedTime(instance) * (EndValue - Value);
+        return Value + GetAlphaFromElapsedTime(instance) * (EndValue - Value);
 	}
 
 	Modifier_MaxStatValueLerp(QJsonObject *d = NULL)
@@ -582,7 +578,7 @@ public:
 	double TimeOffset;
 	 double GetValue(Person per, StatusEffectInstance instance)
 	{
-        return sin(((double)(Game.GameTime.CurrentTimestamp - instance.StartTimestamp) / Period - TimeOffset) * 2.0 * M_PI) * Amplitude + Value;
+        return sin(((double)(GameTime::CurrentTimestamp - instance.StartTimestamp) / Period - TimeOffset) * 2.0 * M_PI) * Amplitude + Value;
 	}
 
 	Modifier_MaxStatValueSine(QJsonObject *d = NULL)
@@ -692,7 +688,7 @@ public:
 	double EndValue;
 	 double GetValue(Person per, StatusEffectInstance instance)
 	{
-        return Value + ModifierBase.GetAlphaFromElapsedTime(instance) * (EndValue - Value);
+        return Value + GetAlphaFromElapsedTime(instance) * (EndValue - Value);
 	}
 
 	Modifier_MinStatValueLerp(QJsonObject *d = NULL)
@@ -714,7 +710,7 @@ public:
 	double TimeOffset;
 	 double GetValue(Person per, StatusEffectInstance instance)
 	{
-        return sin(((double)(Game.GameTime.CurrentTimestamp - instance.StartTimestamp) / Period - TimeOffset) * 2.0 * M_PI) * Amplitude + Value;
+        return sin(((double)(GameTime::CurrentTimestamp - instance.StartTimestamp) / Period - TimeOffset) * 2.0 * M_PI) * Amplitude + Value;
 	}
 
 	Modifier_MinStatValueSine(QJsonObject *d = NULL)

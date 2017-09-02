@@ -2,7 +2,7 @@
 #define SCHOOLSUBJECT_H
 #include "json_macros.h"
 
-enum class SubjectFamily
+enum class SchoolSubjectFamily
 {
     NONE,
     Mathematics,
@@ -20,7 +20,7 @@ enum class SubjectFamily
 class SchoolSubjectInfluence_Stat {
 public:
     double InfluenceFactor;
-    QString statName;
+    QString StatName;
     double BaseValue;
     SchoolSubjectInfluence_Stat(QJsonObject *d = NULL) {
         if (d) init(d);
@@ -29,7 +29,7 @@ public:
     {
         for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
             __IF_VAR_FROM_JSON_AS(it, InfluenceFactor, toDouble)
-            else __IF_VAR_FROM_JSON_AS(it, statName, toString)
+            else __IF_VAR_FROM_JSON_AS(it, StatName, toString)
             else __IF_VAR_FROM_JSON_AS(it, BaseValue, toDouble)
             else qWarning(it.key().append(": unhandled.").toUtf8());
         }
@@ -39,7 +39,7 @@ public:
 class SchoolSubjectInfluence_Family {
 public:
     double InfluenceFactor;
-    SubjectFamily subjectFamily;
+    SchoolSubjectFamily SubjectFamily;
     SchoolSubjectInfluence_Family(QJsonObject *d = NULL) {
         if (d) init(d);
     }
@@ -47,7 +47,7 @@ public:
     {
         for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
             __IF_VAR_FROM_JSON_AS(it, InfluenceFactor, toDouble)
-            else __IF_ENUM_FROM_JSON_AS(it, subjectFamily, SubjectFamily)
+            else __IF_ENUM_FROM_JSON_AS(it, SubjectFamily, SchoolSubjectFamily)
             else qWarning(it.key().append(": unhandled.").toUtf8());
         }
     }
@@ -56,7 +56,7 @@ public:
 class SchoolSubjectInfluence {
 public:
     double InfluenceFactor;
-    SubjectFamily subjectFamily;
+    SchoolSubjectFamily subjectFamily;
     QList<SchoolSubjectInfluence_Stat> stat;
     QList<SchoolSubjectInfluence_Family> family;
     SchoolSubjectInfluence(QJsonObject *d = NULL) {
@@ -81,7 +81,7 @@ public:
 
 	QString Name;
 	QString Description;
-    SubjectFamily subjectFamily;
+    SchoolSubjectFamily SubjectFamily;
 	QString ImageIconPath;
 	bool CanBeTaught;
 	QList<QString> LessonLocations;
@@ -93,7 +93,7 @@ public:
     SchoolSubject(QJsonObject *d = NULL):
             Name(""),
             Description(""),
-            subjectFamily(SubjectFamily::NONE),
+            SubjectFamily(SchoolSubjectFamily::NONE),
             ImageIconPath(""),
             CanBeTaught(true),
             SubjectExperienceRatio(1.0)
@@ -105,7 +105,7 @@ public:
 		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
 			__IF_VAR_FROM_JSON_AS(it, Name, toString)
 			else __IF_VAR_FROM_JSON_AS(it, Description, toString)
-            else __IF_ENUM_FROM_JSON_AS(it, subjectFamily, SubjectFamily)
+            else __IF_ENUM_FROM_JSON_AS(it, SubjectFamily, SchoolSubjectFamily)
 			else __IF_VAR_FROM_JSON_AS(it, ImageIconPath, toString)
 			else __IF_VAR_FROM_JSON_AS(it, CanBeTaught, toBool)
             else __IF_LIST_FROM_JSON_TYPED(it, LessonLocations, toString)

@@ -5,12 +5,12 @@
 
 class StatusEffect {
 public:
-        enum class StatusEffectAccumulationType
+	enum class StatusEffectAccumulationType
 	{
 		None,
 		Refresh,
 		Stack
-	}
+	};
 	QString Name;
 	QString DisplayName;
 	StatusEffectAccumulationType AccumulationType;
