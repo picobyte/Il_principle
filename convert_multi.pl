@@ -85,13 +85,13 @@ sub parsefunc {
     }
     return undef if $L =~ /^\s+finally \{\}$/;
     if (/while \((\w+)\.MoveNext\(\)\)/) {
-        my $v = $1;
-        if ($arr->[$#$arr] =~ /(\w+\<\w+\>) $v \= ((?:\w+\.)*\w+)\.GetEnumerator\(\);/) {
-            my $c = $1;
+        my $nm = $1;
+        if ($arr->[$#$arr] =~ /(\w+\<\w+(?:, \w+)*\>)(?:\.\w+)* $nm \= ((?:\w+\.)*\w+)\.GetEnumerator\(\);/) {
+            my ($c, $v) = ($1, $2);
             pop(@$arr);
             my $it = "it";
             $it .= scalar(@its)+1 if @its;
-            s/^(\s+)while \(\w+\.MoveNext\(\)\)/for (${c}::iterator $it = ${v}\->begin(); $it != ${v}\->end(); ++$it)/;
+            $L =~ s/^(\s+)while \(\w+\.MoveNext\(\)\)/${1}for (${c}::iterator $it = ${v}\->begin();\n$1\t\t$it != ${v}\->end(); ++$it)/;
             push (@its, [$it, $1."}", qr/\b$v\.Current\b/]);
         }
     }
