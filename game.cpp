@@ -24,9 +24,9 @@ bool Game::jsonLoad(QString f)
     QJsonObject::iterator it;
     for (it = d.begin(); it != d.end(); ++it) {
         observed_keys.insert(it.key());
-        if(it.key() != "SchoolUpgrade") {
+        /*if(it.key() != "SchoolUpgrade") {
             return true;
-        }
+        }*/
         __init_dict_if_key(it, Account, DictOfAccounts)
         else __init_dict_if_key(it, Clubs, ListOfClubs)
         else __init_dict_if_key(it, Stat, DictOfStats)
