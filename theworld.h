@@ -7,7 +7,6 @@ class TheWorld {
 	int money;
 	QList<QString> GlobalStats;
 	QList<UIProgressBarDefinition> ProgressBarStats;
-	//object locationUpdateLock;
 	ConcurrentDictionary<QString, Location> DictOfLocation;
 	QList<Location> ListOfLocation;
 	QList<Location> ListOfWorkplaces;
@@ -41,90 +40,66 @@ public:
 	void set_Money(int& v)
 	{
 		money = value < -999999999 ? -999999999 : (value > 999999999 ? 999999999 : value);
-        }
-	TheWorld() : FilePath(""),
-                MaxGeneratedWorldPopulation(1200),
-                MinEnrolledStudentCount(75),
-                MaxEnrolledStudentCount(400),
-                MinDate(new QDateTime(2010, 2, 1)),
-                MaxDate(new QDateTime(2012, 6, 30))
-        {
 	}
+	TheWorld() : FilePath(""),
+		MaxGeneratedWorldPopulation(1200),
+		MinEnrolledStudentCount(75),
+		MaxEnrolledStudentCount(400),
+		MinDate(new QDateTime(2010, 2, 1)),
+		MaxDate(new QDateTime(2012, 6, 30))
+	{}
 	void RecalculateBuildingMaintenance()
 	{
-		checked
+		int Total = 0;
+		IEnumerator<SchoolUpgrade>::iterator it;
+		for (it = Game.ListOfSchoolUpgrades.begin(); it != enumerator.MoveNext(); ++it)
+			Total -= it.Current.MaintenanceCost;
+
+		if (!Game.DictOfAccounts.ContainsKey("Building Maintenance"))
 		{
-			int Total = 0;
-			try
+			Account ac = new Account
 			{
-				IEnumerator<SchoolUpgrade> enumerator = Game.ListOfSchoolUpgrades.GetEnumerator();
-				while (enumerator.MoveNext())
-				{
-					SchoolUpgrade Upgrade = enumerator.Current;
-					Total -= Upgrade.MaintenanceCost;
-				}
-			}
-			finally {}
-			if (!Game.DictOfAccounts.ContainsKey("Building Maintenance"))
-			{
-				Account ac = new Account
-				{
-					Name = "Building Maintenance",
-					PayPeriode = Payperiode.Weekly,
-					Active = true
-				};
-				Game.DictOfAccounts.Add(ac.Name, ac);
-			}
-			Game.DictOfAccounts["Building Maintenance"].Payment = Total;
+				Name = "Building Maintenance",
+				PayPeriode = Payperiode.Weekly,
+				Active = true
+			};
+			Game.DictOfAccounts.Add(ac.Name, ac);
 		}
+		Game.DictOfAccounts["Building Maintenance"].Payment = Total;
 	}
 	void ConvertToDict()
 	{
-		object obj = locationUpdateLock;
-		ObjectFlowControl.CheckForSyncLockOnValueType(obj);
-		lock (obj)
+		if (DictOfLocation.Count == 0)
 		{
-			if (DictOfLocation.Count == 0)
+			ListOfWorkplaces.Clear();
+			QList<Location>.Enumerator enumerator = ListOfLocation.GetEnumerator();
+			while (enumerator.MoveNext())
 			{
-				ListOfWorkplaces.Clear();
-				try
+				Location Loc = enumerator.Current;
+				DictOfLocation.TryAdd(Loc.Name, Loc);
+				if (Loc.AssociatedJobs.Count > 0 && Loc.Region != Region.School)
 				{
-					QList<Location>.Enumerator enumerator = ListOfLocation.GetEnumerator();
-					while (enumerator.MoveNext())
-					{
-						Location Loc = enumerator.Current;
-						DictOfLocation.TryAdd(Loc.Name, Loc);
-						if (Loc.AssociatedJobs.Count > 0 && Loc.Region != Region.School)
-						{
-							ListOfWorkplaces.Add(Loc);
-						}
-						if (Loc.AllowedGenders.Count == 0)
-						{
-							Loc.AllowedGenders.AddRange(new Gender[]
-							{
-								Gender.Male,
-								Gender.Female,
-								Gender.Futanari
-							});
-						}
-					}
+					ListOfWorkplaces.Add(Loc);
 				}
-				finally {}
-				ListOfLocation.Clear();
+				if (Loc.AllowedGenders.Count == 0)
+				{
+					Loc.AllowedGenders.AddRange(new Gender[]
+					{
+						Gender.Male,
+						Gender.Female,
+						Gender.Futanari
+					});
+				}
 			}
+			ListOfLocation.Clear();
 		}
 	}
 	void ConvertToList()
 	{
-		object obj = locationUpdateLock;
-		ObjectFlowControl.CheckForSyncLockOnValueType(obj);
-		lock (obj)
+		if (ListOfLocation.Count != DictOfLocation.Values.Count)
 		{
-			if (ListOfLocation.Count != DictOfLocation.Values.Count)
-			{
-				ListOfLocation.Clear();
-				ListOfLocation.AddRange(DictOfLocation.Values);
-			}
+			ListOfLocation.Clear();
+			ListOfLocation.AddRange(DictOfLocation.Values);
 		}
 	}
 	int GetChecksum()
