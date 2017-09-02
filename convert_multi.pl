@@ -61,6 +61,7 @@ sub create_constructor {
 }
 
 my @sws;
+my @its;
 sub parsefunc {
     my ($L, $arr) = @_;
     if ($L =~ /^\t+\{$/ && ($arr->[$#$arr] =~ /^\s*(try|finally|checked)$/)) {
@@ -68,6 +69,10 @@ sub parsefunc {
         $L =~ s/\{$/\\}/;
         push @sws, qr/^$L$/;
         return undef;
+    }
+    if (@its) {
+        pop @its if $L =~ $its[$#its]->[1];
+        $L =~ s/$_->[2]/$_->[0]/g foreach @its;
     }
     if (@sws) {
         if ($L =~ $sws[$#sws]) {
@@ -79,14 +84,17 @@ sub parsefunc {
         }
     }
     return undef if $L =~ /^\s+finally \{\}$/;
-    #if (/while \((\w+)\.MoveNext\(\)\)/) {
-    #    my $v = $1;
-    #    if ($arr->[$#$arr] =~ /IEnumerator\<(\w+)\> $v \= ((?:\w+\.)*\w+)\.GetEnumerator\(\);/) {
-    #        my $c = $2;
-    #        pop(@$arr);
-    #        s/while \((\w+)\.MoveNext\(\)\)/for (${c}::iterator it = ${v}\->begin(); it != ${v}\->end(); ++it)/;
-    #    }
-    #}
+    if (/while \((\w+)\.MoveNext\(\)\)/) {
+        my $v = $1;
+        if ($arr->[$#$arr] =~ /(\w+\<\w+\>) $v \= ((?:\w+\.)*\w+)\.GetEnumerator\(\);/) {
+            my $c = $1;
+            pop(@$arr);
+            my $it = "it";
+            $it .= scalar(@its)+1 if @its;
+            s/^(\s+)while \(\w+\.MoveNext\(\)\)/for (${c}::iterator $it = ${v}\->begin(); $it != ${v}\->end(); ++$it)/;
+            push (@its, [$it, $1."}", qr/\b$v\.Current\b/]);
+        }
+    }
     return $L;
 }
 
@@ -126,7 +134,7 @@ while (my $f = shift) {
                     $in_get = undef;
                 } else {
                     $_ = parsefunc($_, $in_get);
-                    push (@$in_get, $_) if $_;
+                    push (@$in_get, $_) if defined $_;
                 }
             } elsif ($in_set) {
                 die unless s/^\t\t//;
@@ -134,7 +142,8 @@ while (my $f = shift) {
                     print OUT join("\n", @$in_set, "\t}")."\n";
                     $in_set = undef;
                 } else {
-                    push @$in_set, parsefunc($_, $in_set);
+                    $_ = parsefunc($_, $in_set);
+                    push (@$in_set, $_) if defined $_;
                 }
             } elsif ($mem_fun) {
                 die unless s/^\t//;
@@ -161,7 +170,8 @@ while (my $f = shift) {
                         $in_set = [$_];
                     }
                 } else {
-                    push @$mem_fun, parsefunc($_, $mem_fun);
+                    $_ = parsefunc($_, $mem_fun);
+                    push (@$mem_fun, $_) if defined $_;
                 }
             } elsif (/^\}/) { # namespace end occurs first, actually.
                 print OUT "};\n" and next if $created_constructor;

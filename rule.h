@@ -1,82 +1,65 @@
 #ifndef RULE_H
 #define RULE_H
+#include <QSet>
 #include "json_macros.h"
+#include "rulechoice.h"
 
 class Rule {
-	ObservableCollection<RuleChoice> RuleChoices;
+    QSet<RuleChoice> RuleChoices;
 public:
-	QString Name;
-	QString Description;
-	RuleStatus Status;
-	int ActiveRuleChoiceIndex;
+    QString Name;
+    QString Description;
+    RuleStatus Status;
+    int ActiveRuleChoiceIndex;
 
 	const RuleChoice get_ActiveRuleChoice() const
 	{
-		RuleChoice ActiveRuleChoice;
-		if (Status == RuleStatus.Available && ActiveRuleChoiceIndex > -1 && ActiveRuleChoiceIndex < RuleChoices.Count)
-		{
-			ActiveRuleChoice = RuleChoices[ActiveRuleChoiceIndex];
-		}
-		else
-		{
-			ActiveRuleChoice = NULL;
-		}
-		return ActiveRuleChoice;
+        if (Status == RuleStatus::Available && ActiveRuleChoiceIndex > -1 &&
+                ActiveRuleChoiceIndex < RuleChoices.count())
+            return RuleChoices[ActiveRuleChoiceIndex];
+
+        return = NULL;
 	}
-	void set_ActiveRuleChoice(RuleChoice& v)
+    void set_ActiveRuleChoice(RuleChoice& value)
 	{
-		if (RuleChoices.Contains(value) && value.Status == RuleStatus.Available)
+        if (RuleChoices.Contains(value) && value.Status == RuleStatus::Available)
 		{
 			VisualEventManager.ExecuteNativeEvent(ActiveRuleChoice.Name + "_Deactivated.ve.xml");
 			ActiveRuleChoiceIndex = RuleChoices.IndexOf(value);
 			VisualEventManager.ExecuteNativeEvent(ActiveRuleChoice.Name + "_Activated.ve.xml");
 		}
 	}
-	const int get_AllowedRuleChoiceCount() const
-	{
-		int AllowedRuleChoiceCount;
-		if (Status != RuleStatus.Available)
-		{
-			AllowedRuleChoiceCount = 0;
-		}
-		else
-		{
-			int count = 0;
-			IEnumerator<RuleChoice> enumerator = RuleChoices.GetEnumerator();
-			while (enumerator.MoveNext())
-			{
-				if (enumerator.Current.Status == RuleStatus.Available)
-				{
-					count++;
-				}
-			}
-			AllowedRuleChoiceCount = count;
-		}
-		return AllowedRuleChoiceCount;
-	}
+    const int get_AllowedRuleChoiceCount() const
+    {
+        int count = 0;
+        if (Status == RuleStatus::Available)
+            for(QSet<RuleChoice>::iterator it = RuleChoices.begin(); it != RuleChoices.end(); ++it)
+                if (it->Status == RuleStatus::Available)
+                    ++count;
+        return count;
+    }
 
 	Rule(QJsonObject *d = NULL) : Name(""), Description("")
 	{
 		if (d) init(d);
-		RuleChoices = new ObservableCollection<RuleChoice>();
 	}
 	void init(QJsonObject *d)
 	{
 		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
 			__IF_VAR_FROM_JSON_AS(it, Name, toString)
 			else __IF_VAR_FROM_JSON_AS(it, Description, toString)
-			else __IF_OBJ_FROM_JSON_AS(it, Status)
+            else __IF_ENUM_FROM_JSON_AS(it, Status, RuleStatus)
 			else __IF_VAR_FROM_JSON_AS(it, ActiveRuleChoiceIndex, toInt)
 			//ObservableCollection<RuleChoice> RuleChoices
 		}
 	}
 	bool ShouldSerializeStatus()
 	{
-		return Status > RuleStatus.Available;
+        return Status > RuleStatus::Available;
 	}
 	bool ShouldSerializeActiveRuleChoiceIndex()
 	{
-		return ActiveRuleChoiceIndex != 0 && ActiveRuleChoiceIndex < RuleChoices.Count;
+        return ActiveRuleChoiceIndex != 0 && ActiveRuleChoiceIndex < RuleChoices.count;
 	}
 	QString ToString()
 	{

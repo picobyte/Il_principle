@@ -52,6 +52,7 @@ HEADERS += \
     generic.h \
     timedata.h \
     gametime.h \
+    rulechoice.h \
     rulechoicepersongroupchange.h \
     rulechange.h \
     locationpropertychange.h \

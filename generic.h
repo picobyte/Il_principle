@@ -153,4 +153,12 @@ enum class FacialExpressions
     Ahegao
 };
 
+enum class RuleStatus
+{
+    Available,
+    ProposalNeeded,
+    UpgradeNeeded,
+    Blocked
+};
+
 #endif // GENERIC_H
