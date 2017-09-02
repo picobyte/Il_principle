@@ -39,6 +39,7 @@ while (my $f = shift) {
             s/\bnull\b/NULL/g;
             s/\buint\b/unsigned/g;
             s/\bstring\b/QString/g;
+            s/\bUtilityClass\.Clamp\(([^,(]+), ?([^,]+), ?([^,)]+)\)/$1 < $2 ? $2 : ($1 > $3 ? $3 : $1)/g;
             if ($in_get) {
                 if (s/^\t\t\t\}$//) {
                     print OUT join("\n", @$in_get, "\t}")."\n";
