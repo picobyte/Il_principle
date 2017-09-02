@@ -8,6 +8,34 @@ public:
 	double Change;
 	double Minimum;
 	double Maximum;
+	bool ShouldSerializeMinimum()
+	{
+		return Minimum != 0.0;
+	}
+	bool ShouldSerializeMaximum()
+	{
+		return Maximum != 0.0;
+	}
+	bool WithinRange(double Value)
+	{
+		return Value >= 1.0 && (Minimum == 0.0 || Value >= Minimum) && (Maximum == 0.0 || Value <= Maximum);
+	}
+	void AdjustStat(Person Per)
+	{
+		if (WithinRange(Per.GetStat(Stat)))
+		{
+			Per.AddStat(Stat, Change);
+			if (Minimum != 0.0 && Per.GetStat(Stat) < Minimum)
+			{
+				Per.SetStat(Stat, Minimum);
+				return;
+			}
+			if (Maximum != 0.0 && Per.GetStat(Stat) > Maximum)
+			{
+				Per.SetStat(Stat, Maximum);
+			}
+		}
+	}
 
     StatChange(QJsonObject *d = NULL) {
         if (d) init(d);
