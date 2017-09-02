@@ -115,15 +115,15 @@ while (my $f = shift) {
                         print OUT join("\n", @$mem_fun, $_)."\n";
                     }
                     $mem_fun = undef;
-                } elsif ($mem_fun->[0]->[0] eq $class) { # costructor
+                } elsif ($mem_fun->[0]->[0] =~ /^\t$class\(/) { # constructor
                     push (@$mem_fun, $_) unless / \= new \w+\<\w+\>\(\);/;
-                } elsif (s/^\t\tget(;?)$/\tconst $mem_fun->[0]->[0] get_$mem_fun->[0]->[1]() const$1/) {
+                } elsif (s/^\t\tget(;?)/\tconst $mem_fun->[0]->[0] get_$mem_fun->[0]->[1]() const$1/) {
                     if (s/;$/ {return $mem_fun->[0]->[1];}/) {
                         print OUT $_."\n";
                     } else {
                         $in_get = [$_];
                     }
-                } elsif (s/^\t\tset(;?)$/\tvoid set_$mem_fun->[0]->[1]($mem_fun->[0]->[0]\& v)$1/) {
+                } elsif (s/^\t\tset(;?)/\tvoid set_$mem_fun->[0]->[1]($mem_fun->[0]->[0]\& v)$1/) {
                     if (s/;$/ {$mem_fun->[0]->[1] = v;}/) {
                         print OUT $_."\n";
                     } else {
@@ -139,9 +139,8 @@ while (my $f = shift) {
                 s/ _/ /;
                 push @vars, $_;
                 print OUT "\t".$_, "\n";
-            } elsif (/^\t\t(private|public) (static|override)? ?((\w+ )*\w+\(.*)$/) {
+            } elsif (/^\t\t(private|public) (static|override)? ?((\w+ )*\w+(\(.*)?)$/) {
                 $mem_fun = [[split(/ /, $3)]];
-
             }
         } elsif (/public(?: abstract)? class (\w+)/ and not $C_H) {
             $class = $1;
