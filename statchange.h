@@ -1,6 +1,7 @@
 #ifndef STATCHANGE_H
 #define STATCHANGE_H
 #include "json_macros.h"
+#include "person.h"
 
 class StatChange {
 public:
@@ -20,9 +21,9 @@ public:
 	{
 		return Value >= 1.0 && (Minimum == 0.0 || Value >= Minimum) && (Maximum == 0.0 || Value <= Maximum);
 	}
-	void AdjustStat(Person Per)
+    void AdjustStat(Person *Per)
 	{
-		if (WithinRange(Per.GetStat(Stat)))
+        /*if (WithinRange(Per.GetStat(Stat)))
 		{
 			Per.AddStat(Stat, Change);
 			if (Minimum != 0.0 && Per.GetStat(Stat) < Minimum)
@@ -34,7 +35,7 @@ public:
 			{
 				Per.SetStat(Stat, Maximum);
 			}
-		}
+        }*/
 	}
 
     StatChange(QJsonObject *d = NULL) {

@@ -1,41 +1,42 @@
 #ifndef RULE_H
 #define RULE_H
-#include <QSet>
+#include <QList>
 #include "json_macros.h"
 #include "rulechoice.h"
 
 class Rule {
-    QSet<RuleChoice> RuleChoices;
+    QList<RuleChoice> RuleChoices;
 public:
     QString Name;
     QString Description;
     RuleStatus Status;
     int ActiveRuleChoiceIndex;
 
-	const RuleChoice get_ActiveRuleChoice() const
+    RuleChoice const*const get_ActiveRuleChoice() const
 	{
         if (Status == RuleStatus::Available && ActiveRuleChoiceIndex > -1 &&
                 ActiveRuleChoiceIndex < RuleChoices.count())
-            return RuleChoices[ActiveRuleChoiceIndex];
+            return &RuleChoices[ActiveRuleChoiceIndex];
 
-        return = NULL;
+        return NULL;
 	}
     void set_ActiveRuleChoice(RuleChoice& value)
 	{
-        if (RuleChoices.Contains(value) && value.Status == RuleStatus::Available)
+        /*if (RuleChoices.contains(value) && value.Status == RuleStatus::Available)
 		{
-			VisualEventManager.ExecuteNativeEvent(ActiveRuleChoice.Name + "_Deactivated.ve.xml");
+            RuleChoice const *const arlc = get_ActiveRuleChoice();
+            VisualEventManager.ExecuteNativeEvent(arlc->Name + "_Deactivated.ve.xml");
 			ActiveRuleChoiceIndex = RuleChoices.IndexOf(value);
-			VisualEventManager.ExecuteNativeEvent(ActiveRuleChoice.Name + "_Activated.ve.xml");
-		}
+            VisualEventManager.ExecuteNativeEvent(arlc->Name + "_Activated.ve.xml");
+        }*/
 	}
     const int get_AllowedRuleChoiceCount() const
     {
         int count = 0;
-        if (Status == RuleStatus::Available)
-            for(QSet<RuleChoice>::iterator it = RuleChoices.begin(); it != RuleChoices.end(); ++it)
+        /*if (Status == RuleStatus::Available)
+            for(QList<RuleChoice>::iterator it = RuleChoices.begin(); it != RuleChoices.end(); ++it)
                 if (it->Status == RuleStatus::Available)
-                    ++count;
+                    ++count;*/
         return count;
     }
 
@@ -59,7 +60,7 @@ public:
 	}
 	bool ShouldSerializeActiveRuleChoiceIndex()
 	{
-        return ActiveRuleChoiceIndex != 0 && ActiveRuleChoiceIndex < RuleChoices.count;
+        return ActiveRuleChoiceIndex != 0 && ActiveRuleChoiceIndex < RuleChoices.count();
 	}
 	QString ToString()
 	{

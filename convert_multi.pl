@@ -91,7 +91,7 @@ sub parsefunc {
             pop(@$arr);
             my $it = "it";
             $it .= scalar(@its)+1 if @its;
-            $L =~ s/^(\s+)while \(\w+\.MoveNext\(\)\)/${1}for (${c}::iterator $it = ${v}\->begin();\n$1\t\t$it != ${v}\->end(); ++$it)/;
+            $L =~ s/^(\s+)while \(\w+\.MoveNext\(\)\)/${1}for (${c}::iterator $it = ${v}.begin();\n$1\t\t$it != ${v}.end(); ++$it)/;
             push (@its, [$it, $1."}", qr/\b$v\.Current\b/]);
         }
     }
@@ -124,6 +124,8 @@ while (my $f = shift) {
             s/\bDictionary\b/QHash/g;
             s/\bObservableDictionary\b/QMap/g;
             s/\bnull\b/NULL/g;
+            s/\.Count\b/.count()/g;
+            s/\.Contains\(/.contains\(/g;
             s/\buint\b/unsigned/g;
             s/\bstring\b/QString/g;
             s/\bUtilityClass\.Clamp\(([^,(]+), ?([^,]+), ?([^,)]+)\)/$1 < $2 ? $2 : ($1 > $3 ? $3 : $1)/g;
