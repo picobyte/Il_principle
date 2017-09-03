@@ -119,7 +119,7 @@ sub parsefunc {
                 }
             }
         }
-        if ($do_replace) {
+        if ($do_replace) { # FIXME: bug in here
             my $j = $i;
             my $in_else;
             while ($i++ != $#$arr) {
@@ -246,16 +246,17 @@ while (my $f = shift) {
             } elsif (/^\t\t(private|public) (static|override)? ?((\w+ )*\w+(\(.*)?)$/) {
                 $mem_fun = [[split(/ /, $3)]];
             }
-        } elsif (/public(?: abstract| sealed)? class (\w+)/ and not $C_H) {
+        } elsif (/(?:public|internal)(?: abstract| sealed| static| partial)? (?:class|struct) (\w+)/ and not $C_H) {
             $class = $1;
             $C_H = uc $class."_H";
             print OUT "#ifndef $C_H\n#define $C_H\n".($jl ? "#include \"json_macros.h\"\n" : "")."\nclass $class {\npublic:\n";
-        } elsif (/\tpublic class (\w+) : (\w+)/) {
-            die "feed abstract class first!" if not $C_H;
+        } elsif (/\t(?:public |internal )(?:class|struct) (\w+) : (\w+)/) {
+            #die "feed abstract class first!" if not $C_H;
             $class = $1;
+            $C_H = uc $class."_H";
             print OUT "\n\nclass $class : public $2 {\npublic:\n";
 
-            warn "unexpected inheritance: $2" if uc $2."_H" ne uc $C_H;
+            #warn "unexpected inheritance: $2" if uc $2."_H" ne uc $C_H;
         } else {
             warn "Unhandled:$_\n";
         }
