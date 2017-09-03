@@ -7,7 +7,7 @@ A HHS+ clone, rewritten in Qt/C++
 This is work in progress - not playable yet..
 
 
-If you want to help, git clone the repository, and send a pull request when you have something.
+If you want to help, git clone the repository, and send a pull request when you have something. The stable branch should compile and run.
 
 You need to download the HHS+ package and link the HHS+ Schools directory in the Il_principle project directory, and 
 convert the xml files to json; e.g.
