@@ -25,6 +25,7 @@ sub create_constructor {
         print OUT "\n\t$class($jl)\n\t{\n\t\tif (d) init(d);\n".
         join("\n", @_)."\n\t}\n\tvoid init(QJsonObject *d)\n\t{\n";
         print OUT "\t\tfor (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {\n";
+        print OUT "\t\t\t// *INDENT-OFF*\n";
         my $else = "";
         foreach my $el (@vars) {
             if ($el =~ /(\w+) (\w+);/) {
@@ -52,6 +53,7 @@ sub create_constructor {
             $else = "else ";
             print OUT $el, "\n";
         }
+        print OUT "\t\t\t// *INDENT-ON*\n";
         print OUT "\t\t}\n\t}\n";
         @vars = ();
     } else {
@@ -60,27 +62,51 @@ sub create_constructor {
     $created_constructor = 1;
 }
 
-my @sws;
-my @its;
+my @sws; # skip whitespace
+my @its; #iterators
 sub parsefunc {
     my ($L, $arr) = @_;
-    if ($L =~ /^\t+\{$/ && ($arr->[$#$arr] =~ /^\s*(try|finally|checked)$/)) {
-        pop(@$arr);
-        $L =~ s/\{$/\\}/;
-        push @sws, qr/^$L$/;
-        return undef;
-    }
     if (@its) {
         pop @its if $L =~ $its[$#its]->[1];
         $L =~ s/$_->[2]/$_->[0]/g foreach @its;
     }
     if (@sws) {
-        if ($L =~ $sws[$#sws]) {
-            pop @sws;
-            return undef;
+        for my $i (reverse(0..$#sws)) {
+            my $re = $sws[$i];
+            my $tabs = "\t" x $i;
+            if ($L =~ s/^($tabs)$re/${1}${2}\/\/ ${3}/) {
+                pop @sws;
+            } else {
+                $L =~ s/^\t//;
+            }
         }
-        for (0..$#sws) {
-            $L =~ s/^\t//;
+    }
+    if ($L =~ /^\t+\{$/ && ($arr->[$#$arr] =~ s/^(\s*)(try|finally|checked|lock *\(\w+\))$/$1\/\/ $2 \{/)) {
+        push @sws, qr/(${1})(\})$/;
+        return undef;
+    }
+    if ($L =~ /^\s+return \w+;$/) { #replace some silly branches
+        my $i = $#$arr;
+        my $do_replace = 0;
+        my $v;
+        if ($arr->[$i] =~ /^\s+\}$/ && $i-- && $arr->[$i] =~ /^\s+(\w+) \= /) {
+            $v = $1;
+            if ($i-- && $arr->[$i] =~ /^\s+\{$/ && $i-- && $arr->[$i] =~ /^\s+else$/) {
+                while ($i-- && $arr->[$i] =~ /^\s+\}$/ && $i-- && $arr->[$i] =~ /^\s+$v \= / &&
+                        $i-- && $arr->[$i] =~ /^\s+\{$/ && $i-- && $arr->[$i] =~ /^\s+(else )?if/) {
+                    $do_replace = 1 and last if not $1;
+                }
+            }
+        }
+        if ($do_replace) {
+            my $j = $i;
+            while ($i++ != $#$arr) {
+                next if $arr->[$i] =~ /^\s+[{}]$/;
+                $arr->[++$j] = $arr->[$i];
+                $arr->[$j] =~ s/^(\s+)$v \=/${1}return/;
+            }
+            pop @$arr while $#$arr != $j;
+            return undef;
         }
     }
     return undef if $L =~ /^\s+finally \{\}$/;
@@ -125,9 +151,13 @@ while (my $f = shift) {
             s/\bObservableDictionary\b/QMap/g;
             s/\bnull\b/NULL/g;
             s/\.Count\b/.count()/g;
-            s/\.Contains\(/.contains\(/g;
             s/\buint\b/unsigned/g;
+
+            s/\.Contains\(/.contains\(/g;
             s/\bstring\b/QString/g;
+            s/([^!])QString\.IsNullOrWhiteSpace\((\w+)\)/$1$2.isNull() || $2\.contains(QRegExp("^\\\\s*\$"))/g;
+            s/(!)QString\.IsNullOrWhiteSpace\((\w+)\)/$1($2.isNull() || $2\.contains(QRegExp("^\\\\s*\$")))/g;
+
             s/\bUtilityClass\.Clamp\(([^,(]+), ?([^,]+), ?([^,)]+)\)/$1 < $2 ? $2 : ($1 > $3 ? $3 : $1)/g;
             if ($in_get) {
                 die unless s/^\t\t//;
