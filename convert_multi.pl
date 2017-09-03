@@ -186,7 +186,7 @@ while (my $f = shift) {
             s/([^!])QString\.IsNullOrWhiteSpace\((\w+)\)/$1$2.isNull() || $2\.contains(QRegExp("^\\\\s*\$"))/g;
             s/(!)QString\.IsNullOrWhiteSpace\((\w+)\)/$1($2.isNull() || $2\.contains(QRegExp("^\\\\s*\$")))/g;
 
-            s/\bUtilityClass\.Clamp\(([^,(]+), ?([^,]+), ?([^,)]+)\)/$1 < $2 ? $2 : ($1 > $3 ? $3 : $1)/g;
+            s/\bUtilityClass\.Clamp\(([^,]+), ?([^,]+), ?([^,)]+)\)/$1 < $2 ? $2 : ($1 > $3 ? $3 : $1)/g;
             if ($in_get) {
                 die unless s/^\t\t//;
                 if (/^\t\}$/) {

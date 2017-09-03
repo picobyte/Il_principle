@@ -6,7 +6,6 @@
 #include "schoolsubject.h"
 #include "statuseffectinstance.h"
 
-class Person;
 class ModifierBase {
 public:
     ModifierBase(QJsonObject *d = NULL) {}
@@ -20,7 +19,7 @@ class Modifier_AddGenderPrefValue : public ModifierBase {
 public:
     Gender gender;
     double Value;
-    double GetValue(Person&, StatusEffectInstance&);
+    double GetValue(StatusEffectInstance&);
 
     Modifier_AddGenderPrefValue(QJsonObject *d = NULL)
     {
@@ -30,7 +29,7 @@ public:
     {
         for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
             __IF_ENUM_FROM_JSON_AS(it, gender, Gender)
-                        else __IF_VAR_FROM_JSON_AS(it, Value, toDouble)
+            else __IF_VAR_FROM_JSON_AS(it, Value, toDouble)
         }
     }
 };
@@ -39,7 +38,7 @@ class Modifier_AddSkillValue : public ModifierBase {
 public:
     QString SkillName;
     int Value;
-    int GetValue(Person&, StatusEffectInstance&);
+    int GetValue(StatusEffectInstance&);
 
     Modifier_AddSkillValue(QJsonObject *d = NULL)
     {
@@ -58,7 +57,7 @@ class Modifier_AddStatValue : public ModifierBase {
 public:
     QString StatName;
     double Value;
-    virtual double GetValue(Person&, StatusEffectInstance&);
+    virtual double GetValue(StatusEffectInstance&);
 
     Modifier_AddStatValue(QJsonObject *d = NULL)
     {
@@ -76,7 +75,7 @@ public:
 class Modifier_AddStatValueLerp : public Modifier_AddStatValue {
 public:
     double EndValue;
-    double GetValue(Person&, StatusEffectInstance&);
+    double GetValue(StatusEffectInstance&);
 
     Modifier_AddStatValueLerp(QJsonObject *d = NULL)
     {
@@ -95,7 +94,7 @@ public:
     double Amplitude;
     double Period;
     double TimeOffset;
-    double GetValue(Person&, StatusEffectInstance&);
+    double GetValue(StatusEffectInstance&);
 
     Modifier_AddStatValueSine(QJsonObject *d = NULL)
     {
@@ -115,7 +114,7 @@ class Modifier_AddSubjectFamilyValue : public ModifierBase {
 public:
     SchoolSubjectFamily SubjectFamilyName;
     double Value;
-    double GetValue(Person&, StatusEffectInstance&);
+    double GetValue(StatusEffectInstance&);
 
     Modifier_AddSubjectFamilyValue(QJsonObject *d = NULL)
     {
@@ -144,7 +143,7 @@ public:
     {
         return Maximum != 0.0;
     }
-    virtual double GetValue(Person&, StatusEffectInstance&);
+    virtual double GetValue(StatusEffectInstance&);
 
     Modifier_BodySizeChange(QJsonObject *d = NULL)
     {
@@ -238,7 +237,7 @@ public:
 class Modifier_DecreaseStatMultiplierLerp : public Modifier_DecreaseStatMultiplier {
 public:
     double EndScaleFactor;
-    double GetScaleFactor(Person&, StatusEffectInstance&);
+    double GetScaleFactor(StatusEffectInstance&);
 
     Modifier_DecreaseStatMultiplierLerp(QJsonObject *d = NULL)
     {
@@ -257,7 +256,7 @@ public:
     double Amplitude;
     double Period;
     double TimeOffset;
-    double GetScaleFactor(Person& per, StatusEffectInstance& instance);
+    double GetScaleFactor(StatusEffectInstance&);
 
     Modifier_DecreaseStatMultiplierSine(QJsonObject *d = NULL)
     {
@@ -392,7 +391,7 @@ public:
 class Modifier_IncreaseStatMultiplierLerp : public Modifier_IncreaseStatMultiplier {
 public:
     double EndScaleFactor;
-    double GetScaleFactor(Person&, StatusEffectInstance&);
+    double GetScaleFactor(StatusEffectInstance&);
 
     Modifier_IncreaseStatMultiplierLerp(QJsonObject *d = NULL)
     {
@@ -411,7 +410,7 @@ public:
     double Amplitude;
     double Period;
     double TimeOffset;
-    double GetScaleFactor(Person&, StatusEffectInstance&);
+    double GetScaleFactor(StatusEffectInstance&);
 
     Modifier_IncreaseStatMultiplierSine(QJsonObject *d = NULL)
     {
@@ -457,7 +456,7 @@ class Modifier_MaxGenderPrefValue : public ModifierBase {
 public:
     Gender gender;
     double Value;
-    double GetValue(Person&, StatusEffectInstance&);
+    double GetValue(StatusEffectInstance&);
 
     Modifier_MaxGenderPrefValue(QJsonObject *d = NULL)
     {
@@ -498,7 +497,7 @@ class Modifier_MaxStatValue : public ModifierBase {
 public:
     QString StatName;
     double Value;
-    virtual double GetValue(Person&, StatusEffectInstance&);
+    virtual double GetValue(StatusEffectInstance&);
 
     Modifier_MaxStatValue(QJsonObject *d = NULL)
     {
@@ -516,7 +515,7 @@ public:
 class Modifier_MaxStatValueLerp : public Modifier_MaxStatValue {
 public:
     double EndValue;
-    double GetValue(Person&, StatusEffectInstance&);
+    double GetValue(StatusEffectInstance&);
 
     Modifier_MaxStatValueLerp(QJsonObject *d = NULL)
     {
@@ -535,7 +534,7 @@ public:
     double Amplitude;
     double Period;
     double TimeOffset;
-    double GetValue(Person&, StatusEffectInstance&);
+    double GetValue(StatusEffectInstance&);
 
     Modifier_MaxStatValueSine(QJsonObject *d = NULL)
     {
@@ -555,7 +554,7 @@ class Modifier_MaxSubjectFamilyValue : public ModifierBase {
 public:
     SchoolSubjectFamily SubjectFamilyName;
     double Value;
-    double GetValue(Person&, StatusEffectInstance&);
+    double GetValue(StatusEffectInstance&);
 
     Modifier_MaxSubjectFamilyValue(QJsonObject *d = NULL)
     {
@@ -574,7 +573,7 @@ class Modifier_MinGenderPrefValue : public ModifierBase {
 public:
     Gender gender;
     double Value;
-    double GetValue(Person&, StatusEffectInstance&);
+    double GetValue(StatusEffectInstance&);
 
     Modifier_MinGenderPrefValue(QJsonObject *d = NULL)
     {
@@ -593,10 +592,7 @@ class Modifier_MinSkillValue : public ModifierBase {
 public:
     QString SkillName;
     int Value;
-    int GetValue()
-    {
-        return Value;
-    }
+    int GetValue(StatusEffectInstance&);
 
     Modifier_MinSkillValue(QJsonObject *d = NULL)
     {
@@ -615,7 +611,7 @@ class Modifier_MinStatValue : public ModifierBase {
 public:
     QString StatName;
     double Value;
-    virtual double GetValue(Person&, StatusEffectInstance&);
+    virtual double GetValue(StatusEffectInstance&);
 
     Modifier_MinStatValue(QJsonObject *d = NULL)
     {
@@ -633,7 +629,7 @@ public:
 class Modifier_MinStatValueLerp : public Modifier_MinStatValue {
 public:
     double EndValue;
-    double GetValue(Person&, StatusEffectInstance&);
+    double GetValue(StatusEffectInstance&);
 
     Modifier_MinStatValueLerp(QJsonObject *d = NULL)
     {
@@ -652,7 +648,7 @@ public:
     double Amplitude;
     double Period;
     double TimeOffset;
-    double GetValue(Person&, StatusEffectInstance&);
+    double GetValue(StatusEffectInstance&);
 
     Modifier_MinStatValueSine(QJsonObject *d = NULL)
     {
@@ -672,7 +668,7 @@ class Modifier_MinSubjectFamilyValue : public ModifierBase {
 public:
     SchoolSubjectFamily SubjectFamilyName;
     double Value;
-    double GetValue(Person&, StatusEffectInstance&);
+    double GetValue(StatusEffectInstance&);
 
     Modifier_MinSubjectFamilyValue(QJsonObject *d = NULL)
     {

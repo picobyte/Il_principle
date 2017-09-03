@@ -1,7 +1,9 @@
 #ifndef PERSON_H
 #define PERSON_H
 
+#include <math.h>
 #include <QString>
+#include <QStringList>
 #include <QList>
 #include <QDateTime>
 #include <QTextStream>
@@ -159,16 +161,16 @@ public:
     }
     const QString NameAndTitle() const
     {
-        QString ab = DisplayName();
-        QTextStream(&ab) << " (" << Age() << ")";
+        QString sb = DisplayName();
+        QTextStream(&sb) << " (" << Age() << ")";
 
-        if (!Job().IsEmpty())
-            sb.append(", " + Job());
+        if (!Job.isEmpty())
+            sb.append(", ").append(Job);
 
         if (HasTrait("PTA"))
             sb.append(", PTA");
 
-        if (IsParent)
+        if (IsParent())
             sb.append(", Parent");
 
         return sb;
@@ -195,20 +197,20 @@ public:
         if (likesMale < 25.0 && likesFemale < 25.0 && likesFuta < 25.0)
             return SexualPref::Asexual;
 
-        switch (Gender) {
+        switch (gender) {
 
         case Gender::Male:
-            if (Math.Abs(likesMale - likesFemale) < 10.0 || (maleAttraction > 80.0 && femaleAttraction > 80.0))
+            if (fabs(likesMale - likesFemale) < 10.0 || (maleAttraction > 80.0 && femaleAttraction > 80.0))
                 return SexualPref::Bisexual;
             if (maleAttraction > femaleAttraction)
                 return SexualPref::Homosexual;
         case Gender::Female:
-            if (Math.Abs(likesMale - likesFemale) < 10.0 || (maleAttraction > 80.0 && femaleAttraction > 80.0))
+            if (fabs(likesMale - likesFemale) < 10.0 || (maleAttraction > 80.0 && femaleAttraction > 80.0))
                 return SexualPref::Bisexual;
             if (femaleAttraction > maleAttraction)
                 return SexualPref::Homosexual;
         case Gender::Futanari:
-            if (Math.Abs(likesMale - likesFemale) < 15.0 || (maleAttraction > 80.0 && femaleAttraction > 80.0))
+            if (fabs(likesMale - likesFemale) < 15.0 || (maleAttraction > 80.0 && femaleAttraction > 80.0))
                 return SexualPref::Bisexual;
             if (likesFuta > (likesMale + likesFemale) * 0.75)
                 return SexualPref::Homosexual;
@@ -217,17 +219,17 @@ public:
         }
         return SexualPref::Heterosexual;
     }
-    const LocationJobDetails JobDetails() const
+    LocationJobDetails *const JobDetails() const
     {
         LocationJobDetails JobDetails;
-        if (Work != NULL && (long)Work.AssociatedJobs.count() > (long)((ulong)intJobSlot))
-            return Work.AssociatedJobs[checked((int)intJobSlot)];
+        if (Work != NULL && Work.AssociatedJobs.count() > intJobSlot)
+            return Work.AssociatedJobs[(int)intJobSlot];
         else
             return NULL;
     }
     Person *const Father() const
     {
-        if (Game.DictOfPersonNames.ContainsKey(intFather))
+        if (Game.DictOfPersonNames.contains(intFather))
             return Game.DictOfPersonNames[intFather];
 
         return NULL;
@@ -239,7 +241,7 @@ public:
     Person *const Mother() const
     {
         Person Mother;
-        if (Game.DictOfPersonNames.ContainsKey(intMother))
+        if (Game.DictOfPersonNames.contains(intMother))
             return Game.DictOfPersonNames[intMother];
 
         return NULL;
@@ -250,17 +252,17 @@ public:
     }
     Person *const Love() const
     {
-        if (QString.Equals(intLove, "Principal"))
+        if (intLove == "Principal")
             return Game.HeadTeacher;
 
-        if (Game.DictOfPersonNames.ContainsKey(intLove))
+        if (Game.DictOfPersonNames.contains(intLove))
             return Game.DictOfPersonNames[intLove];
 
         return NULL;
     }
     void Love(Person *v)
     {
-        intLove = v ? (v == Game.HeadTeacher ? "Principal" : intLove = value.Name) : "";
+        intLove = v ? (*v == Game.HeadTeacher ? "Principal" : intLove = v->Name) : "";
     }
     const bool IsCouple() const
     {
@@ -274,194 +276,176 @@ public:
     {
         return Game.FavoriteStudentList.contains(UID);
     }
-    void IsFavorite(bool& v)
+    void IsFavorite(bool& value)
     {
         if (value) {
-            if (!IsFavorite) {
+            if (!IsFavorite)
                 Game.FavoriteStudentList.Add(UID);
-                return;
-            }
         } else {
             Game.FavoriteStudentList.Remove(UID);
         }
     }
     const double ProposalSupport() const
     {
-        if (DictProposalSupport.ContainsKey(ProposalName))
+        if (DictProposalSupport.contains(ProposalName))
             return DictProposalSupport[ProposalName];
         else
             return 0.0;
     }
-    void ProposalSupport(double& v)
+    void ProposalSupport(double& value)
     {
         if (value == 0.0) {
-            if (DictProposalSupport.ContainsKey(ProposalName)) {
+            if (DictProposalSupport.contains(ProposalName))
                 DictProposalSupport.Remove(ProposalName);
-                return;
-            }
         } else {
             DictProposalSupport[ProposalName] = value;
         }
     }
-    const Clubs Club() const
+    const Clubs* Club() const
     {
-        return Game.GetClub(ClubMember);
+        return &Game.GetClub(ClubMember);
     }
-    void Club(Clubs& v)
+    void Club(Clubs *v)
     {
-        if (value == NULL) {
-            ClubMember = "";
-            return;
-        }
-        ClubMember = value.Name;
+        ClubMember = v ? v->Name : "";
     }
     const Body::Size BreastSize() const
     {
-        return checked((Body::Size)Math.Round(Math.Round(intBreastSize < 0.0 ? 0.0 : (intBreastSize > 10.0 ? 10.0 : intBreastSize), 0)));
+        return (Body::Size)round(intBreastSize < 0.0 ? 0.0 : (intBreastSize > 10.0 ? 10.0 : intBreastSize), 0);
     }
-    void BreastSize(Body::Size& v)
+    void BreastSize(Body::Size& value)
     {
-        if (Gender == Gender::Male) {
+        if (gender == Gender::Male)
             intBreastSize = 0.0;
-            return;
-        }
-        intBreastSize = (double)UtilityClass.Clamp((int)value, 0, 10);
+        else
+            intBreastSize = value < 0 ? 0 : (value > 10 ? 10 : value);
     }
     const Body::Size StomachSize() const
     {
-        return checked((Body::Size)Math.Round(Math.Round(intStomachSize < 0.0 ? 0.0 : (intStomachSize > 10.0 ? 10.0 : intStomachSize), 0)));
+        return (Body::Size)round(intStomachSize < 0.0 ? 0.0 : (intStomachSize > 10.0 ? 10.0 : intStomachSize), 0);
     }
-    void StomachSize(Body::Size& v)
+    void StomachSize(Body::Size& value)
     {
-        if (Gender == Gender::Male) {
+        if (gender == Gender::Male)
             intStomachSize = 0.0;
-            return;
-        }
-        intStomachSize = (double)UtilityClass.Clamp((int)value, 0, 10);
+        else
+            intStomachSize = value < 0 ? 0 : (value > 10 ? 10 : value);
     }
     const Body::Size PenisSize() const
     {
-        return checked((Body::Size)Math.Round(Math.Round(intPenisSize < 0.0 ? 0.0 : (intPenisSize > 10.0 ? 10.0 : intPenisSize), 0)));
+        return (Body::Size)round(intPenisSize < 0.0 ? 0.0 : (intPenisSize > 10.0 ? 10.0 : intPenisSize), 0);
     }
-    void PenisSize(Body::Size& v)
+    void PenisSize(Body::Size& value)
     {
-        if (Gender == Gender::Female) {
+        if (gender == Gender::Female)
             intPenisSize = 0.0;
-            return;
-        }
-        intPenisSize = (double)UtilityClass.Clamp((int)value, 1, 10);
+        else
+            intPenisSize = value < 1 ? 1 : (value > 10 ? 10 : value);
     }
     const Body::Size TesticleSize() const
     {
-        return checked((Body::Size)Math.Round(Math.Round(intTesticleSize < 0.0 ? 0.0 : (intTesticleSize > 10.0 ? 10.0 : intTesticleSize), 0)));
+        return (Body::Size)round(intTesticleSize < 0.0 ? 0.0 : (intTesticleSize > 10.0 ? 10.0 : intTesticleSize), 0);
     }
-    void TesticleSize(Body::Size& v)
+    void TesticleSize(Body::Size& value)
     {
-        if (Gender == Gender::Female) {
+        if (gender == Gender::Female)
             intTesticleSize = 0.0;
-            return;
-        }
-        intTesticleSize = (double)UtilityClass.Clamp((int)value, 1, 10);
+        else
+            intTesticleSize = value < 1 ? 1 : (value > 10 ? 10 : value);
     }
     const Body::Size VaginaSize() const
     {
-        return checked((Body::Size)Math.Round(Math.Round(intVaginaSize < 0.0 ? 0.0 : (intVaginaSize > 10.0 ? 10.0 : intVaginaSize), 0)));
+        return (Body::Size)round(intVaginaSize < 0.0 ? 0.0 : (intVaginaSize > 10.0 ? 10.0 : intVaginaSize), 0);
     }
-    void VaginaSize(Body::Size& v)
+    void VaginaSize(Body::Size& value)
     {
-        intVaginaSize = (Gender == Gender::Male ? 0.0 : (value < 1.0 ? 1.0 : (value > 10.0 ? 10.0 : value));
+        intVaginaSize = (gender == Gender::Male ? 0.0 : (value < 1.0 ? 1.0 : (value > 10.0 ? 10.0 : value));
     }
     const Body::Size AnalSize() const
     {
-        return checked((Body::Size)Math.Round(Math.Round(intAnalSize < 0.0 ? 0.0 : (intAnalSize > 10.0 ? 10.0 : intAnalSize), 0)));
+        return (Body::Size)round(intAnalSize < 0.0 ? 0.0 : (intAnalSize > 10.0 ? 10.0 : intAnalSize), 0);
     }
-    void AnalSize(Body::Size& v)
+    void AnalSize(Body::Size& value)
     {
-        intAnalSize = (double)UtilityClass.Clamp((int)value, 1, 10);
+        intAnalSize = v < 1 ? 1 : (v > 10 ? 10 : v);
     }
-    const Location CurrentLocation() const
+    const Location* CurrentLocation() const
     {
-        Location CurrentLocation;
-        if (QString.IsNullOrEmpty(intLoc))
+        if (intLoc.isEmpty())
             return NULL;
 
-        return Game.GetLocation(intLoc);
+        return &Game.GetLocation(intLoc);
     }
-    void CurrentLocation(Location& v)
+    void CurrentLocation(Location& value)
     {
         if (Operators.CompareString(intLoc, intOldLoc, false) != 0)
             intOldLoc = intLoc;
 
         if (value == NULL) {
-            if (!QString.IsNullOrEmpty(intLoc)) {
+            if (!intLoc.isEmpty()) {
                 Game.GetLocation(intLoc).OccupantLeave(this);
                 intLoc = "";
-                return;
             }
         } else {
-            if (!QString.IsNullOrEmpty(intLoc))
+            if (!intLoc.isEmpty())
                 Game.GetLocation(intLoc).OccupantLeave(this);
 
             intLoc = value.Name;
             Game.GetLocation(intLoc).OccupantEnter(this);
         }
     }
-    const Location OldLocation() const
+    const Location* OldLocation() const
     {
-        if (!QString.IsNullOrEmpty(intOldLoc))
-            return Game.GetLocation(intOldLoc);
+        if (!intOldLoc.isEmpty())
+            return &Game.GetLocation(intOldLoc);
 
         return NULL;
     }
-    void OldLocation(Location& v)
+    void OldLocation(Location *v)
     {
-        intOldLoc = ((value == NULL) ? "" : value.Name);
+        intOldLoc = ((v == NULL) ? "" : v->Name);
     }
-    const Location Home() const
+    const Location* Home() const
     {
-        Location Home;
-        if (QString.IsNullOrEmpty(intHome))
-            return Game.GetLocation("General Home");
-        else
-            return Game.GetLocation(intHome);
-    }
-    void Home(Location& v)
-    {
-        if (value == NULL) {
-            intHome = "";
-            return;
-        }
-        intHome = value.Name;
-    }
-    const Location Bedroom() const
-    {
-        Location Bedroom;
-        if (QString.IsNullOrEmpty(intBedroom))
-            return Game.GetLocation("General Home");
+        if (intHome.isEmpty())
+            return &Game.GetLocation("General Home");
 
-        return Game.GetLocation(intBedroom);
+        return &Game.GetLocation(intHome);
     }
-    void Bedroom(Location& v)
+    void Home(Location *v)
     {
-        if (value == NULL) {
+        if (v == NULL)
+            intHome = "";
+        else
+            intHome = v->Name;
+    }
+    const Location* Bedroom() const
+    {
+        if (intBedroom.isEmpty())
+            return &Game.GetLocation("General Home");
+
+        return &Game.GetLocation(intBedroom);
+    }
+    void Bedroom(Location *v)
+    {
+        if (v == NULL) {
             intBedroom = "";
             return;
         }
-        intBedroom = value.Name;
+        intBedroom = v->Name;
     }
-    const bool IsHome() const
+    bool IsHome() const
     {
-        return CurrentLocation == Home || CurrentLocation == Bedroom;
+        return CurrentLocation() == Home() || CurrentLocation() == Bedroom();
     }
-    const Location Work() const
+    const Location* Work() const
     {
-        Location Work;
-        if (QString.IsNullOrEmpty(intWork))
+        if (intWork.isEmpty())
             return NULL;
 
-        return Game.GetLocation(intWork);
+        return &Game.GetLocation(intWork);
     }
-    void Work(Location& v)
+    void Work(Location& value)
     {
         if (value == NULL) {
             intWork = "";
@@ -567,16 +551,16 @@ public:
     }
     bool HasBirthday()
     {
-        DateTime today = Game.SchoolCalendar.TodayDate;
+        QDateTime today = Game.SchoolCalendar.TodayDate;
         return (Birthday.Day == today.Day && Birthday.Month == today.Month) || (DateTime.IsLeapYear(Birthday.Year) && !DateTime.IsLeapYear(today.Year) && Birthday.Month == 2 && Birthday.Day == 29 && today.Month == 3 && today.Day == 1);
     }
     QString ToString()
     {
-        return "Person: " + Name;
+        return Name.prepend("Person: ");
     }
-    double GetGenderPreference(Gender genderName)
+    double GetGenderPreference(Gender genderName) const
     {
-        double retVal = GenderPreferences.ContainsKey(genderName) ? GenderPreferences[genderName] : 0.0;
+        double retVal = GenderPreferences.contains(genderName) ? GenderPreferences[genderName] : 0.0;
         double minVal = 0.0;
         double maxVal = 100.0;
         object statusEffects = StatusEffects;
@@ -595,20 +579,20 @@ public:
                 if (modi is Modifier_AddGenderPrefValue) {
 
                     Modifier_AddGenderPrefValue addConstMod = (Modifier_AddGenderPrefValue)modi;
-                    if (addConstMod.Gender == genderName)
-                        retVal += addConstMod.GetValue(this, se);
+                    if (addConstMod.gender == genderName)
+                        retVal += addConstMod.GetValue(se);
 
                 } else if (modi is Modifier_MinGenderPrefValue) {
 
                     Modifier_MinGenderPrefValue minValMod = (Modifier_MinGenderPrefValue)modi;
-                    if (minValMod.Gender == genderName && minValMod.GetValue(this, se) > minVal)
-                        minVal = minValMod.GetValue(this, se);
+                    if (minValMod.gender == genderName && minValMod.GetValue(se) > minVal)
+                        minVal = minValMod.GetValue(se);
 
                 } else if (modi is Modifier_MaxGenderPrefValue) {
 
                     Modifier_MaxGenderPrefValue maxValMod = (Modifier_MaxGenderPrefValue)modi;
-                    if (maxValMod.Gender == genderName && maxValMod.GetValue(this, se) < maxVal)
-                        minVal = maxValMod.GetValue(this, se);
+                    if (maxValMod.gender == genderName && maxValMod.GetValue(se) < maxVal)
+                        minVal = maxValMod.GetValue(se);
                 }
             }
             // }
@@ -627,30 +611,28 @@ public:
         // object statusEffects = StatusEffects;
         // lock (statusEffects) {
         // try {
-        for (QList<StatusEffectInstance>::iterator it = StatusEffects.begin();
-                it != StatusEffects.end(); ++it)
+        for (QList<StatusEffectInstance>::iterator se = StatusEffects.begin();
+                se != StatusEffects.end(); ++se)
         {
-            StatusEffectInstance se = enumerator.Current;
-            StatusEffect effect = Game.DictOfStatusEffects[se.Name];
+            StatusEffect effect = Game.DictOfStatusEffects[se->Name];
             // try {
-            for (QList<ModifierBase>::iterator it2 = effect.Modifiers.begin();
-                    it2 != effect.Modifiers.end(); ++it2)
+            for (QList<ModifierBase>::iterator modi = effect.Modifiers.begin();
+                    modi != effect.Modifiers.end(); ++modi)
             {
-                ModifierBase modi = enumerator2.Current;
-                if (modi is Modifier_IncreaseGenderPrefMultiplier)
+                if (*modi is Modifier_IncreaseGenderPrefMultiplier)
                 {
-                    Modifier_IncreaseGenderPrefMultiplier scaleMod = (Modifier_IncreaseGenderPrefMultiplier)modi;
+                    Modifier_IncreaseGenderPrefMultiplier scaleMod = (Modifier_IncreaseGenderPrefMultiplier)*modi;
                     if (genderName == scaleMod.Gender && value > 0.0)
                     {
-                        addValue *= scaleMod.GetScaleFactor(this, se);
+                        addValue *= scaleMod.GetScaleFactor(*se);
                     }
                 }
-                else if (modi is Modifier_DecreaseGenderPrefMultiplier)
+                else if (*modi is Modifier_DecreaseGenderPrefMultiplier)
                 {
-                    Modifier_DecreaseGenderPrefMultiplier scaleMod2 = (Modifier_DecreaseGenderPrefMultiplier)modi;
+                    Modifier_DecreaseGenderPrefMultiplier scaleMod2 = (Modifier_DecreaseGenderPrefMultiplier)*modi;
                     if (genderName == scaleMod2.Gender && value < 0.0)
                     {
-                        addValue *= scaleMod2.GetScaleFactor(this, se);
+                        addValue *= scaleMod2.GetScaleFactor(*se);
                     }
                 }
             }
@@ -658,104 +640,83 @@ public:
         }
         // }
         // }
-        GenderPreferences[genderName] = UtilityClass.Clamp((GenderPreferences.ContainsKey(genderName) ? GenderPreferences[genderName] : 0.0) + addValue, 0.0, 100.0);
+        GenderPreferences[genderName] = (GenderPreferences.contains(genderName) ? GenderPreferences[genderName] : 0.0) + addValue < 0.0 ? 0.0 : ((GenderPreferences.contains(genderName) ? GenderPreferences[genderName] : 0.0) + addValue > 100.0 ? 100.0 : (GenderPreferences.contains(genderName) ? GenderPreferences[genderName] : 0.0) + addValue);
     }
-    bool LikesGender(Gender Gend)
+    bool LikesGender(Gender Gend) const
     {
         return GetGenderPreference(Gend) >= 50.0;
     }
-    bool LikesPenis()
+    bool LikesPenis() const
     {
         double likesMale = GetGenderPreference(Gender::Male);
-        bool LikesPenis;
         if (likesMale > 50.0)
-        {
-            LikesPenis = true;
-        }
-        else
-        {
-            double likesFuta = GetGenderPreference(Gender::Futanari);
-            LikesPenis = (likesFuta > 65.0 || likesMale + likesFuta > 80.0);
-        }
-        return LikesPenis;
+            return true;
+
+        double likesFuta = GetGenderPreference(Gender::Futanari);
+        return (likesFuta > 65.0 || likesMale + likesFuta > 80.0);
     }
-    bool LikesVagina()
+    bool LikesVagina() const
     {
         double likesFemale = GetGenderPreference(Gender::Female);
-        bool LikesVagina;
         if (likesFemale > 50.0)
-        {
-            LikesVagina = true;
-        }
-        else
-        {
-            double likesFuta = GetGenderPreference(Gender::Futanari);
-            LikesVagina = (likesFuta > 65.0 || likesFemale + likesFuta > 80.0);
-        }
-        return LikesVagina;
+            return true;
+
+        double likesFuta = GetGenderPreference(Gender::Futanari);
+        return (likesFuta > 65.0 || likesFemale + likesFuta > 80.0);
     }
-    bool LikesBreast()
+    bool LikesBreast() const
     {
         double likesFemale = GetGenderPreference(Gender::Female);
-        bool LikesBreast;
         if (likesFemale > 50.0)
-        {
-            LikesBreast = true;
-        }
-        else
-        {
-            double likesFuta = GetGenderPreference(Gender::Futanari);
-            LikesBreast = (likesFuta > 50.0 || likesFemale + likesFuta > 70.0);
-        }
-        return LikesBreast;
+            return true;
+
+        double likesFuta = GetGenderPreference(Gender::Futanari);
+        return (likesFuta > 50.0 || likesFemale + likesFuta > 70.0);
     }
-    bool HasPenis()
+    bool HasPenis() const
     {
-        return Gender == Gender::Male || Gender == Gender::Futanari;
+        return gender == Gender::Male || gender == Gender::Futanari;
     }
-    bool HasVagina()
+    bool HasVagina() const
     {
-        return Gender == Gender::Female || Gender == Gender::Futanari;
+        return gender == Gender::Female || gender == Gender::Futanari;
     }
-    bool HasBreasts()
+    bool HasBreasts() const
     {
-        return Gender == Gender::Female || Gender == Gender::Futanari;
+        return gender == Gender::Female || gender == Gender::Futanari;
     }
     bool ShouldSerializeFetish()
     {
-        return Fetish.count() > 0;
+        return fetish.count() > 0;
     }
     void AddFetish(Fetish F)
     {
-        if (!Fetish.contains(F) && F != hhs_.Fetish.None)
-        {
-            Fetish.Add(F);
-        }
+        if (!fetish.contains(F) && F != hhs_.Fetish.None)
+            fetish.Add(F);
     }
-    bool HasFetish(Fetish F)
+    bool HasFetish(Fetish F) const
     {
-        return Fetish.contains(F);
+        return fetish.contains(F);
     }
-    bool ShouldSerializeVirgin()
+    bool ShouldSerializeVirgin() const
     {
         return !Virgin;
     }
-    bool ShouldSerializeAnalVirgin()
+    bool ShouldSerializeAnalVirgin() const
     {
         return !AnalVirgin;
     }
-    bool ShouldSerializeJob()
+    bool ShouldSerializeJob() const
     {
-        return !QString.IsNullOrEmpty(Job);
+        return !Job.isEmpty();
     }
-    bool ShouldSerializeintJobSlot()
+    bool ShouldSerializeintJobSlot() const
     {
-        return !QString.IsNullOrEmpty(intWork);
+        return !intWork.isEmpty();
     }
-    bool ShouldSerializeSalary()
+    bool ShouldSerializeSalary() const
     {
-        QString job = Job;
-        return Operators.CompareString(job, "Teacher", false) == 0 || Operators.CompareString(job, "School Secretary", false) == 0 || Operators.CompareString(job, "Librarian", false) == 0 || Operators.CompareString(job, "School Doctor", false) == 0;
+        return Job.contains(QRegExp("(?:Teacher|Librarian|School (?:Secretary|Doctor))"));
     }
     void AssignWork(Location Room, LocationJobDetails jb)
     {
@@ -767,11 +728,10 @@ public:
         {
             jb.Staff.Add(Name);
             Work = Room;
-            intJobSlot = checked((unsigned)Room.AssociatedJobs.IndexOf(jb));
-            if (QString.IsNullOrEmpty(Job))
-            {
+            intJobSlot = (unsigned)Room.AssociatedJobs.IndexOf(jb);
+            if (Job.isEmpty())
                 Job = jb.JobTitle;
-            }
+
             object obj2 = Person.unemployedListLock;
             ObjectFlowControl.CheckForSyncLockOnValueType(obj2);
             // lock (obj2) {
@@ -796,7 +756,7 @@ public:
             object obj2 = Person.unemployedListLock;
             ObjectFlowControl.CheckForSyncLockOnValueType(obj2);
             // lock (obj2) {
-            if (Game.UnemployedPersons.ContainsKey(Name))
+            if (Game.UnemployedPersons.contains(Name))
                 Game.UnemployedPersons[Name] = this;
             else
                 Game.UnemployedPersons.Add(Name, this);
@@ -804,21 +764,21 @@ public:
         }
         // }
     }
-    bool ShouldSerializeChildren()
+    bool ShouldSerializeChildren() const
     {
         return Children.count() > 0;
     }
     bool ShouldSerializeintFather()
     {
-        return !QString.IsNullOrEmpty(intFather);
+        return !intFather.isEmpty();
     }
     bool ShouldSerializeintMother()
     {
-        return !QString.IsNullOrEmpty(intMother);
+        return !intMother.isEmpty();
     }
     bool ShouldSerializeintLove()
     {
-        return !QString.IsNullOrEmpty(intLove);
+        return !intLove.isEmpty();
     }
     bool ShouldSerializeAutoenroll()
     {
@@ -834,7 +794,7 @@ public:
     }
     bool ShouldSerializeSubject()
     {
-        return !QString.IsNullOrEmpty(Subject) && (Job.Equals("Student") || Job.Equals("Teacher"));
+        return !Subject.isEmpty() && (Job.Equals("Student") || Job.Equals("Teacher"));
     }
     void ResetSubject()
     {
@@ -842,7 +802,7 @@ public:
     }
     bool ShouldSerializeGoodInSubject()
     {
-        return !QString.IsNullOrEmpty(GoodInSubject) && (Job.Equals("Student") || Job.Equals("Teacher"));
+        return !GoodInSubject.isEmpty() && (Job.Equals("Student") || Job.Equals("Teacher"));
     }
     void ResetGoodInSubject()
     {
@@ -884,7 +844,7 @@ public:
         // ObjectFlowControl.CheckForSyncLockOnValueType(obj);
         double GetSubjectFamilyExp;
         // lock (obj) {
-        double retVal = SubjectFamilyExp.ContainsKey(SubjectFamily) ? SubjectFamilyExp[SubjectFamily] : 0.0;
+        double retVal = SubjectFamilyExp.contains(SubjectFamily) ? SubjectFamilyExp[SubjectFamily] : 0.0;
         double minVal = 0.0;
         double maxVal = 100.0;
         object statusEffects = StatusEffects;
@@ -904,19 +864,19 @@ public:
                 {
                     Modifier_AddSubjectFamilyValue addConstMod = (Modifier_AddSubjectFamilyValue)modi;
                     if (addConstMod.SubjectFamilyName == SubjectFamily)
-                        retVal += addConstMod.GetValue(this, se);
+                        retVal += addConstMod.GetValue(se);
                 }
                 else if (modi is Modifier_MinSubjectFamilyValue)
                 {
                     Modifier_MinSubjectFamilyValue minValMod = (Modifier_MinSubjectFamilyValue)modi;
-                    if (minValMod.SubjectFamilyName == SubjectFamily && minValMod.GetValue(this, se) > minVal)
-                        minVal = minValMod.GetValue(this, se);
+                    if (minValMod.SubjectFamilyName == SubjectFamily && minValMod.GetValue(se) > minVal)
+                        minVal = minValMod.GetValue(se);
                 }
                 else if (modi is Modifier_MaxSubjectFamilyValue)
                 {
                     Modifier_MaxSubjectFamilyValue maxValMod = (Modifier_MaxSubjectFamilyValue)modi;
-                    if (maxValMod.SubjectFamilyName == SubjectFamily && maxValMod.GetValue(this, se) < maxVal)
-                        minVal = maxValMod.GetValue(this, se);
+                    if (maxValMod.SubjectFamilyName == SubjectFamily && maxValMod.GetValue(se) < maxVal)
+                        minVal = maxValMod.GetValue(se);
                 }
             }
             // }
@@ -932,7 +892,7 @@ public:
         //// object obj = subjectStatLock;
         //// ObjectFlowControl.CheckForSyncLockOnValueType(obj);
         // lock (obj) {
-        if (SubjectInstanceExp.ContainsKey(SubjectInstanceName))
+        if (SubjectInstanceExp.contains(SubjectInstanceName))
             return SubjectInstanceExp[SubjectInstanceName];
 
         return 0.0;
@@ -944,7 +904,7 @@ public:
         //// ObjectFlowControl.CheckForSyncLockOnValueType(obj);
         // lock (obj) {
         Value = Value < 0.0 ? 0.0 : (Value > 100.0 ? 100.0 : Value);
-        if (SubjectFamilyExp.ContainsKey(SubjectFamily))
+        if (SubjectFamilyExp.contains(SubjectFamily))
             SubjectFamilyExp[SubjectFamily] = Value;
         else
             SubjectFamilyExp.Add(SubjectFamily, Value);
@@ -956,7 +916,7 @@ public:
         //// ObjectFlowControl.CheckForSyncLockOnValueType(obj);
         // lock (obj) {
         Value = Value < 0.0 ? 0.0 : (Value > 100.0 ? 100.0 : Value);
-        if (SubjectInstanceExp.ContainsKey(SubjectInstanceName))
+        if (SubjectInstanceExp.contains(SubjectInstanceName))
             SubjectInstanceExp[SubjectInstanceName] = Value;
         else
             SubjectInstanceExp.Add(SubjectInstanceName, Value);
@@ -998,7 +958,7 @@ public:
         }
         // }
         // }
-        SubjectFamilyExp[SubjectFamily] = UtilityClass.Clamp((SubjectFamilyExp.ContainsKey(SubjectFamily) ? SubjectFamilyExp[SubjectFamily] : 0.0) + addValue, 0.0, 100.0);
+        SubjectFamilyExp[SubjectFamily] = (SubjectFamilyExp.contains(SubjectFamily) ? SubjectFamilyExp[SubjectFamily] : 0.0) + addValue < 0.0 ? 0.0 : ((SubjectFamilyExp.contains(SubjectFamily) ? SubjectFamilyExp[SubjectFamily] : 0.0) + addValue > 100.0 ? 100.0 : (SubjectFamilyExp.contains(SubjectFamily) ? SubjectFamilyExp[SubjectFamily] : 0.0) + addValue);
         // }
     }
     void AddSubjectInstanceExp(QString SubjectInstanceName, double Value)
@@ -1006,7 +966,7 @@ public:
         // object obj = subjectStatLock;
         // ObjectFlowControl.CheckForSyncLockOnValueType(obj);
         // lock (obj) {
-        if (SubjectInstanceExp.ContainsKey(SubjectInstanceName))
+        if (SubjectInstanceExp.contains(SubjectInstanceName))
             SubjectInstanceExp[SubjectInstanceName] = SubjectInstanceExp[SubjectInstanceName] + Value < 0.0 ? 0.0 : (SubjectInstanceExp[SubjectInstanceName] + Value > 100.0 ? 100.0 : SubjectInstanceExp[SubjectInstanceName] + Value);
         else
             SubjectInstanceExp.Add(SubjectInstanceName, Value < 0.0 ? 0.0 : (Value > 100.0 ? 100.0 : Value));
@@ -1014,7 +974,7 @@ public:
     }
     bool ShouldSerializeProposalSupport()
     {
-        return (Job.Equals("Teacher") || HasTrait("PTA")) && DictProposalSupport.count() > 0;
+        return (Job == "Teacher" || HasTrait("PTA")) && DictProposalSupport.count() > 0;
     }
     bool ShouldSerializeHasDetention()
     {
@@ -1022,7 +982,7 @@ public:
     }
     bool ShouldSerializeIsRogue()
     {
-        return IsRogue && Job.Equals("Student");
+        return IsRogue && Job == "Student";
     }
     bool ShouldSerializeClubMember()
     {
@@ -1034,7 +994,7 @@ public:
     }
     bool ShouldSerializeImageLocation()
     {
-        return (Name.Equals(Game.HeadTeacher.Name) || SpecialPerson) && !QString.IsNullOrEmpty(ImageLocation);
+        return (Name() == Game.HeadTeacher.Name || SpecialPerson) && !ImageLocation.isEmpty();
     }
     bool ShouldSerializeOutfitLevel()
     {
@@ -1048,27 +1008,27 @@ public:
     {
         return OutfitUseEverywhere;
     }
-    void UpdatePaperDollImage(OutfitType Outfit = OutfitType.DefaultOutfit)
+    void UpdatePaperDollImage(OutfitType Outfit = OutfitType::DefaultOutfit)
     {
-        if (CurrentLocation == NULL || Outfit != OutfitType.DefaultOutfit)
+        if (CurrentLocation == NULL || Outfit != OutfitType::DefaultOutfit)
             CurrentOutfit = Outfit;
 
-        else if (!QString.IsNullOrEmpty(OutfitName))
-            CurrentOutfit = OutfitType.ClothingItem;
+        else if (!OutfitName.isEmpty())
+            CurrentOutfit = OutfitType::ClothingItem;
 
-        else if (Club != NULL && Game.GameTime.IsTimeForClub(Club) && CurrentLocation.Name.Equals(Club.ClubRoom))
-            CurrentOutfit = OutfitType.Club;
+        else if (Club() != NULL && Game.GameTime.IsTimeForClub(Club()) && CurrentLocation().Name == Club()->ClubRoom)
+            CurrentOutfit = OutfitType::Club;
 
-        else if (CurrentLocation.GetActualSpecialOutfit() != OutfitType.DefaultOutfit)
-            CurrentOutfit = CurrentLocation.GetActualSpecialOutfit();
+        else if (CurrentLocation()->GetActualSpecialOutfit() != OutfitType::DefaultOutfit)
+            CurrentOutfit = CurrentLocation()->GetActualSpecialOutfit();
 
         else if (IsAsleep())
-            CurrentOutfit = OutfitType.Sleep;
+            CurrentOutfit = OutfitType::Sleep;
 
         else if (IsWorking())
-            CurrentOutfit = OutfitType.Work;
+            CurrentOutfit = OutfitType::Work;
         else
-            CurrentOutfit = OutfitType.DefaultOutfit;
+            CurrentOutfit = OutfitType::DefaultOutfit;
 
         VisualEvent pdev = VisualEventManager.GetEventByFilename(PaperDollEventFileName, VisualEventKind.PaperDollHandler);
         if (pdev != NULL)
@@ -1081,7 +1041,7 @@ public:
     double GetStat(QString statName)
     {
         Stat arg_31_0 = Game.DictOfStats[statName];
-        double retVal = dictStats.ContainsKey(statName) ? dictStats[statName] : 0.0;
+        double retVal = dictStats.contains(statName) ? dictStats[statName] : 0.0;
         double minVal = arg_31_0.MinValue;
         double maxVal = arg_31_0.MaxValue;
         object statusEffects = StatusEffects;
@@ -1101,19 +1061,19 @@ public:
 
                     Modifier_AddStatValue addConstMod = (Modifier_AddStatValue)modi;
                     if (Operators.CompareString(addConstMod.StatName, statName, false) == 0)
-                        retVal += addConstMod.GetValue(this, se);
+                        retVal += addConstMod.GetValue(se);
 
                 } else if (modi is Modifier_MinStatValue) {
 
                     Modifier_MinStatValue minValMod = (Modifier_MinStatValue)modi;
-                    if (Operators.CompareString(minValMod.StatName, statName, false) == 0 && minValMod.GetValue(this, se) > minVal)
-                        minVal = minValMod.GetValue(this, se);
+                    if (Operators.CompareString(minValMod.StatName, statName, false) == 0 && minValMod.GetValue(se) > minVal)
+                        minVal = minValMod.GetValue(se);
 
                 } else if (modi is Modifier_MaxStatValue) {
 
                     Modifier_MaxStatValue maxValMod = (Modifier_MaxStatValue)modi;
-                    if (Operators.CompareString(maxValMod.StatName, statName, false) == 0 && maxValMod.GetValue(this, se) < maxVal)
-                        minVal = maxValMod.GetValue(this, se);
+                    if (Operators.CompareString(maxValMod.StatName, statName, false) == 0 && maxValMod.GetValue(se) < maxVal)
+                        minVal = maxValMod.GetValue(se);
                 }
             }
             // }
@@ -1124,7 +1084,7 @@ public:
     }
     void SetStat(QString statName, double value)
     {
-        if (Game.DictOfStats.ContainsKey(statName))
+        if (Game.DictOfStats.contains(statName))
         {
             Stat statBase = Game.DictOfStats[statName];
             dictStats[statName] = value < statBase.MinValue ? statBase.MinValue : (value > statBase.MaxValue ? statBase.MaxValue : value);
@@ -1132,7 +1092,7 @@ public:
     }
     void AddStat(QString statName, double value)
     {
-        if (Game.DictOfStats.ContainsKey(statName))
+        if (Game.DictOfStats.contains(statName))
         {
             Stat statBase = Game.DictOfStats[statName];
             double addValue = value;
@@ -1166,7 +1126,7 @@ public:
             }
             // }
             // }
-            dictStats[statName] = UtilityClass.Clamp((dictStats.ContainsKey(statName) ? dictStats[statName] : 0.0) + addValue, statBase.MinValue, statBase.MaxValue);
+            dictStats[statName] = (dictStats.contains(statName) ? dictStats[statName] : 0.0) + addValue < statBase.MinValue ? statBase.MinValue : ((dictStats.contains(statName) ? dictStats[statName] : 0.0) + addValue > statBase.MaxValue ? statBase.MaxValue : (dictStats.contains(statName) ? dictStats[statName] : 0.0) + addValue);
         }
     }
     void AdjustStatsByMind()
@@ -1242,7 +1202,7 @@ public:
         if (this != Game.HeadTeacher)
         {
             AddStat("Arousal", (double)Game.RNG.Next(-20, 20));
-            AddStat("Energy", (double)checked(Game.RNG.Next((int)Math.Round(unchecked(Math.Truncate(GetStat("Stamina")) * 2.0)), (int)Math.Round(Game.DictOfStats["Energy"].MaxValue))));
+            AddStat("Energy", (double)Game.RNG.Next((int)round(Math.Truncate(GetStat("Stamina")) * 2.0), (int)round(Game.DictOfStats["Energy"].MaxValue)));
         }
     }
     void AddStatusEffect(QString effectName)
@@ -1372,116 +1332,68 @@ public:
             {
                 intAnalSize += BSC.Change;
                 if (intAnalSize < minValue)
-                {
                     intAnalSize = minValue;
-                    return;
-                }
-                if (intAnalSize > maxValue)
-                {
+
+                else if (intAnalSize > maxValue)
                     intAnalSize = maxValue;
-                    return;
-                }
             }
             break;
         case BodyPart.Breast:
-            if (new Gender[]
-            {
-                Gender::Female,
-                Gender::Futanari
-            }.contains(Gender) && BSCWithinRange(BSC, intBreastSize))
+            if ((gender == Gender::Female || gender == Gender::Futanari) && BSCWithinRange(BSC, intBreastSize))
             {
                 intBreastSize += BSC.Change;
                 minValue = ((BSC.Minimum < 0.0) ? 0.0 : Math.Min(10.0, BSC.Minimum));
                 if (intBreastSize < minValue)
-                {
                     intBreastSize = minValue;
-                    return;
-                }
-                if (intBreastSize > maxValue)
-                {
+
+                else if (intBreastSize > maxValue)
                     intBreastSize = maxValue;
-                    return;
-                }
             }
             break;
         case BodyPart.Penis:
-            if (new Gender[]
-            {
-                Gender::Male,
-                Gender::Futanari
-            }.contains(Gender) && BSCWithinRange(BSC, intPenisSize))
+            if ((gender == Gender::Male || gender == Gender::Futanari) && BSCWithinRange(BSC, intPenisSize))
             {
                 intPenisSize += BSC.Change;
                 if (intPenisSize < minValue)
-                {
                     intPenisSize = minValue;
-                    return;
-                }
-                if (intPenisSize > maxValue)
-                {
+
+                else if (intPenisSize > maxValue)
                     intPenisSize = maxValue;
-                    return;
-                }
             }
             break;
         case BodyPart.Stomach:
-            if (new Gender[]
-            {
-                Gender::Male,
-                Gender::Futanari
-            }.contains(Gender) && BSCWithinRange(BSC, intPenisSize))
+            if ((gender == Gender::Male || gender == Gender::Futanari) && BSCWithinRange(BSC, intPenisSize))
             {
                 intStomachSize += BSC.Change;
                 minValue = ((BSC.Minimum < 0.0) ? 0.0 : Math.Min(10.0, BSC.Minimum));
                 if (intStomachSize < minValue)
-                {
                     intStomachSize = minValue;
-                    return;
-                }
-                if (intStomachSize > maxValue)
-                {
+
+                else if (intStomachSize > maxValue)
                     intStomachSize = maxValue;
-                    return;
-                }
+
             }
             break;
         case BodyPart.Testicle:
-            if (new Gender[]
-            {
-                Gender::Male,
-                Gender::Futanari
-            }.contains(Gender) && BSCWithinRange(BSC, intTesticleSize))
+            if ((gender == Gender::Male || gender == Gender::Futanari) && BSCWithinRange(BSC, intTesticleSize))
             {
                 intTesticleSize += BSC.Change;
                 if (intTesticleSize < minValue)
-                {
                     intTesticleSize = minValue;
-                    return;
-                }
-                if (intTesticleSize > maxValue)
-                {
+
+                else if (intTesticleSize > maxValue)
                     intTesticleSize = maxValue;
-                    return;
-                }
             }
             break;
         case BodyPart.Vagina:
-            if (new Gender[]
-            {
-                Gender::Female,
-                Gender::Futanari
-            }.contains(Gender) && BSCWithinRange(BSC, intVaginaSize))
+            if ((gender == Gender::Female || gender == Gender::Futanari) && BSCWithinRange(BSC, intVaginaSize))
             {
                 intVaginaSize += BSC.Change;
                 if (intVaginaSize < minValue)
-                {
                     intVaginaSize = minValue;
-                    return;
-                }
-                if (intVaginaSize > maxValue)
-                {
+
+                else if (intVaginaSize > maxValue)
                     intVaginaSize = maxValue;
-                }
             }
             break;
         default:
@@ -1500,15 +1412,15 @@ public:
     }
     bool ShouldSerializeintHome()
     {
-        return !QString.IsNullOrEmpty(intHome);
+        return !intHome.isEmpty();
     }
     bool ShouldSerializeintBedroom()
     {
-        return !QString.IsNullOrEmpty(intBedroom);
+        return !intBedroom.isEmpty();
     }
     bool ShouldSerializeintWork()
     {
-        return !QString.IsNullOrEmpty(intWork);
+        return !intWork.isEmpty();
     }
     bool ShouldSerializeOutLateTonight()
     {
@@ -1525,25 +1437,16 @@ public:
     bool IsWorkTime()
     {
         LocationJobDetails jb = JobDetails;
-        bool IsWorkTime;
         if (jb != NULL && !Game.SchoolCalendar.IsHoliday)
         {
-            if (Game.SchoolCalendar.IsWeekend)
-            {
+            if (Game.SchoolCalendar.IsWeekend) {
                 if (jb.WeekendShift && Game.GameTime.IsWeekendWorkTime)
-                {
-                    IsWorkTime = true;
-                    return IsWorkTime;
-                }
+                    return true;
             }
             else if ((jb.SchoolShift && Game.GameTime.IsSchoolTime) || (jb.WeekdayShift && Game.GameTime.IsStandardWorkTime) || (jb.EveningShift && Game.GameTime.IsEveningWorkTime))
-            {
-                IsWorkTime = true;
-                return IsWorkTime;
-            }
+                return true;
         }
-        IsWorkTime = false;
-        return IsWorkTime;
+        return false;
     }
     bool IsAsleep()
     {
@@ -1587,154 +1490,82 @@ public:
     }
     bool ShouldSerializeInventory()
     {
-        return !Inventory.IsEmpty;
-    }
-    Task CheckAndUseInventoryItems()
-    {
-        Person.VB_StateMachine_409_CheckAndUseInventoryItems vB_StateMachine_409_CheckAndUseInventoryItems = default(Person.VB_StateMachine_409_CheckAndUseInventoryItems);
-        vB_StateMachine_409_CheckAndUseInventoryItems.SVBSMe = this;
-        vB_StateMachine_409_CheckAndUseInventoryItems.SState = -1;
-        vB_StateMachine_409_CheckAndUseInventoryItems.SBuilder = AsyncTaskMethodBuilder.Create();
-        vB_StateMachine_409_CheckAndUseInventoryItems.SBuilder.Start<Person.VB_StateMachine_409_CheckAndUseInventoryItems>(ref vB_StateMachine_409_CheckAndUseInventoryItems);
-        return vB_StateMachine_409_CheckAndUseInventoryItems.SBuilder.Task;
-    }
-    Task CheckAndUseAutomaticItems()
-    {
-        Person.VB_StateMachine_410_CheckAndUseAutomaticItems vB_StateMachine_410_CheckAndUseAutomaticItems = default(Person.VB_StateMachine_410_CheckAndUseAutomaticItems);
-        vB_StateMachine_410_CheckAndUseAutomaticItems.SVBSMe = this;
-        vB_StateMachine_410_CheckAndUseAutomaticItems.SState = -1;
-        vB_StateMachine_410_CheckAndUseAutomaticItems.SBuilder = AsyncTaskMethodBuilder.Create();
-        vB_StateMachine_410_CheckAndUseAutomaticItems.SBuilder.Start<Person.VB_StateMachine_410_CheckAndUseAutomaticItems>(ref vB_StateMachine_410_CheckAndUseAutomaticItems);
-        return vB_StateMachine_410_CheckAndUseAutomaticItems.SBuilder.Task;
+        return !Inventory.isEmpty;
     }
     bool ShouldSerializeTrait()
     {
-        return !QString.IsNullOrEmpty(Trait);
+        return !Trait.isEmpty();
     }
     void AddTrait(QString TraitName)
     {
-        if (Trait.Length == 0)
-        {
+        if (Trait.Length == 0) {
             Trait = TraitName;
             return;
         }
-        if (!Trait.Split(new char[]
-        {
-            Person.TRAIT_SEPARATOR_CHAR
-        }).contains(TraitName))
-        {
-            Trait = Trait + Conversions.ToString(Person.TRAIT_SEPARATOR_CHAR) + TraitName;
-        }
+        if (!HasTrait(TraitName))
+            Trait.append(TRAIT_SEPARATOR_CHAR).append(TraitName);
     }
     void RemoveTrait(QString TraitName)
     {
-        StringBuilder sb = new StringBuilder();
-        QString[] array = Trait.Split(new char[]
-        {
-            Person.TRAIT_SEPARATOR_CHAR
-        });
-        // checked {
-        for (int i = 0; i < array.Length; i++)
-        {
-            QString t = array[i];
-            if (!t.Equals(TraitName))
-            {
-                sb.append(t);
-                sb.append(Person.TRAIT_SEPARATOR_CHAR);
-            }
-        }
-        if (sb.Length > 0 && sb[sb.Length - 1] == Person.TRAIT_SEPARATOR_CHAR)
-        {
-            sb.Remove(sb.Length - 1, 1);
-        }
-        Trait = sb.ToString();
-        // }
+        Trait = Trait.split(TRAIT_SEPARATOR_CHAR).filter(TraitName).join(TRAIT_SEPARATOR_CHAR);
     }
-    bool HasTrait(QString TraitName)
+    bool HasTrait(QString TraitName) const
     {
-        return Trait.Split(new char[]
-        {
-            Person.TRAIT_SEPARATOR_CHAR
-        }).contains(TraitName);
+        return Trait.split(TRAIT_SEPARATOR_CHAR).contains(TraitName);
     }
-    bool HasTraitFromList(QString TraitList)
+    bool HasTraitFromList(QString TraitList) const
     {
-        QString[] TraitListIn = TraitList.Split(new char[]
-        {
-            Person.TRAIT_SEPARATOR_CHAR
-        });
-        QString[] MyTraitList = Trait.Split(new char[]
-        {
-            Person.TRAIT_SEPARATOR_CHAR
-        });
-        QString[] array = TraitListIn;
-        // checked {
-        bool HasTraitFromList;
-        for (int i = 0; i < array.Length; i++)
-        {
-            QString T = array[i];
-            if (MyTraitList.contains(T))
-            {
-                HasTraitFromList = true;
-                return HasTraitFromList;
-            }
-        }
-        HasTraitFromList = false;
-        return HasTraitFromList;
-        // }
+        QStringList TraitListIn = TraitList.Split(TRAIT_SEPARATOR_CHAR);
+        QStringList MyTraitList = Trait.Split(TRAIT_SEPARATOR_CHAR);
+        for (QStringList::iterator it = TraitListIn.begin(); it != TraitListIn.end(); ++it)
+            if (MyTraitList.contains(*it))
+                return true;
+
+        return false;
     }
     bool ShouldSerializeSkills()
     {
         return Skills.count() > 0;
     }
-    bool HasSkill(QString skillName)
+    bool HasSkill(QString skillName) const
     {
-        return Skills.ContainsKey(skillName);
+        return Skills.contains(skillName);
     }
-    int GetSkill(QString skillName)
+    int GetSkill(QString skillName) const
     {
         CheckSkill(skillName);
         Skill arg_30_0 = Game.DictOfSkills[skillName];
-        int retVal = Skills.ContainsKey(skillName) ? Skills[skillName] : 0;
+        int retVal = Skills.contains(skillName) ? Skills[skillName] : 0;
         int minVal = arg_30_0.MinValue;
         int maxVal = arg_30_0.MaxValue;
         object statusEffects = StatusEffects;
         // checked {
         // lock (statusEffects) {
         // try {
-        for (QList<StatusEffectInstance>::iterator it = StatusEffects.begin();
-                it != StatusEffects.end(); ++it)
-        {
-            StatusEffectInstance se = enumerator.Current;
-            StatusEffect effect = Game.DictOfStatusEffects[se.Name];
+        for (QList<StatusEffectInstance>::iterator se = StatusEffects.begin();
+                se != StatusEffects.end(); ++se) {
+
+            StatusEffect effect = Game.DictOfStatusEffects[se->Name];
             // try {
-            for (QList<ModifierBase>::iterator it2 = effect.Modifiers.begin();
-                    it2 != effect.Modifiers.end(); ++it2)
-            {
-                ModifierBase modi = enumerator2.Current;
-                if (modi is Modifier_AddSkillValue)
-                {
-                    Modifier_AddSkillValue addConstMod = (Modifier_AddSkillValue)modi;
+            for (QList<ModifierBase>::iterator modi = effect.Modifiers.begin();
+                    modi != effect.Modifiers.end(); ++modi) {
+
+                if (*modi is Modifier_AddSkillValue) {
+                    Modifier_AddSkillValue addConstMod = (Modifier_AddSkillValue)*modi;
                     if (Operators.CompareString(addConstMod.SkillName, skillName, false) == 0)
-                    {
-                        retVal += addConstMod.GetValue(this, se);
-                    }
+                        retVal += addConstMod.GetValue(*se);
                 }
-                else if (modi is Modifier_MinSkillValue)
+                else if (*modi is Modifier_MinSkillValue)
                 {
-                    Modifier_MinSkillValue minValMod = (Modifier_MinSkillValue)modi;
-                    if (Operators.CompareString(minValMod.SkillName, skillName, false) == 0 && minValMod.GetValue(this, se) > minVal)
-                    {
-                        minVal = minValMod.GetValue(this, se);
-                    }
+                    Modifier_MinSkillValue minValMod = (Modifier_MinSkillValue)*modi;
+                    if (Operators.CompareString(minValMod.SkillName, skillName, false) == 0 && minValMod.GetValue(*se) > minVal)
+                        minVal = minValMod.GetValue(*se);
                 }
-                else if (modi is Modifier_MaxSkillValue)
+                else if (*modi is Modifier_MaxSkillValue)
                 {
-                    Modifier_MaxSkillValue maxValMod = (Modifier_MaxSkillValue)modi;
-                    if (Operators.CompareString(maxValMod.SkillName, skillName, false) == 0 && maxValMod.GetValue(this, se) < maxVal)
-                    {
-                        minVal = maxValMod.GetValue(this, se);
-                    }
+                    Modifier_MaxSkillValue maxValMod = (Modifier_MaxSkillValue)*modi;
+                    if (Operators.CompareString(maxValMod.SkillName, skillName, false) == 0 && maxValMod.GetValue(*se) < maxVal)
+                        minVal = maxValMod.GetValue(*se);
                 }
             }
             // }
@@ -1748,46 +1579,41 @@ public:
     {
         CheckSkill(skillName);
         Skill baseSkill = Game.DictOfSkills[skillName];
-        int oldValue = Skills.ContainsKey(skillName) ? Skills[skillName] : 0;
+        int oldValue = Skills.contains(skillName) ? Skills[skillName] : 0;
         int newValue = value < baseSkill.MinValue ? baseSkill.MinValue : (value > baseSkill.MaxValue ? baseSkill.MaxValue : value);
         Skills[skillName] = newValue;
-        Game.NotifyManager.HandleSkillNotification(this, skillName, checked(newValue - oldValue));
+        Game.NotifyManager.HandleSkillNotification(this, skillName, newValue - oldValue);
     }
     void AddSkill(QString skillName, int value)
     {
         CheckSkill(skillName);
         Skill baseSkill = Game.DictOfSkills[skillName];
-        int oldValue = Skills.ContainsKey(skillName) ? Skills[skillName] : 0;
+        int oldValue = Skills.contains(skillName) ? Skills[skillName] : 0;
         int addValue = value;
         object statusEffects = StatusEffects;
         // checked {
         // lock (statusEffects) {
         // try {
         for (QList<StatusEffectInstance>::iterator it = StatusEffects.begin();
-                it != StatusEffects.end(); ++it)
-        {
+                it != StatusEffects.end(); ++it) {
+
             StatusEffectInstance se = enumerator.Current;
             StatusEffect effect = Game.DictOfStatusEffects[se.Name];
             // try {
             for (QList<ModifierBase>::iterator it2 = effect.Modifiers.begin();
-                    it2 != effect.Modifiers.end(); ++it2)
-            {
+                    it2 != effect.Modifiers.end(); ++it2) {
+
                 ModifierBase modi = enumerator2.Current;
-                if (modi is Modifier_IncreaseSkillMultiplier)
-                {
+                if (modi is Modifier_IncreaseSkillMultiplier) {
                     Modifier_IncreaseSkillMultiplier scaleMod = (Modifier_IncreaseSkillMultiplier)modi;
                     if (Operators.CompareString(skillName, scaleMod.SkillName, false) == 0 && value > 0)
-                    {
-                        addValue = (int)Math.Round(unchecked((double)addValue * scaleMod.GetScaleFactor(this, se)));
-                    }
-                }
-                else if (modi is Modifier_DecreaseSkillMultiplier)
-                {
+                        addValue = (int)round((double)addValue * scaleMod.GetScaleFactor(this, se));
+
+                } else if (modi is Modifier_DecreaseSkillMultiplier) {
+
                     Modifier_DecreaseSkillMultiplier scaleMod2 = (Modifier_DecreaseSkillMultiplier)modi;
                     if (Operators.CompareString(skillName, scaleMod2.SkillName, false) == 0 && value < 0)
-                    {
-                        addValue = (int)Math.Round(unchecked((double)addValue * scaleMod2.GetScaleFactor(this, se)));
-                    }
+                        addValue = (int)round((double)addValue * scaleMod2.GetScaleFactor(this, se));
                 }
             }
             // }
@@ -1801,7 +1627,7 @@ public:
     }
     void CheckSkill(QString skillName)
     {
-        if (!Game.DictOfSkills.ContainsKey(skillName))
+        if (!Game.DictOfSkills.contains(skillName))
         {
             throw new ArgumentException(QString.Format("'{0}' was not declared as valid skill for the current scenario!", skillName));
         }
