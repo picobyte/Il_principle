@@ -31,4 +31,9 @@ The source for HHS+ is not available, but with ilspy or dnspy it is possible to 
 want to know about the HHS+ internal structure. Trying to compile the result in monodevelop failed, after fixing many issues
 it compiled but still didn't run since mono does not support the WPF in use by HHS+. Don't know how to fix it in csharp.
 
+
+A principle is headmaster, but Il Principe is a 16th-century guide by Machiavelli:
+*The descriptions within Il Principe (the prince) have the general theme of accepting that the aims of princes – such as glory and survival – can justify the use of immoral means to achieve those ends.*
+Strauss, Leo (1987)
+
 (c) picobyte, 2017, GPL2
