@@ -112,7 +112,10 @@ sub parsefunc {
             if ($i-- && $arr->[$i] =~ /^\s+\{$/ && $i-- && $arr->[$i] =~ /^\s+else$/) {
                 while ($i-- && $arr->[$i] =~ /^\s+\}$/ && $i-- && $arr->[$i] =~ /^\s+$v \= / &&
                         $i-- && $arr->[$i] =~ /^\s+\{$/ && $i-- && $arr->[$i] =~ /^\s+(else )?if/) {
-                    $do_replace = 1 and last if not $1;
+                    if (not $1) {
+                        $do_replace = 1;
+                        last;
+                    }
                 }
             }
         }
@@ -243,7 +246,7 @@ while (my $f = shift) {
             } elsif (/^\t\t(private|public) (static|override)? ?((\w+ )*\w+(\(.*)?)$/) {
                 $mem_fun = [[split(/ /, $3)]];
             }
-        } elsif (/public(?: abstract)? class (\w+)/ and not $C_H) {
+        } elsif (/public(?: abstract| sealed)? class (\w+)/ and not $C_H) {
             $class = $1;
             $C_H = uc $class."_H";
             print OUT "#ifndef $C_H\n#define $C_H\n".($jl ? "#include \"json_macros.h\"\n" : "")."\nclass $class {\npublic:\n";
