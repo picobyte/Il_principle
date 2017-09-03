@@ -12,25 +12,25 @@ public:
     RuleStatus Status;
     int ActiveRuleChoiceIndex;
 
-    RuleChoice const*const get_ActiveRuleChoice() const
-	{
+    RuleChoice const*const ActiveRuleChoice() const
+    {
         if (Status == RuleStatus::Available && ActiveRuleChoiceIndex > -1 &&
                 ActiveRuleChoiceIndex < RuleChoices.count())
             return &RuleChoices[ActiveRuleChoiceIndex];
 
         return NULL;
-	}
-    void set_ActiveRuleChoice(RuleChoice& value)
-	{
+    }
+    void ActiveRuleChoice(RuleChoice& value)
+    {
         /*if (RuleChoices.contains(value) && value.Status == RuleStatus::Available)
-		{
-            RuleChoice const *const arlc = get_ActiveRuleChoice();
+        {
+            RuleChoice const *const arlc = ActiveRuleChoice();
             VisualEventManager.ExecuteNativeEvent(arlc->Name + "_Deactivated.ve.xml");
-			ActiveRuleChoiceIndex = RuleChoices.IndexOf(value);
+            ActiveRuleChoiceIndex = RuleChoices.IndexOf(value);
             VisualEventManager.ExecuteNativeEvent(arlc->Name + "_Activated.ve.xml");
         }*/
-	}
-    const int get_AllowedRuleChoiceCount() const
+    }
+    const int AllowedRuleChoiceCount() const
     {
         int count = 0;
         /*if (Status == RuleStatus::Available)
@@ -40,32 +40,32 @@ public:
         return count;
     }
 
-	Rule(QJsonObject *d = NULL) : Name(""), Description("")
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, Name, toString)
-			else __IF_VAR_FROM_JSON_AS(it, Description, toString)
+    Rule(QJsonObject *d = NULL) : Name(""), Description("")
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, Name, toString)
+            else __IF_VAR_FROM_JSON_AS(it, Description, toString)
             else __IF_ENUM_FROM_JSON_AS(it, Status, RuleStatus)
-			else __IF_VAR_FROM_JSON_AS(it, ActiveRuleChoiceIndex, toInt)
-			//ObservableCollection<RuleChoice> RuleChoices
-		}
-	}
-	bool ShouldSerializeStatus()
-	{
+            else __IF_VAR_FROM_JSON_AS(it, ActiveRuleChoiceIndex, toInt)
+            //ObservableCollection<RuleChoice> RuleChoices
+        }
+    }
+    bool ShouldSerializeStatus()
+    {
         return Status > RuleStatus::Available;
-	}
-	bool ShouldSerializeActiveRuleChoiceIndex()
-	{
+    }
+    bool ShouldSerializeActiveRuleChoiceIndex()
+    {
         return ActiveRuleChoiceIndex != 0 && ActiveRuleChoiceIndex < RuleChoices.count();
-	}
-	QString ToString()
-	{
-		return "Rule: " + Name;
-	}
+    }
+    QString ToString()
+    {
+        return "Rule: " + Name;
+    }
 };
 
 #endif // RULE_H

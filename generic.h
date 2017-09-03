@@ -88,7 +88,29 @@ enum class Part
     Testicle,
     Vagina
 };
+enum class Size
+{
+    Flat,
+    Tiny,
+    VerySmall,
+    Small,
+    Medium,
+    Large,
+    Larger,
+    Big,
+    Huge,
+    VeryHuge,
+    Gigantic
+};
 }
+
+enum class SexualPref
+{
+    Heterosexual,
+    Homosexual,
+    Bisexual,
+    Asexual
+};
 
 enum class Fetish
 {

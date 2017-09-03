@@ -5,36 +5,36 @@
 
 class RuleEffect {
 public:
-	QString ApplyTo;
-	QList<Gender> Genders;
-	QList<StatChange> StatChanges;
-	QList<BodySizeChange> BodySizeChanges;
+    QString ApplyTo;
+    QList<Gender> Genders;
+    QList<StatChange> StatChanges;
+    QList<BodySizeChange> BodySizeChanges;
 
-	RuleEffect(QJsonObject *d = NULL) : ApplyTo("")
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, ApplyTo, toString)
-			else __IF_LIST_FROM_JSON_ENUM(it, Genders, Gender)
-			else __IF_OBJLIST_FROM_JSON(it, StatChanges, StatChange)
-			else __IF_OBJLIST_FROM_JSON(it, BodySizeChanges, BodySizeChange)
-		}
-	}
-	bool ShouldSerializeGenders()
-	{
+    RuleEffect(QJsonObject *d = NULL) : ApplyTo("")
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, ApplyTo, toString)
+            else __IF_LIST_FROM_JSON_ENUM(it, Genders, Gender)
+            else __IF_OBJLIST_FROM_JSON(it, StatChanges, StatChange)
+            else __IF_OBJLIST_FROM_JSON(it, BodySizeChanges, BodySizeChange)
+        }
+    }
+    bool ShouldSerializeGenders()
+    {
                 return Genders.count() > 0;
-	}
-	bool ShouldSerializeStatChanges()
-	{
+    }
+    bool ShouldSerializeStatChanges()
+    {
                 return StatChanges.count() != 0;
-	}
-	bool ShouldSerializeBodySizeChanges()
-	{
+    }
+    bool ShouldSerializeBodySizeChanges()
+    {
                 return BodySizeChanges.count() != 0;
-	}
+    }
         void ExecuteRuleForGroup()
         {
             /*if (ApplyTo.contains("Student")) {
@@ -82,22 +82,9 @@ public:
             if (ApplyTo.contains("Principal"))
                 ExecuteRuleForPerson(Game.HeadTeacher);*/
         }
-        void ExecuteRuleForPerson(Person Per)
-        {
-            if (Genders.contains(Per.gender))
-                AdjustPerson(&Per);
-        }
-        void AdjustPerson(Person *Per)
-        {
-            if (Per != NULL){
-                for (QList<StatChange>::iterator it = StatChanges.begin();
-                     it != StatChanges.end(); ++it)
-                    it->AdjustStat(Per);
-/*                for (QList<BodySizeChange>::iterator it = BodySizeChanges.begin();
-                     it != BodySizeChanges.end(); ++it)
-                    Per->ApplyBodySizeChange(*it);*/
-            }
-        }
+        void ExecuteRuleForPerson(Person *Per);
+        void AdjustPerson(Person *Per);
+
         /*RuleEffect(RuleEffect& rhs)
         {
             rhs.ApplyTo = ApplyTo;

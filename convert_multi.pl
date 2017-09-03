@@ -44,6 +44,24 @@ sub create_constructor {
                 } else {
                     $el = "\t\t\t${else}__IF_OBJLIST_FROM_JSON(it, $2, $1)";
                 }
+            } elsif ($el = /SerializableAttributeDictionary\<(\w+), (\w+)\> (\w+);/) {
+                if ($1 eq 'QString') {
+                    if (exists $typex{$2}) {
+                        $el = "\t\t\t${else}__IF_HASH_FROM_JSON_TYPED(it, $3, $typex{$2})";
+                    } elsif(exists $enums{$2}) {
+                        $el = "\t\t\t${else}__IF_HASH_FROM_JSON_ENUM(it, $3, $2)";
+                    } else {
+                        $el = "\t\t\t${else}__IF_OBJHASH_FROM_JSON(it, $3, $2)";
+                    }
+                } elsif(exists $enums{$1}) {
+                    if (exists $typex{$2}) {
+                        $el = "\t\t\t${else}__IF_ENUM_LIST_FROM_JSON_TYPED(it, $3, $typex{$2})";
+                    } elsif(exists $enums{$1}) {
+                        $el = "\t\t\t${else}__IF_ENUM_LIST_FROM_JSON_ENUM(it, $3, $2)";
+                    } else {
+                        $el = "\t\t\t${else}__IF_ENUM_OBJLIST_FROM_JSON(it, $3, $2)";
+                    }
+                }
             } else {
                 $el =~ s/^(.*);$/\t\t\t\/\/$1/;
                 print OUT $el, "\n";
@@ -100,10 +118,18 @@ sub parsefunc {
         }
         if ($do_replace) {
             my $j = $i;
+            my $in_else;
             while ($i++ != $#$arr) {
-                next if $arr->[$i] =~ /^\s+[{}]$/;
+                next if $arr->[$i] =~ /^\s+\{]$/;
                 $arr->[++$j] = $arr->[$i];
+                $arr->[$j] =~ s/^\s+\}$//;
+                $arr->[$j] =~ s/^(\s+)else if\b/${1}if/;
                 $arr->[$j] =~ s/^(\s+)$v \=/${1}return/;
+                if ($in_else) {
+                    $arr->[$j] =~ s/^\t//;
+                } elsif ($arr->[$j] =~ s/^\s+else$//) {
+                    $in_else = 1;
+                }
             }
             pop @$arr while $#$arr != $j;
             return undef;
@@ -152,8 +178,10 @@ while (my $f = shift) {
             s/\bnull\b/NULL/g;
             s/\.Count\b/.count()/g;
             s/\buint\b/unsigned/g;
+            s/\bSerializableAttributeDictionary\b/QHash/g;
 
             s/\.Contains\(/.contains\(/g;
+            s/\.Append\(/.append(/g;
             s/\bstring\b/QString/g;
             s/([^!])QString\.IsNullOrWhiteSpace\((\w+)\)/$1$2.isNull() || $2\.contains(QRegExp("^\\\\s*\$"))/g;
             s/(!)QString\.IsNullOrWhiteSpace\((\w+)\)/$1($2.isNull() || $2\.contains(QRegExp("^\\\\s*\$")))/g;
@@ -189,13 +217,13 @@ while (my $f = shift) {
                     $mem_fun = undef;
                 } elsif ($mem_fun->[0]->[0] =~ /^\t$class\(/) { # constructor
                     push (@$mem_fun, $_) unless / \= new \w+\<\w+\>\(\);/;
-                } elsif (s/^\t\tget(;?)/\tconst $mem_fun->[0]->[0] get_$mem_fun->[0]->[1]() const$1/) {
+                } elsif (s/^\t\tget(;?)/\tconst $mem_fun->[0]->[0] $mem_fun->[0]->[1]() const$1/) {
                     if (s/;$/ {return $mem_fun->[0]->[1];}/) {
                         print OUT $_."\n";
                     } else {
                         $in_get = [$_];
                     }
-                } elsif (s/^\t\tset(;?)/\tvoid set_$mem_fun->[0]->[1]($mem_fun->[0]->[0]\& v)$1/) {
+                } elsif (s/^\t\tset(;?)/\tvoid $mem_fun->[0]->[1]($mem_fun->[0]->[0]\& v)$1/) {
                     if (s/;$/ {$mem_fun->[0]->[1] = v;}/) {
                         print OUT $_."\n";
                     } else {
@@ -209,7 +237,7 @@ while (my $f = shift) {
                 print OUT "};\n" and next if $created_constructor;
                 create_constructor();
             } elsif (s/^\t\t(private|public) (static)? ?(.*;)$/$3/) {
-                s/ _/ /;
+                #s/ _/ /;
                 push @vars, $_;
                 print OUT "\t".$_, "\n";
             } elsif (/^\t\t(private|public) (static|override)? ?((\w+ )*\w+(\(.*)?)$/) {

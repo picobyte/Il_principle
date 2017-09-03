@@ -31,72 +31,72 @@ static const char* studentInfoEG[] = {"1/1/2012", "18", "Owen", "Home", "Cheerle
 
 // should be read from json..
 static const char* subjectName[] = {"Anatomy Class", "Art", "Biology", "Bondage Class", "Chemistry",
-                                       "Computer Science", "Economics", "English", "Geography", "History",
-                                       "Math", "Music", "Philosophy", "Physics", "Practical Sex Education",
-                                       "Religion", "School Sport", "Swimming", "Theoretical Sex Education"};
+									   "Computer Science", "Economics", "English", "Geography", "History",
+									   "Math", "Music", "Philosophy", "Physics", "Practical Sex Education",
+									   "Religion", "School Sport", "Swimming", "Theoretical Sex Education"};
 
 static const int no_workdays = ARRAY_LEN(weekday)-2;
 
 class SchlMngStudentClasses: public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 private:
-    QGridLayout grid;
-    QLabel *periodLbl[ARRAY_LEN(period)], *dayLbl[no_workdays], *lunch_break;
-    QComboBox *classSchedule[ARRAY_LEN(period)*no_workdays];
-    QLabel curriculumLbl;
+	QGridLayout grid;
+	QLabel *periodLbl[ARRAY_LEN(period)], *dayLbl[no_workdays], *lunch_break;
+	QComboBox *classSchedule[ARRAY_LEN(period)*no_workdays];
+	QLabel curriculumLbl;
 public:
-    SchlMngStudentClasses();
+	SchlMngStudentClasses();
 };
 
 class SchlMngClassSummary: public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 private:
-    QGridLayout grid;
-    QLabel classSummaryLbl, aSFELbl;
-    QLabel *subjLbl[ARRAY_LEN(subject)];
-    QProgressBar subjBar[ARRAY_LEN(subject)];
-    QSpacerItem vertStretch;
+	QGridLayout grid;
+	QLabel classSummaryLbl, aSFELbl;
+	QLabel *subjLbl[ARRAY_LEN(subject)];
+	QProgressBar subjBar[ARRAY_LEN(subject)];
+	QSpacerItem vertStretch;
 public:
-    SchlMngClassSummary();
+	SchlMngClassSummary();
 };
 
 class SchlMngStudents: public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 private:
-    QGridLayout grid;
-    QCheckBox favoritesOnly, favorite;
-    QLabel studentName, sbjScoreLbl;
-    QComboBox transferCmb;
-    QPushButton transferBtn;
-    QListView studentsList;
-    QLabel *statLbl[ARRAY_LEN(studentInfo)];
-    QLabel *statVal[ARRAY_LEN(studentInfo)];
-    QLabel *subjLbl[ARRAY_LEN(subjectName)];
-    QProgressBar subjBar[ARRAY_LEN(subjectName)];
-    QGraphicsView graphicsView;
+	QGridLayout grid;
+	QCheckBox favoritesOnly, favorite;
+	QLabel studentName, sbjScoreLbl;
+	QComboBox transferCmb;
+	QPushButton transferBtn;
+	QListView studentsList;
+	QLabel *statLbl[ARRAY_LEN(studentInfo)];
+	QLabel *statVal[ARRAY_LEN(studentInfo)];
+	QLabel *subjLbl[ARRAY_LEN(subjectName)];
+	QProgressBar subjBar[ARRAY_LEN(subjectName)];
+	QGraphicsView graphicsView;
 public:
-    SchlMngStudents();
+	SchlMngStudents();
 };
 
 class StudentsTab: public QWidget
 {
-    Q_OBJECT
+	Q_OBJECT
 private:
-    QGridLayout grid;
-    QLabel classesLbl;
-    QPushButton distrBtn;
-    QSpinBox spinBox;
-    QListView listView;
-    QWidget tabW;
-    QTabWidget tab;
-    SchlMngStudentClasses timetableW;
-    SchlMngClassSummary classSummaryW;
-    SchlMngStudents studentsW;
+	QGridLayout grid;
+	QLabel classesLbl;
+	QPushButton distrBtn;
+	QSpinBox spinBox;
+	QListView listView;
+	QWidget tabW;
+	QTabWidget tab;
+	SchlMngStudentClasses timetableW;
+	SchlMngClassSummary classSummaryW;
+	SchlMngStudents studentsW;
 public:
-    StudentsTab(QRect geom);
+	StudentsTab(QRect geom);
 };
 
 #endif // STUDENT_TAB_H

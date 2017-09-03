@@ -11,21 +11,21 @@
 
 class AspectRatioPixmapLabel : public QLabel
 {
-    Q_OBJECT
+	Q_OBJECT
 public:
-    explicit AspectRatioPixmapLabel(QWidget *parent = 0);
-    virtual int heightForWidth( const int width ) const;
-    virtual QSize sizeHint() const;
-    QPixmap scaledPixmap() const;
-    void toggle_blur();
+	explicit AspectRatioPixmapLabel(QWidget *parent = 0);
+	virtual int heightForWidth( const int width ) const;
+	virtual QSize sizeHint() const;
+	QPixmap scaledPixmap() const;
+	void toggle_blur();
 public slots:
-    void setPixmap ( const QPixmap &);
-    void resizeEvent(QResizeEvent *);
+	void setPixmap ( const QPixmap &);
+	void resizeEvent(QResizeEvent *);
 private:
-    QPixmap* pix;
-    QPixmap blur;
-    QPixmap orig;
-    bool is_blurred;
+	QPixmap* pix;
+	QPixmap blur;
+	QPixmap orig;
+	bool is_blurred;
 };
 
 #endif // ASPECTRATIOPIXMAPLABEL_H

@@ -6,9 +6,10 @@
 #include "schoolsubject.h"
 #include "statuseffectinstance.h"
 
+class Person;
 class ModifierBase {
 public:
-	ModifierBase(QJsonObject *d = NULL) {}
+    ModifierBase(QJsonObject *d = NULL) {}
     static double GetAlphaFromElapsedTime(StatusEffectInstance instance)
     {
         return (double)(GameTime::CurrentTimestamp - instance.StartTimestamp / (double)(instance.StartTimestamp + instance.Duration - instance.StartTimestamp));
@@ -17,752 +18,689 @@ public:
 
 class Modifier_AddGenderPrefValue : public ModifierBase {
 public:
-	Gender gender;
-	double Value;
-	double GetValue(Person per, StatusEffectInstance instance)
-	{
-		return Value;
-	}
+    Gender gender;
+    double Value;
+    double GetValue(Person&, StatusEffectInstance&);
 
-	Modifier_AddGenderPrefValue(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_ENUM_FROM_JSON_AS(it, gender, Gender)
+    Modifier_AddGenderPrefValue(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_ENUM_FROM_JSON_AS(it, gender, Gender)
                         else __IF_VAR_FROM_JSON_AS(it, Value, toDouble)
-		}
-	}
+        }
+    }
 };
 
 class Modifier_AddSkillValue : public ModifierBase {
 public:
-	QString SkillName;
-	int Value;
-	int GetValue()
-	{
-		return Value;
-	}
+    QString SkillName;
+    int Value;
+    int GetValue(Person&, StatusEffectInstance&);
 
-	Modifier_AddSkillValue(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, SkillName, toString)
-			else __IF_VAR_FROM_JSON_AS(it, Value, toInt)
-		}
-	}
+    Modifier_AddSkillValue(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, SkillName, toString)
+            else __IF_VAR_FROM_JSON_AS(it, Value, toInt)
+        }
+    }
 };
 
 class Modifier_AddStatValue : public ModifierBase {
 public:
-	QString StatName;
-	double Value;
-	virtual double GetValue(Person per, StatusEffectInstance instance)
-	{
-		return Value;
-	}
+    QString StatName;
+    double Value;
+    virtual double GetValue(Person&, StatusEffectInstance&);
 
-	Modifier_AddStatValue(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, StatName, toString)
-			else __IF_VAR_FROM_JSON_AS(it, Value, toDouble)
-		}
-	}
+    Modifier_AddStatValue(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, StatName, toString)
+            else __IF_VAR_FROM_JSON_AS(it, Value, toDouble)
+        }
+    }
 };
 
 class Modifier_AddStatValueLerp : public Modifier_AddStatValue {
 public:
-	double EndValue;
-	 double GetValue(Person per, StatusEffectInstance instance)
-	{
-        return Value + GetAlphaFromElapsedTime(instance) * (EndValue - Value);
-	}
+    double EndValue;
+    double GetValue(Person&, StatusEffectInstance&);
 
-	Modifier_AddStatValueLerp(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, EndValue, toDouble)
-		}
-	}
+    Modifier_AddStatValueLerp(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, EndValue, toDouble)
+        }
+    }
 };
 
 class Modifier_AddStatValueSine : public Modifier_AddStatValue {
 public:
-	double Amplitude;
-	double Period;
-	double TimeOffset;
-    double GetValue(Person per, StatusEffectInstance instance)
-	{
-        return sin(((double)(GameTime::CurrentTimestamp - instance.StartTimestamp) / Period - TimeOffset) * 2.0 * M_PI) * Amplitude + Value;
-	}
+    double Amplitude;
+    double Period;
+    double TimeOffset;
+    double GetValue(Person&, StatusEffectInstance&);
 
-	Modifier_AddStatValueSine(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, Amplitude, toDouble)
-			else __IF_VAR_FROM_JSON_AS(it, Period, toDouble)
-			else __IF_VAR_FROM_JSON_AS(it, TimeOffset, toDouble)
-		}
-	}
+    Modifier_AddStatValueSine(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, Amplitude, toDouble)
+            else __IF_VAR_FROM_JSON_AS(it, Period, toDouble)
+            else __IF_VAR_FROM_JSON_AS(it, TimeOffset, toDouble)
+        }
+    }
 };
 
 class Modifier_AddSubjectFamilyValue : public ModifierBase {
 public:
     SchoolSubjectFamily SubjectFamilyName;
-	double Value;
-	double GetValue(Person per, StatusEffectInstance instance)
-	{
-		return Value;
-	}
+    double Value;
+    double GetValue(Person&, StatusEffectInstance&);
 
-	Modifier_AddSubjectFamilyValue(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			//SchoolSubjectFamily SubjectFamilyName
-			__IF_VAR_FROM_JSON_AS(it, Value, toDouble)
-		}
-	}
+    Modifier_AddSubjectFamilyValue(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            //SchoolSubjectFamily SubjectFamilyName
+            __IF_VAR_FROM_JSON_AS(it, Value, toDouble)
+        }
+    }
 };
 
 class Modifier_BodySizeChange : public ModifierBase {
 public:
     Body::Part bodyPart;
-	double Change;
-	double Minimum;
-	double Maximum;
-	bool ShouldSerializeMinimum()
-	{
-		return Minimum != 0.0;
-	}
-	bool ShouldSerializeMaximum()
-	{
-		return Maximum != 0.0;
-	}
-	virtual double GetValue(Person per, StatusEffectInstance instance)
-	{
-		return Change;
-	}
+    double Change;
+    double Minimum;
+    double Maximum;
+    bool ShouldSerializeMinimum()
+    {
+        return Minimum != 0.0;
+    }
+    bool ShouldSerializeMaximum()
+    {
+        return Maximum != 0.0;
+    }
+    virtual double GetValue(Person&, StatusEffectInstance&);
 
-	Modifier_BodySizeChange(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+    Modifier_BodySizeChange(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
             __IF_ENUM_FROM_JSON_AS(it, bodyPart, Body::Part)
             else __IF_VAR_FROM_JSON_AS(it, Change, toDouble)
-			else __IF_VAR_FROM_JSON_AS(it, Minimum, toDouble)
-			else __IF_VAR_FROM_JSON_AS(it, Maximum, toDouble)
-		}
-	}
+            else __IF_VAR_FROM_JSON_AS(it, Minimum, toDouble)
+            else __IF_VAR_FROM_JSON_AS(it, Maximum, toDouble)
+        }
+    }
 };
 
 class Modifier_DecreaseGenderPrefMultiplier : public ModifierBase {
 public:
     Gender gender;
-	double ScaleFactor;
-	Modifier_DecreaseGenderPrefMultiplier()
-	{
-		ScaleFactor = 1.0;
-	}
-	double GetScaleFactor()
-	{
-		return ScaleFactor;
-	}
+    double ScaleFactor;
+    Modifier_DecreaseGenderPrefMultiplier()
+    {
+        ScaleFactor = 1.0;
+    }
+    double GetScaleFactor()
+    {
+        return ScaleFactor;
+    }
 
-	Modifier_DecreaseGenderPrefMultiplier(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+    Modifier_DecreaseGenderPrefMultiplier(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
             __IF_ENUM_FROM_JSON_AS(it, gender, Gender)
             else __IF_VAR_FROM_JSON_AS(it, ScaleFactor, toDouble)
-		}
-	}
+        }
+    }
 };
 
 class Modifier_DecreaseSkillMultiplier : public ModifierBase {
 public:
-	QString SkillName;
-	double ScaleFactor;
-	Modifier_DecreaseSkillMultiplier()
-	{
-		ScaleFactor = 1.0;
-	}
-	double GetScaleFactor()
-	{
-		return ScaleFactor;
-	}
+    QString SkillName;
+    double ScaleFactor;
+    Modifier_DecreaseSkillMultiplier()
+    {
+        ScaleFactor = 1.0;
+    }
+    double GetScaleFactor()
+    {
+        return ScaleFactor;
+    }
 
-	Modifier_DecreaseSkillMultiplier(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, SkillName, toString)
-			else __IF_VAR_FROM_JSON_AS(it, ScaleFactor, toDouble)
-		}
-	}
+    Modifier_DecreaseSkillMultiplier(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, SkillName, toString)
+            else __IF_VAR_FROM_JSON_AS(it, ScaleFactor, toDouble)
+        }
+    }
 };
 
 class Modifier_DecreaseStatMultiplier : public ModifierBase {
 public:
-	QString StatName;
-	double ScaleFactor;
+    QString StatName;
+    double ScaleFactor;
     Modifier_DecreaseStatMultiplier(QJsonObject *d = NULL)
-	{
+    {
         if (d) init(d);
-		ScaleFactor = 1.0;
-	}
-	virtual double GetScaleFactor()
-	{
-		return ScaleFactor;
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, StatName, toString)
-			else __IF_VAR_FROM_JSON_AS(it, ScaleFactor, toDouble)
-		}
-	}
+        ScaleFactor = 1.0;
+    }
+    virtual double GetScaleFactor()
+    {
+        return ScaleFactor;
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, StatName, toString)
+            else __IF_VAR_FROM_JSON_AS(it, ScaleFactor, toDouble)
+        }
+    }
 };
 
 class Modifier_DecreaseStatMultiplierLerp : public Modifier_DecreaseStatMultiplier {
 public:
-	double EndScaleFactor;
-     double GetScaleFactor(Person per, StatusEffectInstance instance)
-	{
-        return ScaleFactor + GetAlphaFromElapsedTime(instance) * (EndScaleFactor - ScaleFactor);
-	}
+    double EndScaleFactor;
+    double GetScaleFactor(Person&, StatusEffectInstance&);
 
-	Modifier_DecreaseStatMultiplierLerp(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, EndScaleFactor, toDouble)
-		}
-	}
+    Modifier_DecreaseStatMultiplierLerp(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, EndScaleFactor, toDouble)
+        }
+    }
 };
 
 class Modifier_DecreaseStatMultiplierSine : public Modifier_DecreaseStatMultiplier {
 public:
-	double Amplitude;
-	double Period;
-	double TimeOffset;
-     double GetScaleFactor(Person per, StatusEffectInstance instance)
-	{
-        return sin(((double)(GameTime::CurrentTimestamp - instance.StartTimestamp) / Period - TimeOffset) * 2.0 * M_PI) * Amplitude + ScaleFactor;
-	}
+    double Amplitude;
+    double Period;
+    double TimeOffset;
+    double GetScaleFactor(Person& per, StatusEffectInstance& instance);
 
-	Modifier_DecreaseStatMultiplierSine(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, Amplitude, toDouble)
-			else __IF_VAR_FROM_JSON_AS(it, Period, toDouble)
-			else __IF_VAR_FROM_JSON_AS(it, TimeOffset, toDouble)
-		}
-	}
+    Modifier_DecreaseStatMultiplierSine(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, Amplitude, toDouble)
+            else __IF_VAR_FROM_JSON_AS(it, Period, toDouble)
+            else __IF_VAR_FROM_JSON_AS(it, TimeOffset, toDouble)
+        }
+    }
 };
 
 class Modifier_DecreaseSubjectFamilyMultiplier : public ModifierBase {
 public:
     SchoolSubjectFamily subjectFamilyName;
-	double ScaleFactor;
-	Modifier_DecreaseSubjectFamilyMultiplier()
-	{
-		ScaleFactor = 1.0;
-	}
-	double GetScaleFactor()
-	{
-		return ScaleFactor;
-	}
+    double ScaleFactor;
+    Modifier_DecreaseSubjectFamilyMultiplier()
+    {
+        ScaleFactor = 1.0;
+    }
+    double GetScaleFactor()
+    {
+        return ScaleFactor;
+    }
 
-	Modifier_DecreaseSubjectFamilyMultiplier(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+    Modifier_DecreaseSubjectFamilyMultiplier(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
             __IF_ENUM_FROM_JSON_AS(it, subjectFamilyName, SchoolSubjectFamily)
             else __IF_VAR_FROM_JSON_AS(it, ScaleFactor, toDouble)
-		}
-	}
+        }
+    }
 };
 
 class Modifier_ExpirationEvent : public ModifierBase {
 public:
-	QString EventPath;
+    QString EventPath;
 
-	Modifier_ExpirationEvent(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, EventPath, toString)
-		}
-	}
+    Modifier_ExpirationEvent(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, EventPath, toString)
+        }
+    }
 };
 
 class Modifier_IncreaseGenderPrefMultiplier : public ModifierBase {
 public:
     Gender gender;
-	double ScaleFactor;
-	Modifier_IncreaseGenderPrefMultiplier()
-	{
-		ScaleFactor = 1.0;
-	}
-	double GetScaleFactor()
-	{
-		return ScaleFactor;
-	}
+    double ScaleFactor;
+    Modifier_IncreaseGenderPrefMultiplier()
+    {
+        ScaleFactor = 1.0;
+    }
+    double GetScaleFactor()
+    {
+        return ScaleFactor;
+    }
 
-	Modifier_IncreaseGenderPrefMultiplier(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+    Modifier_IncreaseGenderPrefMultiplier(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
             __IF_ENUM_FROM_JSON_AS(it, gender, Gender)
             else __IF_VAR_FROM_JSON_AS(it, ScaleFactor, toDouble)
-		}
-	}
+        }
+    }
 };
 
 class Modifier_IncreaseSkillMultiplier : public ModifierBase {
 public:
-	QString SkillName;
-	double ScaleFactor;
-	Modifier_IncreaseSkillMultiplier()
-	{
-		ScaleFactor = 1.0;
-	}
-	double GetScaleFactor()
-	{
-		return ScaleFactor;
-	}
+    QString SkillName;
+    double ScaleFactor;
+    Modifier_IncreaseSkillMultiplier()
+    {
+        ScaleFactor = 1.0;
+    }
+    double GetScaleFactor()
+    {
+        return ScaleFactor;
+    }
 
-	Modifier_IncreaseSkillMultiplier(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, SkillName, toString)
-			else __IF_VAR_FROM_JSON_AS(it, ScaleFactor, toDouble)
-		}
-	}
+    Modifier_IncreaseSkillMultiplier(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, SkillName, toString)
+            else __IF_VAR_FROM_JSON_AS(it, ScaleFactor, toDouble)
+        }
+    }
 };
 
 class Modifier_IncreaseStatMultiplier : public ModifierBase {
 public:
-	QString StatName;
-	double ScaleFactor;
+    QString StatName;
+    double ScaleFactor;
     Modifier_IncreaseStatMultiplier(QJsonObject *d = NULL)
-	{
+    {
         if (d) init(d);
-		ScaleFactor = 1.0;
-	}
-	virtual double GetScaleFactor()
-	{
-		return ScaleFactor;
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, StatName, toString)
-			else __IF_VAR_FROM_JSON_AS(it, ScaleFactor, toDouble)
-		}
-	}
+        ScaleFactor = 1.0;
+    }
+    virtual double GetScaleFactor()
+    {
+        return ScaleFactor;
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, StatName, toString)
+            else __IF_VAR_FROM_JSON_AS(it, ScaleFactor, toDouble)
+        }
+    }
 };
 
 class Modifier_IncreaseStatMultiplierLerp : public Modifier_IncreaseStatMultiplier {
 public:
-	double EndScaleFactor;
-     double GetScaleFactor(Person per, StatusEffectInstance instance)
-	{
-        return ScaleFactor + GetAlphaFromElapsedTime(instance) * (EndScaleFactor - ScaleFactor);
-	}
+    double EndScaleFactor;
+    double GetScaleFactor(Person&, StatusEffectInstance&);
 
-	Modifier_IncreaseStatMultiplierLerp(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, EndScaleFactor, toDouble)
-		}
-	}
+    Modifier_IncreaseStatMultiplierLerp(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, EndScaleFactor, toDouble)
+        }
+    }
 };
 
 class Modifier_IncreaseStatMultiplierSine : public Modifier_IncreaseStatMultiplier {
 public:
-	double Amplitude;
-	double Period;
-	double TimeOffset;
-     double GetScaleFactor(Person per, StatusEffectInstance instance)
-	{
-        return sin(((double)(GameTime::CurrentTimestamp - instance.StartTimestamp) / Period - TimeOffset) * 2.0 * M_PI) * Amplitude + ScaleFactor;
-	}
+    double Amplitude;
+    double Period;
+    double TimeOffset;
+    double GetScaleFactor(Person&, StatusEffectInstance&);
 
-	Modifier_IncreaseStatMultiplierSine(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, Amplitude, toDouble)
-			else __IF_VAR_FROM_JSON_AS(it, Period, toDouble)
-			else __IF_VAR_FROM_JSON_AS(it, TimeOffset, toDouble)
-		}
-	}
+    Modifier_IncreaseStatMultiplierSine(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, Amplitude, toDouble)
+            else __IF_VAR_FROM_JSON_AS(it, Period, toDouble)
+            else __IF_VAR_FROM_JSON_AS(it, TimeOffset, toDouble)
+        }
+    }
 };
 
 class Modifier_IncreaseSubjectFamilyMultiplier : public ModifierBase {
 public:
-	SchoolSubjectFamily SubjectFamilyName;
-	double ScaleFactor;
-	Modifier_IncreaseSubjectFamilyMultiplier()
-	{
-		ScaleFactor = 1.0;
-	}
-	double GetScaleFactor()
-	{
-		return ScaleFactor;
-	}
+    SchoolSubjectFamily SubjectFamilyName;
+    double ScaleFactor;
+    Modifier_IncreaseSubjectFamilyMultiplier()
+    {
+        ScaleFactor = 1.0;
+    }
+    double GetScaleFactor()
+    {
+        return ScaleFactor;
+    }
 
-	Modifier_IncreaseSubjectFamilyMultiplier(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			//SchoolSubjectFamily SubjectFamilyName
-			__IF_VAR_FROM_JSON_AS(it, ScaleFactor, toDouble)
-		}
-	}
+    Modifier_IncreaseSubjectFamilyMultiplier(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            //SchoolSubjectFamily SubjectFamilyName
+            __IF_VAR_FROM_JSON_AS(it, ScaleFactor, toDouble)
+        }
+    }
 };
 
 class Modifier_MaxGenderPrefValue : public ModifierBase {
 public:
     Gender gender;
-	double Value;
-	double GetValue(Person per, StatusEffectInstance instance)
-	{
-		return Value;
-	}
+    double Value;
+    double GetValue(Person&, StatusEffectInstance&);
 
-	Modifier_MaxGenderPrefValue(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+    Modifier_MaxGenderPrefValue(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
             __IF_ENUM_FROM_JSON_AS(it, gender, Gender)
             else __IF_VAR_FROM_JSON_AS(it, Value, toDouble)
-		}
-	}
+        }
+    }
 };
 
 class Modifier_MaxSkillValue : public ModifierBase {
 public:
-	QString SkillName;
-	int Value;
-	int GetValue()
-	{
-		return Value;
-	}
+    QString SkillName;
+    int Value;
+    int GetValue()
+    {
+        return Value;
+    }
 
-	Modifier_MaxSkillValue(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, SkillName, toString)
-			else __IF_VAR_FROM_JSON_AS(it, Value, toInt)
-		}
-	}
+    Modifier_MaxSkillValue(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, SkillName, toString)
+            else __IF_VAR_FROM_JSON_AS(it, Value, toInt)
+        }
+    }
 };
 
 class Modifier_MaxStatValue : public ModifierBase {
 public:
-	QString StatName;
-	double Value;
-	virtual double GetValue(Person per, StatusEffectInstance instance)
-	{
-		return Value;
-	}
+    QString StatName;
+    double Value;
+    virtual double GetValue(Person&, StatusEffectInstance&);
 
-	Modifier_MaxStatValue(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, StatName, toString)
-			else __IF_VAR_FROM_JSON_AS(it, Value, toDouble)
-		}
-	}
+    Modifier_MaxStatValue(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, StatName, toString)
+            else __IF_VAR_FROM_JSON_AS(it, Value, toDouble)
+        }
+    }
 };
 
 class Modifier_MaxStatValueLerp : public Modifier_MaxStatValue {
 public:
-	double EndValue;
-	 double GetValue(Person per, StatusEffectInstance instance)
-	{
-        return Value + GetAlphaFromElapsedTime(instance) * (EndValue - Value);
-	}
+    double EndValue;
+    double GetValue(Person&, StatusEffectInstance&);
 
-	Modifier_MaxStatValueLerp(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, EndValue, toDouble)
-		}
-	}
+    Modifier_MaxStatValueLerp(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, EndValue, toDouble)
+        }
+    }
 };
 
 class Modifier_MaxStatValueSine : public Modifier_MaxStatValue {
 public:
-	double Amplitude;
-	double Period;
-	double TimeOffset;
-	 double GetValue(Person per, StatusEffectInstance instance)
-	{
-        return sin(((double)(GameTime::CurrentTimestamp - instance.StartTimestamp) / Period - TimeOffset) * 2.0 * M_PI) * Amplitude + Value;
-	}
+    double Amplitude;
+    double Period;
+    double TimeOffset;
+    double GetValue(Person&, StatusEffectInstance&);
 
-	Modifier_MaxStatValueSine(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, Amplitude, toDouble)
-			else __IF_VAR_FROM_JSON_AS(it, Period, toDouble)
-			else __IF_VAR_FROM_JSON_AS(it, TimeOffset, toDouble)
-		}
-	}
+    Modifier_MaxStatValueSine(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, Amplitude, toDouble)
+            else __IF_VAR_FROM_JSON_AS(it, Period, toDouble)
+            else __IF_VAR_FROM_JSON_AS(it, TimeOffset, toDouble)
+        }
+    }
 };
 
 class Modifier_MaxSubjectFamilyValue : public ModifierBase {
 public:
-	SchoolSubjectFamily SubjectFamilyName;
-	double Value;
-	double GetValue(Person per, StatusEffectInstance instance)
-	{
-		return Value;
-	}
+    SchoolSubjectFamily SubjectFamilyName;
+    double Value;
+    double GetValue(Person&, StatusEffectInstance&);
 
-	Modifier_MaxSubjectFamilyValue(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			//SchoolSubjectFamily SubjectFamilyName
-			__IF_VAR_FROM_JSON_AS(it, Value, toDouble)
-		}
-	}
+    Modifier_MaxSubjectFamilyValue(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            //SchoolSubjectFamily SubjectFamilyName
+            __IF_VAR_FROM_JSON_AS(it, Value, toDouble)
+        }
+    }
 };
 
 class Modifier_MinGenderPrefValue : public ModifierBase {
 public:
     Gender gender;
-	double Value;
-	double GetValue(Person per, StatusEffectInstance instance)
-	{
-		return Value;
-	}
+    double Value;
+    double GetValue(Person&, StatusEffectInstance&);
 
-	Modifier_MinGenderPrefValue(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+    Modifier_MinGenderPrefValue(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
             __IF_ENUM_FROM_JSON_AS(it, gender, Gender)
             else __IF_VAR_FROM_JSON_AS(it, Value, toDouble)
-		}
-	}
+        }
+    }
 };
 
 class Modifier_MinSkillValue : public ModifierBase {
 public:
-	QString SkillName;
-	int Value;
-	int GetValue()
-	{
-		return Value;
-	}
+    QString SkillName;
+    int Value;
+    int GetValue()
+    {
+        return Value;
+    }
 
-	Modifier_MinSkillValue(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, SkillName, toString)
-			else __IF_VAR_FROM_JSON_AS(it, Value, toInt)
-		}
-	}
+    Modifier_MinSkillValue(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, SkillName, toString)
+            else __IF_VAR_FROM_JSON_AS(it, Value, toInt)
+        }
+    }
 };
 
 class Modifier_MinStatValue : public ModifierBase {
 public:
-	QString StatName;
-	double Value;
-	virtual double GetValue(Person per, StatusEffectInstance instance)
-	{
-		return Value;
-	}
+    QString StatName;
+    double Value;
+    virtual double GetValue(Person&, StatusEffectInstance&);
 
-	Modifier_MinStatValue(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, StatName, toString)
-			else __IF_VAR_FROM_JSON_AS(it, Value, toDouble)
-		}
-	}
+    Modifier_MinStatValue(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, StatName, toString)
+            else __IF_VAR_FROM_JSON_AS(it, Value, toDouble)
+        }
+    }
 };
 
 class Modifier_MinStatValueLerp : public Modifier_MinStatValue {
 public:
-	double EndValue;
-	 double GetValue(Person per, StatusEffectInstance instance)
-	{
-        return Value + GetAlphaFromElapsedTime(instance) * (EndValue - Value);
-	}
+    double EndValue;
+    double GetValue(Person&, StatusEffectInstance&);
 
-	Modifier_MinStatValueLerp(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, EndValue, toDouble)
-		}
-	}
+    Modifier_MinStatValueLerp(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, EndValue, toDouble)
+        }
+    }
 };
 
 class Modifier_MinStatValueSine : public Modifier_MinStatValue {
 public:
-	double Amplitude;
-	double Period;
-	double TimeOffset;
-	 double GetValue(Person per, StatusEffectInstance instance)
-	{
-        return sin(((double)(GameTime::CurrentTimestamp - instance.StartTimestamp) / Period - TimeOffset) * 2.0 * M_PI) * Amplitude + Value;
-	}
+    double Amplitude;
+    double Period;
+    double TimeOffset;
+    double GetValue(Person&, StatusEffectInstance&);
 
-	Modifier_MinStatValueSine(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, Amplitude, toDouble)
-			else __IF_VAR_FROM_JSON_AS(it, Period, toDouble)
-			else __IF_VAR_FROM_JSON_AS(it, TimeOffset, toDouble)
-		}
-	}
+    Modifier_MinStatValueSine(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, Amplitude, toDouble)
+            else __IF_VAR_FROM_JSON_AS(it, Period, toDouble)
+            else __IF_VAR_FROM_JSON_AS(it, TimeOffset, toDouble)
+        }
+    }
 };
 
 class Modifier_MinSubjectFamilyValue : public ModifierBase {
 public:
-	SchoolSubjectFamily SubjectFamilyName;
-	double Value;
-	double GetValue(Person per, StatusEffectInstance instance)
-	{
-		return Value;
-	}
+    SchoolSubjectFamily SubjectFamilyName;
+    double Value;
+    double GetValue(Person&, StatusEffectInstance&);
 
-	Modifier_MinSubjectFamilyValue(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			//SchoolSubjectFamily SubjectFamilyName
-			__IF_VAR_FROM_JSON_AS(it, Value, toDouble)
-		}
-	}
+    Modifier_MinSubjectFamilyValue(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            //SchoolSubjectFamily SubjectFamilyName
+            __IF_VAR_FROM_JSON_AS(it, Value, toDouble)
+        }
+    }
 };
 
 class Modifier_StatusFlag : public ModifierBase {
 public:
-	QString Flag;
+    QString Flag;
 
-	Modifier_StatusFlag(QJsonObject *d = NULL)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, Flag, toString)
-		}
-	}
+    Modifier_StatusFlag(QJsonObject *d = NULL)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, Flag, toString)
+        }
+    }
 };
 
 #endif // MODIFIERBASE_H

@@ -4,8 +4,8 @@
 # (c) Picobyte 2017, GPL2
 #-------------------------------------------------
 
-QT       += core gui
-QT       += charts
+QT	   += core gui
+QT	   += charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -21,51 +21,54 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000	# disables all the APIs deprecated before Qt 6.0.0
 
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
-    location_view.cpp \
-    person_interaction.cpp \
-    aspectratiopixmaplabel.cpp \
-    school_management.cpp \
-    student_tab.cpp \
-    game.cpp \
-    schoolupgrade.cpp
+                main.cpp \
+                mainwindow.cpp \
+        location_view.cpp \
+        person_interaction.cpp \
+        aspectratiopixmaplabel.cpp \
+        school_management.cpp \
+        student_tab.cpp \
+        game.cpp \
+        schoolupgrade.cpp \
+    statchange.cpp \
+    ruleeffect.cpp \
+    modifier.cpp \
+    person.cpp
 
 HEADERS += \
-        mainwindow.h \
-    stat.h \
-    skill.h \
-    rule.h \
-    schoolsubject.h \
-    item.h \
-    modifier.h \
-    statuseffect.h \
-    person.h \
-    location_view.h \
-    person_interaction.h \
-    aspectratiopixmaplabel.h \
-    school_management.h \
-    generic.h \
-    timedata.h \
-    gametime.h \
-    rulechoice.h \
-    rulechoicepersongroupchange.h \
-    rulechange.h \
-    locationpropertychange.h \
-    schoolupgrade.h \
-    student_tab.h \
-    statuseffect.h \
-    game.h \
-    account.h \
-    bodysizechange.h \
-    statchange.h \
-    clubs.h \
-    json_macros.h \
-    gametime.h
+                mainwindow.h \
+        stat.h \
+        skill.h \
+        rule.h \
+        schoolsubject.h \
+        item.h \
+        modifier.h \
+        statuseffect.h \
+        person.h \
+        location_view.h \
+        person_interaction.h \
+        aspectratiopixmaplabel.h \
+        school_management.h \
+        generic.h \
+        timedata.h \
+        gametime.h \
+        rulechoice.h \
+        rulechoicepersongroupchange.h \
+        rulechange.h \
+        locationpropertychange.h \
+        schoolupgrade.h \
+        student_tab.h \
+        game.h \
+        account.h \
+        bodysizechange.h \
+        statchange.h \
+        clubs.h \
+        json_macros.h \
+        gametime.h
 
 FORMS +=
 

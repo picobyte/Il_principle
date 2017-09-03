@@ -56,7 +56,7 @@ static int balanceItemExample[] = {
     18945, 2585, -34563, -3000, -1684, -600, 252, 504, 504, 352, 384, 400};
 
 template <class T> class leftandRightT: public QWidget
-{    // template classes cannot have Q_OBJECT, signals or slots. see:
+{	// template classes cannot have Q_OBJECT, signals or slots. see:
     // http://doc.qt.io/qt-4.8/moc.html
 protected:
     QGridLayout grid;

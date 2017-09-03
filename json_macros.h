@@ -56,10 +56,11 @@ if (it.key() == #_instance) {\
     _instance.init(&v);\
 }
 
-/*#define __IF_OBJDICT_FROM_JSON(it, _key, _obj, _as) \
-    if (it.key() == #_key) {\
-        QJsonObject v = it.value().toObject();\
-        _as[v["Name"].toString()] = _key(&v);\
-    }*/
+#define __IF_HASH_FROM_JSON_TYPED(it, _hash, _toType)\
+if (it.key() == #_hash) {\
+    QJsonObject v = it.value().toObject();\
+    for (QJsonObject::iterator oit = v->begin(); oit != v->end(); ++oit)\
+        _hash.insert(oit.key(), oit.value()._toType());\
+}
 
 #endif // JSON_MACROS_H

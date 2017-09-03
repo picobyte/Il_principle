@@ -75,13 +75,13 @@ public:
 class SchoolSubject {
 public:
 
-	QString Name;
-	QString Description;
+    QString Name;
+    QString Description;
     SchoolSubjectFamily SubjectFamily;
-	QString ImageIconPath;
-	bool CanBeTaught;
-	QList<QString> LessonLocations;
-	double SubjectExperienceRatio;
+    QString ImageIconPath;
+    bool CanBeTaught;
+    QList<QString> LessonLocations;
+    double SubjectExperienceRatio;
     SchoolSubjectInfluence EvaluationInfluence;
     SchoolSubjectInfluence ImprovementInfluence;
     SchoolSubjectInfluence LearningBoostInfluence;
@@ -93,25 +93,25 @@ public:
             ImageIconPath(""),
             CanBeTaught(true),
             SubjectExperienceRatio(1.0)
-	{
-		if (d) init(d);
-	}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, Name, toString)
-			else __IF_VAR_FROM_JSON_AS(it, Description, toString)
+    {
+        if (d) init(d);
+    }
+    void init(QJsonObject *d)
+    {
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+            __IF_VAR_FROM_JSON_AS(it, Name, toString)
+            else __IF_VAR_FROM_JSON_AS(it, Description, toString)
             else __IF_ENUM_FROM_JSON_AS(it, SubjectFamily, SchoolSubjectFamily)
-			else __IF_VAR_FROM_JSON_AS(it, ImageIconPath, toString)
-			else __IF_VAR_FROM_JSON_AS(it, CanBeTaught, toBool)
+            else __IF_VAR_FROM_JSON_AS(it, ImageIconPath, toString)
+            else __IF_VAR_FROM_JSON_AS(it, CanBeTaught, toBool)
             else __IF_LIST_FROM_JSON_TYPED(it, LessonLocations, toString)
-			else __IF_VAR_FROM_JSON_AS(it, SubjectExperienceRatio, toDouble)
+            else __IF_VAR_FROM_JSON_AS(it, SubjectExperienceRatio, toDouble)
             else __IF_OBJ_FROM_JSON(it, EvaluationInfluence)
             else __IF_OBJ_FROM_JSON(it, ImprovementInfluence)
             else __IF_OBJ_FROM_JSON(it, LearningBoostInfluence)
             else qWarning(it.key().append(": unhandled.").toUtf8());
-		}
-	}
+        }
+    }
 };
 
 #endif // SCHOOLSUBJECT_H

@@ -45,27 +45,27 @@ public:
 class SchoolUpgrade {
     QList<SchoolUpgradeLevel> ListUpgradeLevels;
     static size_t schoolupgradeCounter;
-    size_t thisSchoolUpgradeNr;
+    size_t _thisSchoolUpgradeNr;
 public:
     QString Name;
     QString LocationName;
     int CurrentLevel;
-    /*const Location get_Location() const
+    /*const Location Location() const
     {
         return Game.GetLocation(LocationName);
     }*/
-    void set_Location(Location* v = NULL)
+    void Location(Location* v = NULL)
     {
         LocationName = v ? v->Name : "";
     }
-    SchoolUpgradeLevel const*const get_CurrentLevelObject() const
+    SchoolUpgradeLevel const*const CurrentLevelObject() const
     {
         if (CurrentLevel > -1 && CurrentLevel < ListUpgradeLevels.count())
             return &ListUpgradeLevels[CurrentLevel];
 
         return NULL;
     }
-    SchoolUpgradeLevel const*const get_NextLevelObject() const
+    SchoolUpgradeLevel const*const NextLevelObject() const
     {
         int next = CurrentLevel + 1;
         if (next > -1 && next < ListUpgradeLevels.count() && ListUpgradeLevels[next].CanBeChosen)
@@ -73,10 +73,10 @@ public:
 
         return NULL;
     }
-    const QString get_DisplayName() const
+    const QString DisplayName() const
     {
-        SchoolUpgradeLevel const*const clo = get_CurrentLevelObject();
-        SchoolUpgradeLevel const*const nlo = get_NextLevelObject();
+        SchoolUpgradeLevel const*const clo = CurrentLevelObject();
+        SchoolUpgradeLevel const*const nlo = NextLevelObject();
         if (clo == NULL)
             return nlo ? "Purchase " + nlo->Name : "Nothing;";
 
@@ -84,37 +84,37 @@ public:
             return clo->Name;
         return "Upgrade " + clo->Name + " to " + nlo->Name;
     }
-    const QString get_CurrentName() const
+    const QString CurrentName() const
     {
-        SchoolUpgradeLevel const*const clo = get_CurrentLevelObject();
+        SchoolUpgradeLevel const*const clo = CurrentLevelObject();
         return clo ? clo->Name : "Nothing";
     }
-    const QString get_UpgradeName() const
+    const QString UpgradeName() const
     {
-        SchoolUpgradeLevel const*const nlo = get_NextLevelObject();
+        SchoolUpgradeLevel const*const nlo = NextLevelObject();
         return nlo ? nlo->Name : "No upgrade available";
     }
-    const QString get_Description() const
+    const QString Description() const
     {
-        SchoolUpgradeLevel const*const clo = get_CurrentLevelObject();
+        SchoolUpgradeLevel const*const clo = CurrentLevelObject();
         return clo ? clo->Description : "";
     }
-    const QString get_UpgradeDescription() const
+    const QString UpgradeDescription() const
     {
-        SchoolUpgradeLevel const*const nlo = get_NextLevelObject();
+        SchoolUpgradeLevel const*const nlo = NextLevelObject();
         return nlo ? nlo->Description : "";
     }
-    const int get_MaintenanceCost() const
+    const int MaintenanceCost() const
     {
-        SchoolUpgradeLevel const*const clo = get_CurrentLevelObject();
+        SchoolUpgradeLevel const*const clo = CurrentLevelObject();
         return clo ? clo->MaintenanceCost : 0;
     }
-    const int get_UpgradeCost() const
+    const int UpgradeCost() const
     {
-        SchoolUpgradeLevel const*const nlo = get_NextLevelObject();
+        SchoolUpgradeLevel const*const nlo = NextLevelObject();
         return nlo ? nlo->Cost : -1;
     }
-    SchoolUpgrade(QJsonObject *d = NULL) : thisSchoolUpgradeNr(schoolupgradeCounter++)
+    SchoolUpgrade(QJsonObject *d = NULL) : _thisSchoolUpgradeNr(schoolupgradeCounter++)
     {
         if (d) init(d);
     }
@@ -127,17 +127,17 @@ public:
             //QList<SchoolUpgradeLevel> ListUpgradeLevels
         }
     }
-    size_t get_thisSchoolUpgradeNr() const {
-        return thisSchoolUpgradeNr;
+    size_t thisSchoolUpgradeNr() const {
+        return _thisSchoolUpgradeNr;
     }
 };
 
 inline size_t qHash(const SchoolUpgrade &su) {
-    return su.get_thisSchoolUpgradeNr();
+    return su.thisSchoolUpgradeNr();
 }
 
 inline bool operator==(const SchoolUpgrade su1, const SchoolUpgrade su2){
-    return su1.get_thisSchoolUpgradeNr() == su2.get_thisSchoolUpgradeNr();
+    return su1.thisSchoolUpgradeNr() == su2.thisSchoolUpgradeNr();
 }
 
 #endif // SCHOOLUPGRADE_H

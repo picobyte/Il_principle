@@ -10,9 +10,9 @@ public:
 	bool Reversed;
 
 	Stat(QJsonObject *d = NULL):
-            MinValue(0.0),
-            MaxValue(100.0),
-            Reversed(false)
+			MinValue(0.0),
+			MaxValue(100.0),
+			Reversed(false)
 	{
 		if (d) init(d);
 	}

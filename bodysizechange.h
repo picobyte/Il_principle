@@ -4,21 +4,21 @@
 
 class BodySizeChange {
 public:
-    Body::Part BodyPart;
+	Body::Part BodyPart;
 	double Change;
 	double Minimum;
 	double Maximum;
 
-    BodySizeChange(QJsonObject *d = NULL) {
-        if (d) init(d);
-    }
-    void init(QJsonObject *d)
+	BodySizeChange(QJsonObject *d = NULL) {
+		if (d) init(d);
+	}
+	void init(QJsonObject *d)
 	{
-        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-            __IF_ENUM_FROM_JSON_AS(it, BodyPart, Body::Part)
-            else __IF_VAR_FROM_JSON_AS(it, Change, toDouble)
-            else __IF_VAR_FROM_JSON_AS(it, Minimum, toDouble)
-            else __IF_VAR_FROM_JSON_AS(it, Maximum, toDouble)
+		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
+			__IF_ENUM_FROM_JSON_AS(it, BodyPart, Body::Part)
+			else __IF_VAR_FROM_JSON_AS(it, Change, toDouble)
+			else __IF_VAR_FROM_JSON_AS(it, Minimum, toDouble)
+			else __IF_VAR_FROM_JSON_AS(it, Maximum, toDouble)
 		}
 	}
 };
