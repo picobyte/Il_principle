@@ -37,7 +37,8 @@ SOURCES += \
     statchange.cpp \
     ruleeffect.cpp \
     modifier.cpp \
-    person.cpp
+    person.cpp \
+    locationjobdetails.cpp
 
 HEADERS += \
                 mainwindow.h \
@@ -48,7 +49,12 @@ HEADERS += \
         item.h \
         modifier.h \
         statuseffect.h \
+        mind.h \
+        range.h \
+        adjustment.h \
         person.h \
+        location.h \
+        locationjobdetails.h \
         location_view.h \
         person_interaction.h \
         aspectratiopixmaplabel.h \

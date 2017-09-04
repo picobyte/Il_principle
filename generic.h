@@ -183,4 +183,22 @@ enum class RuleStatus
     Blocked
 };
 
+enum class Region
+{
+    City,
+    School,
+    Business,
+    Home
+};
+
+enum class PeopleAmount
+{
+    Empty,
+    VerySparse,
+    Sparse,
+    Normal,
+    Crowded,
+    VeryCrowded
+};
+
 #endif // GENERIC_H
