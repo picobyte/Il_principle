@@ -27,7 +27,7 @@ sub create_constructor {
         print OUT "\t\tfor (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {\n";
         print OUT "\t\t\t// *INDENT-OFF*\n";
         my $else = "";
-        foreach my $el (@vars) {
+        foreach my $el (map {$_ eq "" ? () : $_} @vars) {
             if ($el =~ /(\w+) (\w+);/) {
                 if (exists $typex{$1}) {
                     $el = "\t\t\t${else}__IF_VAR_FROM_JSON_AS(it, $2, $typex{$1})";
