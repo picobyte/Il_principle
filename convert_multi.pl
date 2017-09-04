@@ -34,7 +34,7 @@ sub create_constructor {
                 } elsif(exists $enums{$1}) {
                     $el = "\t\t\t${else}__IF_ENUM_FROM_JSON_AS(it, $2, $1)";
                 } else {
-                    $el = "\t\t\t${else}__IF_OBJ_FROM_JSON_AS(it, $2)";
+                    $el = "\t\t\t${else}__IF_OBJ_FROM_JSON(it, $2)";
                 }
             } elsif ($el =~ /QList\<(\w+)\> (\w+);/) {
                 if (exists $typex{$1}) {

@@ -5,7 +5,7 @@
 
 class InventoryCollection {
 public:
-    const bool IsEmpty() const
+    /*const bool IsEmpty() const
     {
         return Keys.count() == 0;
     }
@@ -248,7 +248,7 @@ public:
             return true;
         }
         return false;
-    }
+    }*/
 
     InventoryCollection(QJsonObject *d = NULL) {}
 };
