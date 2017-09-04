@@ -14,6 +14,8 @@
 #include "schoolsubject.h"
 #include "statuseffect.h"
 #include "inventorycollection.h"
+#include "locationjobdetails.h"
+#include "mind.h"
 
 class Game;
 class Person {
@@ -1146,15 +1148,11 @@ public:
         // try {
         for (QList<QString>::iterator it = MindStats.begin();
                 it != MindStats.end(); ++it)
-        {
-            QString Stat = enumerator.Current;
-            AdjustStat(GameMind, Stat);
-        }
+            AdjustStat(GameMind, *it;
         // }
         if (GetStat("Arousal") < GetStat("Lust"))
-        {
             AddStat("Arousal", 0.05 * (GetStat("Lust") - GetStat("Arousal")));
-        }
+
         double CorLust = (GetStat("Corruption") + GetStat("Lust")) * 0.5;
         AddStat("Inhibition", -(0.005 * (CorLust - (100.0 - GetStat("Inhibition")))));
 
@@ -1175,9 +1173,9 @@ public:
             ProjectData.ClearProjectError();
         }*/
     }
-    void AdjustStat(Mind Mind, QString SE)
+    void AdjustStat(Mind mind, QString SE)
     {
-        Adjustment adj = Mind.AdjustmentByStat(SE);
+        Adjustment adj = mind.AdjustmentByStat(SE);
         if (adj != NULL)
         {
             double stat = GetStat(SE);

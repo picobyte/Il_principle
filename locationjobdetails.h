@@ -84,6 +84,7 @@ public:
         rhs.EveningShift = EveningShift;
         rhs.WeekendShift = WeekendShift;
         rhs.SchoolShift = SchoolShift;
+        return rhs;
     }
     QString ToString()
     {
