@@ -223,11 +223,12 @@ public:
     }
     LocationJobDetails *const JobDetails() const
     {
-        LocationJobDetails JobDetails;
-        if (Work != NULL && Work.AssociatedJobs.count() > intJobSlot)
-            return Work.AssociatedJobs[(int)intJobSlot];
-        else
-            return NULL;
+        const Location* w = Work();
+
+        if (w && w->AssociatedJobs.count() > intJobSlot)
+            return w->AssociatedJobs[(int)intJobSlot];
+
+        return NULL;
     }
     Person *const Father() const
     {
@@ -242,7 +243,6 @@ public:
     }
     Person *const Mother() const
     {
-        Person Mother;
         if (Game.DictOfPersonNames.contains(intMother))
             return Game.DictOfPersonNames[intMother];
 
@@ -447,13 +447,13 @@ public:
 
         return &Game.GetLocation(intWork);
     }
-    void Work(Location& value)
+    void Work(Location *value)
     {
         if (value == NULL) {
             intWork = "";
             return;
         }
-        intWork = value.Name;
+        intWork = value->Name;
     }
     const QString InventoryName() const
     {
@@ -463,12 +463,12 @@ public:
     {
         for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
             // *INDENT-OFF*
-            __IF_OBJ_FROM_JSON_AS(it, UID)
+            __IF_OBJ_FROM_JSON(it, UID)
             else __IF_VAR_FROM_JSON_AS(it, Forename, toString)
             else __IF_VAR_FROM_JSON_AS(it, Lastname, toString)
             else __IF_VAR_FROM_JSON_AS(it, CustomForename, toString)
             else __IF_ENUM_FROM_JSON_AS(it, Gender, Gender)
-            else __IF_OBJ_FROM_JSON_AS(it, Birthday)
+            else __IF_OBJ_FROM_JSON(it, Birthday)
             else __IF_VAR_FROM_JSON_AS(it, SpecialPerson, toBool)
             else __IF_VAR_FROM_JSON_AS(it, TextColor, toString)
             else __IF_VAR_FROM_JSON_AS(it, InitParams, toString)
@@ -492,8 +492,8 @@ public:
             else __IF_LIST_FROM_JSON_TYPED(it, TeacherSubjects, toString)
             //QHash<SchoolSubjectFamily, double> SubjectFamilyExp
             else __IF_HASH_FROM_JSON_TYPED(it, SubjectInstanceExp, double)
-            else __IF_OBJ_FROM_JSON_AS(it, subjectStatLock)
-            else __IF_OBJ_FROM_JSON_AS(it, DictProposalSupport)
+            else __IF_OBJ_FROM_JSON(it, subjectStatLock)
+            else __IF_OBJ_FROM_JSON(it, DictProposalSupport)
             else __IF_VAR_FROM_JSON_AS(it, HasDetention, toBool)
             else __IF_VAR_FROM_JSON_AS(it, IsRogue, toBool)
             else __IF_VAR_FROM_JSON_AS(it, ClubMember, toString)
@@ -527,7 +527,7 @@ public:
             else __IF_VAR_FROM_JSON_AS(it, OutLateTonight, toBool)
             else __IF_VAR_FROM_JSON_AS(it, OutLateLastNight, toBool)
             else __IF_VAR_FROM_JSON_AS(it, UpEarly, toBool)
-            else __IF_OBJ_FROM_JSON_AS(it, Inventory)
+            else __IF_OBJ_FROM_JSON(it, Inventory)
             else __IF_VAR_FROM_JSON_AS(it, Trait, toString)
             else __IF_HASH_FROM_JSON_TYPED(it, Skills, toInt)
             else __IF_LIST_FROM_JSON_TYPED(it, AttachedEventIDs, toInt)
@@ -565,36 +565,34 @@ public:
         double retVal = GenderPreferences.contains(genderName) ? GenderPreferences[genderName] : 0.0;
         double minVal = 0.0;
         double maxVal = 100.0;
-        object statusEffects = StatusEffects;
+        //object statusEffects = StatusEffects;
         // lock (statusEffects) {
         // try {
-        for (QList<StatusEffectInstance>::iterator it = StatusEffects.begin();
-                it != StatusEffects.end(); ++it) {
+        for (QList<StatusEffectInstance>::iterator se = StatusEffects.begin();
+                se != StatusEffects.end(); ++se) {
 
-            StatusEffectInstance se = enumerator.Current;
-            StatusEffect effect = Game.DictOfStatusEffects[se.Name];
+            StatusEffect effect = Game.DictOfStatusEffects[se->Name];
             // try {
-            for (QList<ModifierBase>::iterator it2 = effect.Modifiers.begin();
-                    it2 != effect.Modifiers.end(); ++it2) {
+            for (QList<ModifierBase>::iterator modi = effect.Modifiers.begin();
+                    modi != effect.Modifiers.end(); ++modi) {
 
-                ModifierBase modi = enumerator2.Current;
-                if (modi is Modifier_AddGenderPrefValue) {
+                if (*modi is Modifier_AddGenderPrefValue) {
 
-                    Modifier_AddGenderPrefValue addConstMod = (Modifier_AddGenderPrefValue)modi;
+                    Modifier_AddGenderPrefValue addConstMod = (Modifier_AddGenderPrefValue)*modi;
                     if (addConstMod.gender == genderName)
-                        retVal += addConstMod.GetValue(se);
+                        retVal += addConstMod.GetValue(*se);
 
-                } else if (modi is Modifier_MinGenderPrefValue) {
+                } else if (*modi is Modifier_MinGenderPrefValue) {
 
-                    Modifier_MinGenderPrefValue minValMod = (Modifier_MinGenderPrefValue)modi;
-                    if (minValMod.gender == genderName && minValMod.GetValue(se) > minVal)
-                        minVal = minValMod.GetValue(se);
+                    Modifier_MinGenderPrefValue minValMod = (Modifier_MinGenderPrefValue)*modi;
+                    if (minValMod.gender == genderName && minValMod.GetValue(*se) > minVal)
+                        minVal = minValMod.GetValue(*se);
 
-                } else if (modi is Modifier_MaxGenderPrefValue) {
+                } else if (*modi is Modifier_MaxGenderPrefValue) {
 
-                    Modifier_MaxGenderPrefValue maxValMod = (Modifier_MaxGenderPrefValue)modi;
-                    if (maxValMod.gender == genderName && maxValMod.GetValue(se) < maxVal)
-                        minVal = maxValMod.GetValue(se);
+                    Modifier_MaxGenderPrefValue maxValMod = (Modifier_MaxGenderPrefValue)*modi;
+                    if (maxValMod.gender == genderName && maxValMod.GetValue(*se) < maxVal)
+                        minVal = maxValMod.GetValue(*se);
                 }
             }
             // }
@@ -720,17 +718,17 @@ public:
     {
         return Job.contains(QRegExp("(?:Teacher|Librarian|School (?:Secretary|Doctor))"));
     }
-    void AssignWork(Location Room, LocationJobDetails jb)
+    void AssignWork(Location *Room, LocationJobDetails jb)
     {
         UnassignWork();
-        object obj = Person.jobLock;
+        //object obj = Person.jobLock;
         // ObjectFlowControl.CheckForSyncLockOnValueType(obj);
         // lock (obj) {
-        if (Room != NULL && Room.AssociatedJobs.contains(jb) && jb.CanEmploy(this))
+        if (Room != NULL && Room->AssociatedJobs.contains(jb) && jb.CanEmploy(this))
         {
             jb.Staff.Add(Name);
             Work = Room;
-            intJobSlot = (unsigned)Room.AssociatedJobs.IndexOf(jb);
+            intJobSlot = (unsigned)Room->AssociatedJobs.IndexOf(jb);
             if (Job.isEmpty())
                 Job = jb.JobTitle;
 
@@ -744,19 +742,19 @@ public:
     }
     void UnassignWork()
     {
-        object obj = Person.jobLock;
+        //object obj = Person.jobLock;
         // ObjectFlowControl.CheckForSyncLockOnValueType(obj);
         // lock (obj) {
-        LocationJobDetails jb = JobDetails;
+        LocationJobDetails *jb = JobDetails();
         if (jb != NULL)
-            jb.Staff.Remove(Name);
+            jb->Staff.removeOne(Name);
 
-        Work = NULL;
+        Work(NULL);
         intJobSlot = 0u;
-        if (!QString.Equals(Job, "Teacher") && !QString.Equals(Job, "Student") && !Trait.contains("Staff"))
+        if (Job != "Teacher" && Job != "Student" && !Trait.contains("Staff"))
         {
-            object obj2 = Person.unemployedListLock;
-            ObjectFlowControl.CheckForSyncLockOnValueType(obj2);
+            //object obj2 = Person.unemployedListLock;
+            //ObjectFlowControl.CheckForSyncLockOnValueType(obj2);
             // lock (obj2) {
             if (Game.UnemployedPersons.contains(Name))
                 Game.UnemployedPersons[Name] = this;
@@ -788,7 +786,7 @@ public:
     }
     bool ShouldSerializeSchoolclass()
     {
-        return Schoolclass != 0 && Job.Equals("Student");
+        return Schoolclass != 0 && Job == "Student";
     }
     void ResetSchoolclass()
     {
@@ -796,7 +794,7 @@ public:
     }
     bool ShouldSerializeSubject()
     {
-        return !Subject.isEmpty() && (Job.Equals("Student") || Job.Equals("Teacher"));
+        return !Subject.isEmpty() && (Job == "Student" || Job == "Teacher");
     }
     void ResetSubject()
     {
@@ -804,7 +802,7 @@ public:
     }
     bool ShouldSerializeGoodInSubject()
     {
-        return !GoodInSubject.isEmpty() && (Job.Equals("Student") || Job.Equals("Teacher"));
+        return !GoodInSubject.isEmpty() && (Job == "Student" || Job == "Teacher");
     }
     void ResetGoodInSubject()
     {
@@ -812,11 +810,11 @@ public:
     }
     bool ShouldSerializeTeacherSubjects()
     {
-        return Job.Equals("Teacher");
+        return Job == "Teacher";
     }
     void ResetTeacherSubjects()
     {
-        TeacherSubjects = new QList<QString>();
+        TeacherSubjects.clear();
     }
     double GetSubjectExp(QString SubjectInstanceName)
     {
@@ -849,36 +847,34 @@ public:
         double retVal = SubjectFamilyExp.contains(SubjectFamily) ? SubjectFamilyExp[SubjectFamily] : 0.0;
         double minVal = 0.0;
         double maxVal = 100.0;
-        object statusEffects = StatusEffects;
+        //object statusEffects = StatusEffects;
         // lock (statusEffects) {
         // try {
-        for (QList<StatusEffectInstance>::iterator it = StatusEffects.begin();
-                it != StatusEffects.end(); ++it)
-        {
-            StatusEffectInstance se = enumerator.Current;
-            StatusEffect effect = Game.DictOfStatusEffects[se.Name];
+        for (QList<StatusEffectInstance>::iterator se = StatusEffects.begin();
+                se != StatusEffects.end(); ++se) {
+
+            StatusEffect effect = Game.DictOfStatusEffects[se->Name];
             // try {
-            for (QList<ModifierBase>::iterator it2 = effect.Modifiers.begin();
-                    it2 != effect.Modifiers.end(); ++it2)
-            {
-                ModifierBase modi = enumerator2.Current;
-                if (modi is Modifier_AddSubjectFamilyValue)
+            for (QList<ModifierBase>::iterator modi = effect.Modifiers.begin();
+                    modi != effect.Modifiers.end(); ++modi) {
+
+                if (*modi is Modifier_AddSubjectFamilyValue)
                 {
-                    Modifier_AddSubjectFamilyValue addConstMod = (Modifier_AddSubjectFamilyValue)modi;
+                    Modifier_AddSubjectFamilyValue addConstMod = (Modifier_AddSubjectFamilyValue)*modi;
                     if (addConstMod.SubjectFamilyName == SubjectFamily)
-                        retVal += addConstMod.GetValue(se);
+                        retVal += addConstMod.GetValue(*se);
                 }
-                else if (modi is Modifier_MinSubjectFamilyValue)
+                else if (*modi is Modifier_MinSubjectFamilyValue)
                 {
-                    Modifier_MinSubjectFamilyValue minValMod = (Modifier_MinSubjectFamilyValue)modi;
-                    if (minValMod.SubjectFamilyName == SubjectFamily && minValMod.GetValue(se) > minVal)
-                        minVal = minValMod.GetValue(se);
+                    Modifier_MinSubjectFamilyValue minValMod = (Modifier_MinSubjectFamilyValue)*modi;
+                    if (minValMod.SubjectFamilyName == SubjectFamily && minValMod.GetValue(*se) > minVal)
+                        minVal = minValMod.GetValue(*se);
                 }
-                else if (modi is Modifier_MaxSubjectFamilyValue)
+                else if (*modi is Modifier_MaxSubjectFamilyValue)
                 {
-                    Modifier_MaxSubjectFamilyValue maxValMod = (Modifier_MaxSubjectFamilyValue)modi;
-                    if (maxValMod.SubjectFamilyName == SubjectFamily && maxValMod.GetValue(se) < maxVal)
-                        minVal = maxValMod.GetValue(se);
+                    Modifier_MaxSubjectFamilyValue maxValMod = (Modifier_MaxSubjectFamilyValue)*modi;
+                    if (maxValMod.SubjectFamilyName == SubjectFamily && maxValMod.GetValue(*se) < maxVal)
+                        minVal = maxValMod.GetValue(*se);
                 }
             }
             // }
@@ -891,8 +887,8 @@ public:
     }
     double GetSubjectInstanceExp(QString SubjectInstanceName)
     {
-        //// object obj = subjectStatLock;
-        //// ObjectFlowControl.CheckForSyncLockOnValueType(obj);
+        // object obj = subjectStatLock;
+        // ObjectFlowControl.CheckForSyncLockOnValueType(obj);
         // lock (obj) {
         if (SubjectInstanceExp.contains(SubjectInstanceName))
             return SubjectInstanceExp[SubjectInstanceName];
@@ -902,58 +898,56 @@ public:
     }
     void SetSubjectFamilyExp(SchoolSubjectFamily SubjectFamily, double Value)
     {
-        //// object obj = subjectStatLock;
-        //// ObjectFlowControl.CheckForSyncLockOnValueType(obj);
+        // object obj = subjectStatLock;
+        // ObjectFlowControl.CheckForSyncLockOnValueType(obj);
         // lock (obj) {
         Value = Value < 0.0 ? 0.0 : (Value > 100.0 ? 100.0 : Value);
         if (SubjectFamilyExp.contains(SubjectFamily))
             SubjectFamilyExp[SubjectFamily] = Value;
         else
-            SubjectFamilyExp.Add(SubjectFamily, Value);
+            SubjectFamilyExp.insert(SubjectFamily, Value);
         // }
     }
     void SetSubjectInstanceExp(QString SubjectInstanceName, double Value)
     {
-        //// object obj = subjectStatLock;
-        //// ObjectFlowControl.CheckForSyncLockOnValueType(obj);
+        // object obj = subjectStatLock;
+        // ObjectFlowControl.CheckForSyncLockOnValueType(obj);
         // lock (obj) {
         Value = Value < 0.0 ? 0.0 : (Value > 100.0 ? 100.0 : Value);
         if (SubjectInstanceExp.contains(SubjectInstanceName))
             SubjectInstanceExp[SubjectInstanceName] = Value;
         else
-            SubjectInstanceExp.Add(SubjectInstanceName, Value);
+            SubjectInstanceExp.insert(SubjectInstanceName, Value);
         // }
     }
     void AddSubjectFamilyExp(SchoolSubjectFamily SubjectFamily, double Value)
     {
-        //// object obj = subjectStatLock;
-        //// ObjectFlowControl.CheckForSyncLockOnValueType(obj);
+        // object obj = subjectStatLock;
+        // ObjectFlowControl.CheckForSyncLockOnValueType(obj);
         // lock (obj) {
         double addValue = Value;
-        object statusEffects = StatusEffects;
+        //object statusEffects = StatusEffects;
         // lock (statusEffects) {
         // try {
-        for (QList<StatusEffectInstance>::iterator it = StatusEffects.begin();
-                it != StatusEffects.end(); ++it)
-        {
-            StatusEffectInstance se = enumerator.Current;
-            StatusEffect effect = Game.DictOfStatusEffects[se.Name];
+        for (QList<StatusEffectInstance>::iterator se = StatusEffects.begin();
+                se != StatusEffects.end(); ++se) {
+
+            StatusEffect effect = Game.DictOfStatusEffects[se->Name];
             // try {
-            for (QList<ModifierBase>::iterator it2 = effect.Modifiers.begin();
-                    it2 != effect.Modifiers.end(); ++it2)
-            {
-                ModifierBase modi = enumerator2.Current;
-                if (modi is Modifier_IncreaseSubjectFamilyMultiplier)
+            for (QList<ModifierBase>::iterator modi = effect.Modifiers.begin();
+                    modi != effect.Modifiers.end(); ++modi) {
+
+                if (*modi is Modifier_IncreaseSubjectFamilyMultiplier)
                 {
-                    Modifier_IncreaseSubjectFamilyMultiplier scaleMod = (Modifier_IncreaseSubjectFamilyMultiplier)modi;
+                    Modifier_IncreaseSubjectFamilyMultiplier scaleMod = (Modifier_IncreaseSubjectFamilyMultiplier)*modi;
                     if (SubjectFamily == scaleMod.SubjectFamilyName && Value > 0.0)
-                        addValue *= scaleMod.GetScaleFactor(this, se);
+                        addValue *= scaleMod.GetScaleFactor(this, *se);
                 }
-                else if (modi is Modifier_DecreaseSubjectFamilyMultiplier)
+                else if (*modi is Modifier_DecreaseSubjectFamilyMultiplier)
                 {
-                    Modifier_DecreaseSubjectFamilyMultiplier scaleMod2 = (Modifier_DecreaseSubjectFamilyMultiplier)modi;
+                    Modifier_DecreaseSubjectFamilyMultiplier scaleMod2 = (Modifier_DecreaseSubjectFamilyMultiplier)*modi;
                     if (SubjectFamily == scaleMod2.SubjectFamilyName && Value < 0.0)
-                        addValue *= scaleMod2.GetScaleFactor(this, se);
+                        addValue *= scaleMod2.GetScaleFactor(this, *se);
                 }
             }
             // }
@@ -971,7 +965,7 @@ public:
         if (SubjectInstanceExp.contains(SubjectInstanceName))
             SubjectInstanceExp[SubjectInstanceName] = SubjectInstanceExp[SubjectInstanceName] + Value < 0.0 ? 0.0 : (SubjectInstanceExp[SubjectInstanceName] + Value > 100.0 ? 100.0 : SubjectInstanceExp[SubjectInstanceName] + Value);
         else
-            SubjectInstanceExp.Add(SubjectInstanceName, Value < 0.0 ? 0.0 : (Value > 100.0 ? 100.0 : Value));
+            SubjectInstanceExp.inser(SubjectInstanceName, Value < 0.0 ? 0.0 : (Value > 100.0 ? 100.0 : Value));
         // }
     }
     bool ShouldSerializeProposalSupport()
@@ -1012,7 +1006,7 @@ public:
     }
     void UpdatePaperDollImage(OutfitType Outfit = OutfitType::DefaultOutfit)
     {
-        if (CurrentLocation == NULL || Outfit != OutfitType::DefaultOutfit)
+        if (CurrentLocation() == NULL || Outfit != OutfitType::DefaultOutfit)
             CurrentOutfit = Outfit;
 
         else if (!OutfitName.isEmpty())
@@ -1046,36 +1040,34 @@ public:
         double retVal = dictStats.contains(statName) ? dictStats[statName] : 0.0;
         double minVal = arg_31_0.MinValue;
         double maxVal = arg_31_0.MaxValue;
-        object statusEffects = StatusEffects;
+        //object statusEffects = StatusEffects;
         // lock (statusEffects) {
         // try {
-        for (QList<StatusEffectInstance>::iterator it = StatusEffects.begin();
-                it != StatusEffects.end(); ++it) {
+        for (QList<StatusEffectInstance>::iterator se = StatusEffects.begin();
+                se != StatusEffects.end(); ++se) {
 
-            StatusEffectInstance se = enumerator.Current;
-            StatusEffect effect = Game.DictOfStatusEffects[se.Name];
+            StatusEffect effect = Game.DictOfStatusEffects[se->Name];
             // try {
-            for (QList<ModifierBase>::iterator it2 = effect.Modifiers.begin();
-                    it2 != effect.Modifiers.end(); ++it2) {
+            for (QList<ModifierBase>::iterator modi = effect.Modifiers.begin();
+                    modi != effect.Modifiers.end(); ++modi) {
 
-                ModifierBase modi = enumerator2.Current;
-                if (modi is Modifier_AddStatValue) {
+                if (*modi is Modifier_AddStatValue) {
 
-                    Modifier_AddStatValue addConstMod = (Modifier_AddStatValue)modi;
+                    Modifier_AddStatValue addConstMod = (Modifier_AddStatValue)*modi;
                     if (Operators.CompareString(addConstMod.StatName, statName, false) == 0)
-                        retVal += addConstMod.GetValue(se);
+                        retVal += addConstMod.GetValue(*se);
 
-                } else if (modi is Modifier_MinStatValue) {
+                } else if (*modi is Modifier_MinStatValue) {
 
-                    Modifier_MinStatValue minValMod = (Modifier_MinStatValue)modi;
-                    if (Operators.CompareString(minValMod.StatName, statName, false) == 0 && minValMod.GetValue(se) > minVal)
-                        minVal = minValMod.GetValue(se);
+                    Modifier_MinStatValue minValMod = (Modifier_MinStatValue)*modi;
+                    if (Operators.CompareString(minValMod.StatName, statName, false) == 0 && minValMod.GetValue(*se) > minVal)
+                        minVal = minValMod.GetValue(*se);
 
-                } else if (modi is Modifier_MaxStatValue) {
+                } else if (*modi is Modifier_MaxStatValue) {
 
-                    Modifier_MaxStatValue maxValMod = (Modifier_MaxStatValue)modi;
-                    if (Operators.CompareString(maxValMod.StatName, statName, false) == 0 && maxValMod.GetValue(se) < maxVal)
-                        minVal = maxValMod.GetValue(se);
+                    Modifier_MaxStatValue maxValMod = (Modifier_MaxStatValue)*modi;
+                    if (Operators.CompareString(maxValMod.StatName, statName, false) == 0 && maxValMod.GetValue(*se) < maxVal)
+                        minVal = maxValMod.GetValue(*se);
                 }
             }
             // }
@@ -1098,30 +1090,28 @@ public:
         {
             Stat statBase = Game.DictOfStats[statName];
             double addValue = value;
-            object statusEffects = StatusEffects;
+            //object statusEffects = StatusEffects;
             // lock (statusEffects) {
             // try {
-            for (QList<StatusEffectInstance>::iterator it = StatusEffects.begin();
-                    it != StatusEffects.end(); ++it)
+            for (QList<StatusEffectInstance>::iterator se = StatusEffects.begin();
+                    se != StatusEffects.end(); ++se)
             {
-                StatusEffectInstance se = enumerator.Current;
-                StatusEffect effect = Game.DictOfStatusEffects[se.Name];
+                StatusEffect effect = Game.DictOfStatusEffects[se->Name];
                 // try {
-                for (QList<ModifierBase>::iterator it2 = effect.Modifiers.begin();
-                        it2 != effect.Modifiers.end(); ++it2)
+                for (QList<ModifierBase>::iterator modi = effect.Modifiers.begin();
+                        modi != effect.Modifiers.end(); ++modi)
                 {
-                    ModifierBase modi = enumerator2.Current;
-                    if (modi is Modifier_IncreaseStatMultiplier)
+                    if (*modi is Modifier_IncreaseStatMultiplier)
                     {
-                        Modifier_IncreaseStatMultiplier scaleMod = (Modifier_IncreaseStatMultiplier)modi;
+                        Modifier_IncreaseStatMultiplier scaleMod = (Modifier_IncreaseStatMultiplier)*modi;
                         if (Operators.CompareString(statName, scaleMod.StatName, false) == 0 && value > 0.0)
-                            addValue *= scaleMod.GetScaleFactor(this, se);
+                            addValue *= scaleMod.GetScaleFactor(this, *se);
                     }
-                    else if (modi is Modifier_DecreaseStatMultiplier)
+                    else if (*modi is Modifier_DecreaseStatMultiplier)
                     {
-                        Modifier_DecreaseStatMultiplier scaleMod2 = (Modifier_DecreaseStatMultiplier)modi;
+                        Modifier_DecreaseStatMultiplier scaleMod2 = (Modifier_DecreaseStatMultiplier)*modi;
                         if (Operators.CompareString(statName, scaleMod2.StatName, false) == 0 && value < 0.0)
-                            addValue *= scaleMod2.GetScaleFactor(this, se);
+                            addValue *= scaleMod2.GetScaleFactor(this, *se);
                     }
                 }
                 // }
@@ -1319,7 +1309,7 @@ public:
         // }
         // }
     }
-    void ApplyBody::SizeChange(IBody::SizeChange BSC)
+    void ApplyBody::SizeChange(IBodySizeChange BSC)
     {
         double minValue = (BSC.Minimum < 1.0) ? 1.0 : Math.Min(10.0, BSC.Minimum);
         double maxValue = (BSC.Maximum == 0.0 || BSC.Maximum > 10.0) ? 10.0 : Math.Max(1.0, BSC.Maximum);
@@ -1398,7 +1388,7 @@ public:
             return;
         }
     }
-    bool BSCWithinRange(IBody::SizeChange BSC, double Value)
+    bool BSCWithinRange(IBodySizeChange BSC, double Value)
     {
         double Minimum = (BSC.Minimum < 1.0) ? 1.0 : Math.Min(10.0, BSC.Minimum);
         double Maximum = (BSC.Maximum == 0.0 || BSC.Maximum > 10.0) ? 10.0 : Math.Max(1.0, BSC.Maximum);
@@ -1452,7 +1442,7 @@ public:
     }
     bool IsWorking()
     {
-        return (CurrentLocation == Work && IsWorkTime()) || ((Job.Equals("Student") || Trait.contains("Staff")) && CurrentLocation.Region == Region.School);
+        return (CurrentLocation == Work && IsWorkTime()) || ((Job == "Student" || Trait.contains("Staff")) && CurrentLocation.Region == Region.School);
     }
     void RandomizeSchedule()
     {
@@ -1460,7 +1450,7 @@ public:
         UpEarly = false;
         OutLateTonight = false;
         int randomNumber = Game.RNG.Next(100);
-        if (Job.Equals("Student"))
+        if (Job == "Student")
         {
             if (randomNumber < 25)
             {
