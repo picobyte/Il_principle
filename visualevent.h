@@ -3,29 +3,29 @@
 #include "json_macros.h"
 
 class VisualEvent {
-public:
     QList<SeqOperation> SeqObjects;
     QList<SeqVariable> SeqVars;
     QList<SeqPeripheral> SeqPeripherals;
     QList<SeqOperation> PendingOperations;
+    QHash<QString, QString> TextReplaceDict;
+    QHash<QString, SeqVariable> ParamVars;
+public:
     bool Accepted;
     SeqActLat_RemoteEvent ReturnRemote;
     QString Author;
     QString XMLFileName;
-    DateTime LastModificationDate;
+    QDateTime LastModificationDate;
     unsigned UniqueID;
     int SheduledFor;
     int SheduledForTime;
     bool Virtualize;
-    TriggerType TriggerType;
+    TriggerType triggerType;
     int Priority;
     bool HighPriority;
-    Point ButtonLocation;
+    QPoint ButtonLocation;
     QString ButtonName;
     QString ChoiceName;
     QString Description;
-    QHash<QString, QString> TextReplaceDict;
-    QHash<QString, SeqVariable> ParamVars;
     //readonly object dictLock;
     const QString ShortXMLFileName() const
     {
@@ -36,7 +36,6 @@ public:
         if (QString.IsNullOrEmpty(XMLFileName) || XMLFileName.Length < Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, "Events\\").Length)
             return "";
         return XMLFileName.Substring(Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, "Events\\").Length);
-
     }
     VisualEvent(QJsonObject *d = NULL)
     {
@@ -71,6 +70,7 @@ public:
             else __IF_VAR_FROM_JSON_AS(it, ButtonName, toString)
             else __IF_VAR_FROM_JSON_AS(it, ChoiceName, toString)
             else __IF_VAR_FROM_JSON_AS(it, Description, toString)
+            else __IF_OBJ_FROM_JSON(it, dictLock)
             // *INDENT-ON*
         }
     }
@@ -108,88 +108,53 @@ public:
     }
     void PostGameInit()
     {
-        // try {
         for (QList<SeqOperation>::iterator it = SeqObjects.begin();
                 it != SeqObjects.end(); ++it)
-        {
-            enumerator.Current.PostGameInit();
-        }
-        // }
-        // try {
+            it->PostGameInit();
+
         for (QList<SeqVariable>::iterator it = SeqVars.begin();
                 it != SeqVars.end(); ++it)
-        {
-            enumerator2.Current.PostGameInit();
-        }
-        // }
-        // try {
+            it->PostGameInit();
+
         for (QList<SeqPeripheral>::iterator it = SeqPeripherals.begin();
                 it != SeqPeripherals.end(); ++it)
-        {
-            enumerator3.Current.PostGameInit();
-        }
-        // }
+            it->PostGameInit();
     }
     void PostGameLoad()
     {
-        // try {
         for (QList<SeqOperation>::iterator it = SeqObjects.begin();
                 it != SeqObjects.end(); ++it)
-        {
-            enumerator.Current.PostGameLoad();
-        }
-        // }
-        // try {
+            it->PostGameLoad();
+
         for (QList<SeqVariable>::iterator it = SeqVars.begin();
                 it != SeqVars.end(); ++it)
-        {
-            enumerator2.Current.PostGameLoad();
-        }
-        // }
-        // try {
+            it->PostGameLoad();
+
         for (QList<SeqPeripheral>::iterator it = SeqPeripherals.begin();
                 it != SeqPeripherals.end(); ++it)
-        {
-            enumerator3.Current.PostGameLoad();
-        }
-        // }
+            it->PostGameLoad();
     }
     unsigned GetNextID()
     {
         unsigned Best = 0;
-        // try {
         for (QList<SeqOperation>::iterator it = SeqObjects.begin();
-                it != SeqObjects.end(); ++it)
-        {
+                it != SeqObjects.end(); ++it) {
             SeqOperation Obj = enumerator.Current;
             if (Obj.ID > Best)
-            {
                 Best = Obj.ID;
-            }
         }
-        // }
-        // try {
         for (QList<SeqVariable>::iterator it = SeqVars.begin();
-                it != SeqVars.end(); ++it)
-        {
+                it != SeqVars.end(); ++it) {
             SeqVariable Var = enumerator2.Current;
             if (Var.ID > Best)
-            {
                 Best = Var.ID;
-            }
         }
-        // }
-        // try {
         for (QList<SeqPeripheral>::iterator it = SeqPeripherals.begin();
-                it != SeqPeripherals.end(); ++it)
-        {
+                it != SeqPeripherals.end(); ++it) {
             SeqPeripheral Peri = enumerator3.Current;
             if (Peri.ID > Best)
-            {
                 Best = Peri.ID;
-            }
         }
-        // }
         return checked((unsigned)(unchecked((ulong)Best) + 1uL));
     }
     void AddSeqObject(SeqObject ObjToAdd)
@@ -237,46 +202,30 @@ public:
     void RemoveSeqObject(SeqObject ObjToRemove)
     {
         if (ObjToRemove is SeqOperation)
-        {
             SeqObjects.Remove((SeqOperation)ObjToRemove);
-            return;
-        }
-        if (ObjToRemove is SeqVariable)
-        {
+
+                else if (ObjToRemove is SeqVariable)
             SeqVars.Remove((SeqVariable)ObjToRemove);
-            return;
-        }
-        if (ObjToRemove is SeqPeripheral)
-        {
+
+                else if (ObjToRemove is SeqPeripheral)
             SeqPeripherals.Remove((SeqPeripheral)ObjToRemove);
-        }
     }
     SeqOperation FindSeqObjectByID(unsigned SearchID)
     {
         int imin = 0;
-        // checked {
         int imax = SeqObjects.count() - 1;
-        SeqOperation FindSeqObjectByID;
-        while (imax >= imin)
-        {
+        while (imax >= imin) {
+
             int imid = imin + (imax - imin) / 2;
             if (SeqObjects[imid].ID == SearchID)
-            {
-                FindSeqObjectByID = SeqObjects[imid];
-                return FindSeqObjectByID;
-            }
+                return SeqObjects[imid];
+
             if (SeqObjects[imid].ID < SearchID)
-            {
                 imin = imid + 1;
-            }
             else
-            {
                 imax = imid - 1;
-            }
         }
-        FindSeqObjectByID = NULL;
-        return FindSeqObjectByID;
-        // }
+        return NULL;
     }
     SeqVariable FindSeqVarByID(unsigned SearchID, bool NoResolve = false)
     {
@@ -284,55 +233,37 @@ public:
         int imin = 0;
         // checked {
         int imax = SeqVars.count() - 1;
-        while (imax >= imin)
-        {
+        while (imax >= imin) {
+
             int imid = imin + (imax - imin) / 2;
-            if (SeqVars[imid].ID == SearchID)
-            {
+            if (SeqVars[imid].ID == SearchID) {
                 Var = SeqVars[imid];
                 break;
             }
             if (SeqVars[imid].ID < SearchID)
-            {
                 imin = imid + 1;
-            }
             else
-            {
                 imax = imid - 1;
-            }
         }
-        SeqVariable FindSeqVarByID;
         if (Var is SeqVar_Reference && !NoResolve)
         {
             SeqVariable SeqVar = NULL;
             SeqVar_Reference RefVar = (SeqVar_Reference)Var;
             if (RefVar.TargetVar != NULL)
-            {
                 SeqVar = RefVar.TargetVar;
-            }
-            else
-            {
+            else {
                 if (QString.IsNullOrEmpty(RefVar.RefFileName))
-                {
                     SeqVar = FindSeqVarByID(RefVar.RefID, false);
-                }
-                else
-                {
+                else {
                     VisualEvent ev = VisualEventManager.GetEventByFilename(RefVar.RefFileName, VisualEventKind.NONE);
                     if (ev != NULL)
-                    {
                         SeqVar = ev.FindSeqVarByID(RefVar.RefID, false);
-                    }
                 }
                 RefVar.TargetVar = SeqVar;
             }
-            FindSeqVarByID = SeqVar;
+            return SeqVar;
         }
-        else
-        {
-            FindSeqVarByID = Var;
-        }
-        return FindSeqVarByID;
+        return Var;
         // }
     }
     bool TryEvent()
@@ -362,46 +293,6 @@ public:
     void Execute(object Arg, QHash<QString, SeqVariable> Vars)
     {
         new EventRunner().Execute(this, RuntimeHelpers.GetObjectValue(Arg), Vars);
-    }
-    Task ExecuteAsync()
-    {
-        VisualEvent.VB_StateMachine_109_ExecuteAsync vB_StateMachine_109_ExecuteAsync = default(VisualEvent.VB_StateMachine_109_ExecuteAsync);
-        vB_StateMachine_109_ExecuteAsync.SVBSMe = this;
-        vB_StateMachine_109_ExecuteAsync.SState = -1;
-        vB_StateMachine_109_ExecuteAsync.SBuilder = AsyncTaskMethodBuilder.Create();
-        vB_StateMachine_109_ExecuteAsync.SBuilder.Start<VisualEvent.VB_StateMachine_109_ExecuteAsync>(ref vB_StateMachine_109_ExecuteAsync);
-        return vB_StateMachine_109_ExecuteAsync.SBuilder.Task;
-    }
-    Task ExecuteAsync(object Arg)
-    {
-        VisualEvent.VB_StateMachine_110_ExecuteAsync vB_StateMachine_110_ExecuteAsync = default(VisualEvent.VB_StateMachine_110_ExecuteAsync);
-        vB_StateMachine_110_ExecuteAsync.SVBSMe = this;
-        vB_StateMachine_110_ExecuteAsync.SVBSLocal_Arg = Arg;
-        vB_StateMachine_110_ExecuteAsync.SState = -1;
-        vB_StateMachine_110_ExecuteAsync.SBuilder = AsyncTaskMethodBuilder.Create();
-        vB_StateMachine_110_ExecuteAsync.SBuilder.Start<VisualEvent.VB_StateMachine_110_ExecuteAsync>(ref vB_StateMachine_110_ExecuteAsync);
-        return vB_StateMachine_110_ExecuteAsync.SBuilder.Task;
-    }
-    Task ExecuteAsync(QHash<QString, SeqVariable> Vars)
-    {
-        VisualEvent.VB_StateMachine_111_ExecuteAsync vB_StateMachine_111_ExecuteAsync = default(VisualEvent.VB_StateMachine_111_ExecuteAsync);
-        vB_StateMachine_111_ExecuteAsync.SVBSMe = this;
-        vB_StateMachine_111_ExecuteAsync.SVBSLocal_Vars = Vars;
-        vB_StateMachine_111_ExecuteAsync.SState = -1;
-        vB_StateMachine_111_ExecuteAsync.SBuilder = AsyncTaskMethodBuilder.Create();
-        vB_StateMachine_111_ExecuteAsync.SBuilder.Start<VisualEvent.VB_StateMachine_111_ExecuteAsync>(ref vB_StateMachine_111_ExecuteAsync);
-        return vB_StateMachine_111_ExecuteAsync.SBuilder.Task;
-    }
-    Task ExecuteAsync(object Arg, QHash<QString, SeqVariable> Vars)
-    {
-        VisualEvent.VB_StateMachine_112_ExecuteAsync vB_StateMachine_112_ExecuteAsync = default(VisualEvent.VB_StateMachine_112_ExecuteAsync);
-        vB_StateMachine_112_ExecuteAsync.SVBSMe = this;
-        vB_StateMachine_112_ExecuteAsync.SVBSLocal_Arg = Arg;
-        vB_StateMachine_112_ExecuteAsync.SVBSLocal_Vars = Vars;
-        vB_StateMachine_112_ExecuteAsync.SState = -1;
-        vB_StateMachine_112_ExecuteAsync.SBuilder = AsyncTaskMethodBuilder.Create();
-        vB_StateMachine_112_ExecuteAsync.SBuilder.Start<VisualEvent.VB_StateMachine_112_ExecuteAsync>(ref vB_StateMachine_112_ExecuteAsync);
-        return vB_StateMachine_112_ExecuteAsync.SBuilder.Task;
     }
     void AddToDictionary(QString key, QString value)
     {
@@ -632,8 +523,7 @@ public:
         }
         // }
         // try {
-        for (QList<SeqVariable>::iterator it = SeqVars.begin();
-                it != SeqVars.end(); ++it)
+        for (QList<SeqVariable>::iterator it = SeqVars.begin(); it != SeqVars.end(); ++it)
         {
             SeqVariable SeqVar = enumerator8.Current;
             QString result2 = SeqVar.CheckForErrors(this);
@@ -756,13 +646,9 @@ public:
     {
         int CompareTo;
         if (obj is VisualEvent)
-        {
             return checked(Priority - ((VisualEvent)obj).Priority);
 
-
-    {
         return 0;
-
     }
 };
 
