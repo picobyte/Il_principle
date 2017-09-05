@@ -1298,10 +1298,10 @@ public:
                     it2 != effect.Modifiers.end(); ++it2) {
 
                 ModifierBase modi = enumerator2.Current;
-                if (modi is Modifier_Body::SizeChange) {
+                if (modi is Modifier_BodySizeChange) {
 
-                    Modifier_Body::SizeChange change = (Modifier_Body::SizeChange)modi;
-                    ApplyBody::SizeChange(change);
+                    Modifier_BodySizeChange change = (Modifier_BodySizeChange)modi;
+                    ApplyBodySizeChange(change);
                 }
             }
             // }
@@ -1309,7 +1309,7 @@ public:
         // }
         // }
     }
-    void ApplyBody::SizeChange(IBodySizeChange BSC)
+    void ApplyBodySizeChange(BodySizeChange& BSC)
     {
         double minValue = (BSC.Minimum < 1.0) ? 1.0 : Math.Min(10.0, BSC.Minimum);
         double maxValue = (BSC.Maximum == 0.0 || BSC.Maximum > 10.0) ? 10.0 : Math.Max(1.0, BSC.Maximum);
@@ -1388,7 +1388,7 @@ public:
             return;
         }
     }
-    bool BSCWithinRange(IBodySizeChange BSC, double Value)
+    bool BSCWithinRange(BodySizeChange& BSC, double Value)
     {
         double Minimum = (BSC.Minimum < 1.0) ? 1.0 : Math.Min(10.0, BSC.Minimum);
         double Maximum = (BSC.Maximum == 0.0 || BSC.Maximum > 10.0) ? 10.0 : Math.Max(1.0, BSC.Maximum);

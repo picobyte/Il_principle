@@ -53,7 +53,9 @@ HEADERS += \
         range.h \
         adjustment.h \
         person.h \
+        visualevent.h \
         location.h \
+        locationaddress.h \
         locationjobdetails.h \
         location_view.h \
         person_interaction.h \

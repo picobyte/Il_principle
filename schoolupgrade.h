@@ -50,11 +50,11 @@ public:
     QString Name;
     QString LocationName;
     int CurrentLevel;
-    /*const Location Location() const
+    Location* getLocation() const
     {
-        return Game.GetLocation(LocationName);
-    }*/
-    void Location(Location* v = NULL)
+        return &Game.GetLocation(LocationName);
+    }
+    void setLocation(Location* v = NULL)
     {
         LocationName = v ? v->Name : "";
     }

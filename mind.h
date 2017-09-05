@@ -27,7 +27,7 @@ public:
         // try {
         for (QList<Adjustment>::iterator it = AdjustStatList.begin();
                 it != AdjustStatList.end(); ++it)
-            if (it->StatName == Stat) {
+            if (it->StatName == Stat)
                 return &(*it); //yes, it's an iterator.
         // }
         return NULL;

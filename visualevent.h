@@ -3,15 +3,16 @@
 #include "json_macros.h"
 
 class VisualEvent {
-    QList<SeqOperation> SeqObjects;
-    QList<SeqVariable> SeqVars;
-    QList<SeqPeripheral> SeqPeripherals;
-    QList<SeqOperation> PendingOperations;
+    // XXX: probably will do this differentl
+    //QList<SeqOperation> SeqObjects;
+    //QList<SeqVariable> SeqVars;
+    //QList<SeqPeripheral> SeqPeripherals;
+    //QList<SeqOperation> PendingOperations;
     QHash<QString, QString> TextReplaceDict;
-    QHash<QString, SeqVariable> ParamVars;
+    //QHash<QString, SeqVariable> ParamVars;
 public:
     bool Accepted;
-    SeqActLat_RemoteEvent ReturnRemote;
+    //SeqActLat_RemoteEvent ReturnRemote;
     QString Author;
     QString XMLFileName;
     QDateTime LastModificationDate;
@@ -19,7 +20,7 @@ public:
     int SheduledFor;
     int SheduledForTime;
     bool Virtualize;
-    TriggerType triggerType;
+    //TriggerType triggerType;
     int Priority;
     bool HighPriority;
     QPoint ButtonLocation;
@@ -27,7 +28,7 @@ public:
     QString ChoiceName;
     QString Description;
     //readonly object dictLock;
-    const QString ShortXMLFileName() const
+    /*const QString ShortXMLFileName() const
     {
         QString ShortXMLFileName;
         if (!XMLFileName.StartsWith(Game.GamePath))
@@ -36,7 +37,7 @@ public:
         if (QString.IsNullOrEmpty(XMLFileName) || XMLFileName.Length < Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, "Events\\").Length)
             return "";
         return XMLFileName.Substring(Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, "Events\\").Length);
-    }
+    }*/
     VisualEvent(QJsonObject *d = NULL)
     {
         if (d) init(d);
@@ -44,44 +45,44 @@ public:
         XMLFileName = "";
         UniqueID = 0u;
         Virtualize = false;
-        TriggerType = TriggerType.Location;
+        //TriggerType = TriggerType.Location;
     }
     void init(QJsonObject *d)
     {
         for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
             // *INDENT-OFF*
-            __IF_OBJLIST_FROM_JSON(it, SeqObjects, SeqOperation)
+            /*__IF_OBJLIST_FROM_JSON(it, SeqObjects, SeqOperation)
             else __IF_OBJLIST_FROM_JSON(it, SeqVars, SeqVariable)
             else __IF_OBJLIST_FROM_JSON(it, SeqPeripherals, SeqPeripheral)
             else __IF_OBJLIST_FROM_JSON(it, PendingOperations, SeqOperation)
-            else __IF_VAR_FROM_JSON_AS(it, Accepted, toBool)
-            else __IF_OBJ_FROM_JSON(it, ReturnRemote)
+            else*/ __IF_VAR_FROM_JSON_AS(it, Accepted, toBool)
+            //else __IF_OBJ_FROM_JSON(it, ReturnRemote)
             else __IF_VAR_FROM_JSON_AS(it, Author, toString)
             else __IF_VAR_FROM_JSON_AS(it, XMLFileName, toString)
-            else __IF_OBJ_FROM_JSON(it, LastModificationDate)
+            //else __IF_OBJ_FROM_JSON(it, LastModificationDate) //QDateTime
             else __IF_VAR_FROM_JSON_AS(it, UniqueID, toInt)
             else __IF_VAR_FROM_JSON_AS(it, SheduledFor, toInt)
             else __IF_VAR_FROM_JSON_AS(it, SheduledForTime, toInt)
             else __IF_VAR_FROM_JSON_AS(it, Virtualize, toBool)
-            else __IF_OBJ_FROM_JSON(it, TriggerType)
+            //else __IF_OBJ_FROM_JSON(it, TriggerType)
             else __IF_VAR_FROM_JSON_AS(it, Priority, toInt)
             else __IF_VAR_FROM_JSON_AS(it, HighPriority, toBool)
-            else __IF_OBJ_FROM_JSON(it, ButtonLocation)
+            //else __IF_OBJ_FROM_JSON(it, ButtonLocation) //QPoint
             else __IF_VAR_FROM_JSON_AS(it, ButtonName, toString)
             else __IF_VAR_FROM_JSON_AS(it, ChoiceName, toString)
             else __IF_VAR_FROM_JSON_AS(it, Description, toString)
-            else __IF_OBJ_FROM_JSON(it, dictLock)
+            //else __IF_OBJ_FROM_JSON(it, dictLock)
             // *INDENT-ON*
         }
     }
-    bool ShouldSerializeXMLFileName()
+    /*bool ShouldSerializeXMLFileName()
     {
         return !QString.IsNullOrEmpty(XMLFileName);
     }
     bool ShouldSerializeLastModificationDate()
     {
         return Game.GameInitialized;
-    }
+    }*/
     bool ShouldSerializeVirtualize()
     {
         return Virtualize;
@@ -94,10 +95,10 @@ public:
     {
         return HighPriority;
     }
-    bool ShouldSerializeButtonLocation()
+    /*bool ShouldSerializeButtonLocation()
     {
         return TriggerType == TriggerType.Button;
-    }
+    }*/
     bool ShouldSerializeDescription()
     {
         return !(Description.isNull() || Description.contains(QRegExp("^\\s*$")));
@@ -106,7 +107,7 @@ public:
     {
         return TextReplaceDict.count() > 0;
     }
-    void PostGameInit()
+    /*void PostGameInit()
     {
         for (QList<SeqOperation>::iterator it = SeqObjects.begin();
                 it != SeqObjects.end(); ++it)
@@ -649,7 +650,7 @@ public:
             return checked(Priority - ((VisualEvent)obj).Priority);
 
         return 0;
-    }
+    }*/
 };
 
 #endif // VISUALEVENT_H

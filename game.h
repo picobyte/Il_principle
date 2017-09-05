@@ -27,96 +27,99 @@
 #include "item.h"
 #include "statuseffect.h"
 #include "schoolupgrade.h"
+#include "rule.h"
+#include "eventstructmanager.h"
+
 //#include
 
 
 class Game {
     //int seed = Environment.TickCount;
-    //ThreadLocal<Random> _rng = new ThreadLocal<Random>(new Func<Random>(Game._ClosureS__.SI._LambdaS__0_0));
-    QMap<QString, Account> _DictOfAccounts;
-    QMap<QString, Clubs> _ListOfClubs;
-    QHash<long, Person> _DictOfPersonIDs;
-    QHash<QString, Person> _DictOfPersonNames;
-    QMap<QString, Person> _HiredTeacher;
-    QMap<QString, Person> _NotHiredTeacher;
-    QMap<QString, Person> _AvailableStaff;
-    QMap<QString, Person> _HiredStaff;
-    QHash<QString, Person> _OwnStudents;
-    QHash<QString, Person> _OtherStudents;
-    QHash<QString, Person> _ListOfPTA;
-    QHash<QString, Person> _UnemployedPersons;
-    QList<Person> _occupandlist;
-    QList<SchoolClass> _ListSchoolClasses;
-    QHash<QString, StatusEffect> _DictOfStatusEffects;
-    QHash<QString, Stat> _DictOfStats;
-    QHash<QString, Skill> _DictOfSkills;
+    //ThreadLocal<Random> _rng = new ThreadLocal<Random>(new Func<Random>(_ClosureS__.SI._LambdaS__0_0));
+    QMap<QString, Account> DictOfAccounts;
+    QMap<QString, Clubs> ListOfClubs;
+    QHash<long, Person> DictOfPersonIDs;
+    QHash<QString, Person> DictOfPersonNames;
+    QMap<QString, Person> HiredTeacher;
+    QMap<QString, Person> NotHiredTeacher;
+    QMap<QString, Person> AvailableStaff;
+    QMap<QString, Person> HiredStaff;
+    QHash<QString, Person> OwnStudents;
+    QHash<QString, Person> OtherStudents;
+    QHash<QString, Person> ListOfPTA;
+    QHash<QString, Person> UnemployedPersons;
+    QList<Person> occupandlist;
+    QList<SchoolClass> ListSchoolClasses;
+    QHash<QString, StatusEffect> DictOfStatusEffects;
+    QHash<QString, Stat> DictOfStats;
+    QHash<QString, Skill> DictOfSkills;
     QList<QString> _ListOfJobs;
-    ObservableCollection<SchoolUpgrade> _ListOfSchoolUpgrades;
-    QMap<QString, Rule> _ListOfRules;
-    QHash<QString, Item> _ListOfBaseItems;
-    QHash<QString, SchoolSubject> _DictOfSubjects;
-    QList<PersonScheduleHandler> _ListOfScheduleHandlers;
-    QHash<QString, double> _CachedGlobalStats;
-    QList<Button> _lstbutton;
-    QList<long> _FavoriteStudentList;
+    ObservableCollection<SchoolUpgrade> ListOfSchoolUpgrades;
+    QMap<QString, Rule> ListOfRules;
+    QHash<QString, Item> ListOfBaseItems;
+    QHash<QString, SchoolSubject> DictOfSubjects;
+    QList<PersonScheduleHandler> ListOfScheduleHandlers;
+    QHash<QString, double> CachedGlobalStats;
+    QList<Button> lstbutton;
+    QList<long> FavoriteStudentList;
 public:
-    CultureInfo _GameCulture;
-    StatisticsManager _StatisticsManager;
-    EventStructManager _StructManager;
-    NotificationManager _NotifyManager;
-    PersonRelationshipDatabase _RelationshipDatabase;
-    TheWorld _TheSchool;
-    ClassroomAssignments _ClassAssignments;
-    GameCalendar _SchoolCalendar;
-    Time _GameTime;
-    Person _HeadTeacher;
+    QLocale GameCulture; //orig: CultureInfo GameCulture;
+    StatisticsManager StatisticsManager;
+    EventStructManager StructManager;
+    NotificationManager NotifyManager;
+    PersonRelationshipDatabase RelationshipDatabase;
+    TheWorld TheSchool;
+    ClassroomAssignments ClassAssignments;
+    GameCalendar SchoolCalendar;
+    Time GameTime;
+    Person HeadTeacher;
 
-    QString _GamePath;
+    QString GamePath;
     QString inteventlog;
-    bool _EventLogflag;
-    int _DesiredNumSchoolClasses;
-    SchoolClass _SpareStudentsClass;
-    GameScenarioConfig _ScenarioConfig;
-    PopulationGenerator _PopulationManager;
-    int _TickCount;
-    int _helpercounter;
-    QString _LastWorldLocationPath;
-    bool _GameInitialized;
-    bool _GameLoading;
-    int _LastAutosaveDay;
-    bool _CheatsUsed;
+    bool EventLogflag;
+    int DesiredNumSchoolClasses;
+    SchoolClass SpareStudentsClass;
+    GameScenarioConfig ScenarioConfig;
+    PopulationGenerator PopulationManager;
+    int TickCount;
+    int helpercounter;
+    QString LastWorldLocationPath;
+    bool GameInitialized;
+    bool GameLoading;
+    int LastAutosaveDay;
+    bool CheatsUsed;
     const Random RNG() const
     {
-        return Game._rng.Value;
+        return _rng.Value;
     }
     const Location PlayerLocation() const
     {
         Location PlayerLocation;
-        if (Game.HeadTeacher == NULL)
+        if (HeadTeacher == NULL)
         {
             return NULL;
                 }
-                return Game.HeadTeacher.CurrentLocation;
+                return HeadTeacher.CurrentLocation;
     }
     Person GetPerson(long PerID)
     {
         Person GetPerson;
-        if (Game.DictOfPersonIDs.ContainsKey(PerID))
-            return Game.DictOfPersonIDs[PerID];
+        if (DictOfPersonIDs.ContainsKey(PerID))
+            return DictOfPersonIDs[PerID];
 
         return NULL;
     }
     Person GetPerson(QString PerName)
     {
         Person GetPerson;
-        if (!$1.isEmpty() && Game.DictOfPersonNames.ContainsKey(PerName))
-            return Game.DictOfPersonNames[PerName];
+        if (!$1.isEmpty() && DictOfPersonNames.ContainsKey(PerName))
+            return DictOfPersonNames[PerName];
 
         return NULL;
     }
     QString GetPersonDisplayName(QString PerName)
     {
-        Person per = Game.GetPerson(PerName);
+        Person per = GetPerson(PerName);
         QString GetPersonDisplayName;
         if (per != NULL)
             return per.DisplayName;
@@ -126,59 +129,41 @@ public:
     Location GetLocation(QString LocName)
     {
         Location GetLocation;
-        if (!$1.isEmpty() && Game.TheSchool.DictOfLocation.ContainsKey(LocName))
-            return Game.TheSchool.DictOfLocation[LocName];
+        if (!$1.isEmpty() && TheSchool.DictOfLocation.ContainsKey(LocName))
+            return TheSchool.DictOfLocation[LocName];
 
         return NULL;
     }
     Location GetWorkForJob(QString JobName)
     {
         Predicate<LocationJobDetails> SI1 = (LocationJobDetails j) => JobName.Equals(j.JobTitle) && !j.IsFullyStaffed();
-        return Game.TheSchool.DictOfLocation.Values.FirstOrDefault((Location loc) => loc.AssociatedJobs.Exists(SI1));
+        return TheSchool.DictOfLocation.Values.FirstOrDefault((Location loc) => loc.AssociatedJobs.Exists(SI1));
     }
-    Clubs GetClub(QString ClubName)
+    Clubs* GetClub(QString ClubName)
     {
-        Clubs GetClub;
-        if (!$1.isEmpty())
-        {
-            if (Game.ListOfClubs.ContainsKey(ClubName))
-            {
-                GetClub = Game.ListOfClubs[ClubName];
-            }
-            else
-            {
-                // try {
-                for (IEnumerator<Clubs>::iterator it = Game.ListOfClubs.Values.begin();
-                        it != Game.ListOfClubs.Values.end(); ++it)
-                {
-                    Clubs Club = enumerator.Current;
-                    // try {
-                    for (QList<ClubLevel>::iterator it2 = Club.ClubLevels.begin();
-                            it2 != Club.ClubLevels.end(); ++it2)
-                    {
-                        if (enumerator2.Current.Name.Equals(ClubName))
-                        {
-                            GetClub = Club;
-                            return GetClub;
-                        }
-                    }
-                    // }
-                }
-                // }
-                GetClub = NULL;
-            }
+        if (ClubName.isEmpty())
+            return NULL;
+
+        if (ListOfClubs.ContainsKey(ClubName))
+            return ListOfClubs[ClubName];
+
+        // try {
+        for (IEnumerator<Clubs>::iterator it = ListOfClubs.Values.begin();
+                it != ListOfClubs.Values.end(); ++it) {
+            // try {
+            for (QList<ClubLevel>::iterator it2 = Club->ClubLevels.begin();
+                    it2 != Club->ClubLevels.end(); ++it2)
+                if (enumerator2.Current.Name.Equals(ClubName))
+                    return *Club;
+            // }
         }
-        else
-        {
-            GetClub = NULL;
-        }
-        return GetClub;
+        // }
+        return NULL;
     }
-    SchoolSubject GetSubject(QString SubjName)
+    SchoolSubject* GetSubject(QString SubjName)
     {
-        SchoolSubject GetSubject;
-        if (Game.DictOfSubjects.ContainsKey(SubjName))
-            return Game.DictOfSubjects[SubjName];
+        if (DictOfSubjects.ContainsKey(SubjName))
+            return &DictOfSubjects[SubjName];
 
         return NULL;
     }
@@ -187,14 +172,14 @@ public:
         // checked {
         int Total = 0;
         // try {
-        for (IEnumerator<Person>::iterator it = Game.HiredStaff.Values.begin();
-                it != Game.HiredStaff.Values.end(); ++it)
+        for (IEnumerator<Person>::iterator it = HiredStaff.Values.begin();
+                it != HiredStaff.Values.end(); ++it)
         {
             Person Per = enumerator.Current;
             Total -= Per.Salary;
         }
         // }
-        if (!Game.DictOfAccounts.ContainsKey("Staff Salary"))
+        if (!DictOfAccounts.ContainsKey("Staff Salary"))
         {
             Account ac = new Account
             {
@@ -202,38 +187,38 @@ public:
                 PayPeriode = Payperiode.Monthly,
                 Active = true
             };
-            Game.DictOfAccounts.Add(ac.Name, ac);
+            DictOfAccounts.Add(ac.Name, ac);
         }
-        Game.DictOfAccounts["Staff Salary"].Payment = Total;
+        DictOfAccounts["Staff Salary"].Payment = Total;
         // }
     }
     void ClearAllLists()
     {
-        Game.DictOfAccounts.Clear();
-        Game.ListOfClubs.Clear();
-        Game.DictOfPersonIDs.Clear();
-        Game.DictOfPersonNames.Clear();
-        Game.HiredTeacher.Clear();
-        Game.NotHiredTeacher.Clear();
-        Game.AvailableStaff.Clear();
-        Game.HiredStaff.Clear();
-        Game.OwnStudents.Clear();
-        Game.OtherStudents.Clear();
-        Game.ListOfPTA.Clear();
-        Game.UnemployedPersons.Clear();
-        Game.occupandlist.Clear();
-        Game.ListSchoolClasses.Clear();
-        Game.SpareStudentsClass = new SchoolClass();
-        Game.DictOfStatusEffects.Clear();
-        Game.DictOfStats.Clear();
-        Game.DictOfSkills.Clear();
-        Game.ListOfJobs.Clear();
-        Game.ListOfSchoolUpgrades.Clear();
-        Game.ListOfRules.Clear();
-        Game.ListOfBaseItems.Clear();
-        Game.DictOfSubjects.Clear();
-        Game.ListOfScheduleHandlers.Clear();
-        Game.FavoriteStudentList.Clear();
+        DictOfAccounts.clear();
+        ListOfClubs.clear();
+        DictOfPersonIDs.clear();
+        DictOfPersonNames.clear();
+        HiredTeacher.clear();
+        NotHiredTeacher.clear();
+        AvailableStaff.clear();
+        HiredStaff.clear();
+        OwnStudents.clear();
+        OtherStudents.clear();
+        ListOfPTA.clear();
+        UnemployedPersons.clear();
+        occupandlist.clear();
+        ListSchoolClasses.clear();
+        SpareStudentsClass = new SchoolClass();
+        DictOfStatusEffects.clear();
+        DictOfStats.clear();
+        DictOfSkills.clear();
+        ListOfJobs.clear();
+        ListOfSchoolUpgrades.clear();
+        ListOfRules.clear();
+        ListOfBaseItems.clear();
+        DictOfSubjects.clear();
+        ListOfScheduleHandlers.clear();
+        FavoriteStudentList.clear();
     }
 
     Game(QJsonObject *d = NULL)
@@ -245,38 +230,38 @@ public:
     {
         for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
             // *INDENT-OFF*
-            __IF_OBJ_FROM_JSON_AS(it, _GameCulture)
-            else __IF_OBJ_FROM_JSON_AS(it, _StatisticsManager)
-            else __IF_OBJ_FROM_JSON_AS(it, _StructManager)
-            else __IF_OBJ_FROM_JSON_AS(it, _NotifyManager)
-            else __IF_OBJ_FROM_JSON_AS(it, _RelationshipDatabase)
-            else __IF_OBJ_FROM_JSON_AS(it, _TheSchool)
-            else __IF_OBJ_FROM_JSON_AS(it, _ClassAssignments)
-            else __IF_OBJ_FROM_JSON_AS(it, _SchoolCalendar)
-            else __IF_OBJ_FROM_JSON_AS(it, _GameTime)
-            else __IF_OBJ_FROM_JSON_AS(it, _HeadTeacher)
-            else __IF_VAR_FROM_JSON_AS(it, _GamePath, toString)
+            __IF_OBJ_FROM_JSON(it, GameCulture)
+            else __IF_OBJ_FROM_JSON(it, StatisticsManager)
+            else __IF_OBJ_FROM_JSON(it, StructManager)
+            else __IF_OBJ_FROM_JSON(it, NotifyManager)
+            else __IF_OBJ_FROM_JSON(it, RelationshipDatabase)
+            else __IF_OBJ_FROM_JSON(it, TheSchool)
+            else __IF_OBJ_FROM_JSON(it, ClassAssignments)
+            else __IF_OBJ_FROM_JSON(it, SchoolCalendar)
+            else __IF_OBJ_FROM_JSON(it, GameTime)
+            else __IF_OBJ_FROM_JSON(it, HeadTeacher)
+            else __IF_VAR_FROM_JSON_AS(it, GamePath, toString)
             else __IF_VAR_FROM_JSON_AS(it, inteventlog, toString)
-            else __IF_VAR_FROM_JSON_AS(it, _EventLogflag, toBool)
-            else __IF_OBJLIST_FROM_JSON(it, _occupandlist, Person)
-            else __IF_OBJLIST_FROM_JSON(it, _ListSchoolClasses, SchoolClass)
-            else __IF_VAR_FROM_JSON_AS(it, _DesiredNumSchoolClasses, toInt)
-            else __IF_OBJ_FROM_JSON_AS(it, _SpareStudentsClass)
-            else __IF_LIST_FROM_JSON_TYPED(it, _ListOfJobs, toString)
-            else __IF_OBJLIST_FROM_JSON(it, _ListOfScheduleHandlers, PersonScheduleHandler)
-            else __IF_OBJ_FROM_JSON_AS(it, _ScenarioConfig)
-            else __IF_OBJLIST_FROM_JSON(it, _lstbutton, Button)
-            else __IF_OBJ_FROM_JSON_AS(it, _PopulationManager)
-            else __IF_VAR_FROM_JSON_AS(it, _TickCount, toInt)
-            else __IF_OBJLIST_FROM_JSON(it, _FavoriteStudentList, long)
-            else __IF_VAR_FROM_JSON_AS(it, _helpercounter, toInt)
-            else __IF_VAR_FROM_JSON_AS(it, _LastWorldLocationPath, toString)
-            else __IF_VAR_FROM_JSON_AS(it, _GameInitialized, toBool)
-            else __IF_VAR_FROM_JSON_AS(it, _GameLoading, toBool)
-            else __IF_VAR_FROM_JSON_AS(it, _LastAutosaveDay, toInt)
-            else __IF_VAR_FROM_JSON_AS(it, _CheatsUsed, toBool)
+            else __IF_VAR_FROM_JSON_AS(it, EventLogflag, toBool)
+            else __IF_OBJLIST_FROM_JSON(it, occupandlist, Person)
+            else __IF_OBJLIST_FROM_JSON(it, ListSchoolClasses, SchoolClass)
+            else __IF_VAR_FROM_JSON_AS(it, DesiredNumSchoolClasses, toInt)
+            else __IF_OBJ_FROM_JSON(it, SpareStudentsClass)
+            else __IF_LIST_FROM_JSON_TYPED(it, ListOfJobs, toString)
+            else __IF_OBJLIST_FROM_JSON(it, ListOfScheduleHandlers, PersonScheduleHandler)
+            else __IF_OBJ_FROM_JSON(it, ScenarioConfig)
+            else __IF_OBJLIST_FROM_JSON(it, lstbutton, Button)
+            else __IF_OBJ_FROM_JSON(it, PopulationManager)
+            else __IF_VAR_FROM_JSON_AS(it, TickCount, toInt)
+            else __IF_OBJLIST_FROM_JSON(it, FavoriteStudentList, long)
+            else __IF_VAR_FROM_JSON_AS(it, helpercounter, toInt)
+            else __IF_VAR_FROM_JSON_AS(it, LastWorldLocationPath, toString)
+            else __IF_VAR_FROM_JSON_AS(it, GameInitialized, toBool)
+            else __IF_VAR_FROM_JSON_AS(it, GameLoading, toBool)
+            else __IF_VAR_FROM_JSON_AS(it, LastAutosaveDay, toInt)
+            else __IF_VAR_FROM_JSON_AS(it, CheatsUsed, toBool)
             // *INDENT-ON*
         }
     }
-
+};
 #endif // GAME_H
