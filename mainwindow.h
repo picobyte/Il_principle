@@ -19,6 +19,7 @@
 #include <QProgressBar>
 #include <QPushButton>
 #include <QWidget>
+#include <QString>
 
 #include "location_view.h"
 #include "person_interaction.h"
@@ -56,15 +57,15 @@ class MainWindow : public QMainWindow
 
     SchoolManagement* school_management;
 
-    QPushButton push_wait[ARRAY_LEN(wait_time)];
+    QPushButton* push_wait[ARRAY_LEN(wait_time)];
 public:
-
+    QWidget* getW() { return &W;}
 
     explicit MainWindow(QWidget *parent = 0);
     void dummy_startup();
     void retranslateUi();
-public slots:
-    void toggle_school_management();
+/*public slots:
+    void toggle_school_management();*/
 };
 
 #endif // MAINWINDOW_H

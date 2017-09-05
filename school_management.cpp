@@ -47,13 +47,13 @@ StatsTab::StatsTab(): grid(this), statList(this)
     connect(&statList, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(statClicked(QListWidgetItem*)));
 }
 
-void StatsTab::statClicked(QListWidgetItem* it)
+/*void StatsTab::statClicked(QListWidgetItem* it)
 {
     int i = it - item;
     //int i = it->data(Qt::DisplayRole).toString().toInt();
     //int i = 0;
     chart.series().at(i)->setVisible(!chart.series().at(i)->isVisible());
-}
+}*/
 
 AccountingTab::AccountingTab(): grid(this),
     table(ARRAY_LEN(balanceItem), 4, this),

@@ -29,7 +29,7 @@ public:
     Person_interaction(QWidget* W);
     void retranslateUi();
     void setVisible(bool set_visible=true);
-public slots:
+//public slots:
     void slot_hide();
 
 };

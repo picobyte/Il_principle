@@ -58,8 +58,8 @@ public:
     QStringList getPeople() const;
 
     void setImg(QString s);
-public slots:
-    void slot_selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+/*public slots:
+    void slot_selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);*/
 };
 
 #endif // LOCATION_VIEW_H

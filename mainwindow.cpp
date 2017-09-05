@@ -24,14 +24,16 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), W(this),
     gridW.setContentsMargins(0, 0, 0, 0);
     gridW.setGeometry(geom);
     grid.setContentsMargins(0, 0, 0, 0);
+    grid.setObjectName("grid");
     //grid.setGeometry(geom);
 
     setPalette(backgroundStyle());
 
     // FIXME: only shown if window contains locationview
     for (int i = 0; i != ARRAY_LEN(wait_time); ++i) {
-        push_wait[i].setParent(&W);
-        grid.addWidget(&push_wait[i], 0, i, 2, 1);
+        push_wait[i] = new QPushButton(&W);
+        push_wait[i]->setObjectName(QString::asprintf("wait%d", wait_time[i]));
+        grid.addWidget(push_wait[i], 0, i, 2, 1);
     }
 
     QFont font("sans", 13);
@@ -114,10 +116,10 @@ void MainWindow::dummy_startup()
     loc->addPerson(&peter_hooter);
 }
 
-void MainWindow::toggle_school_management()
+/*void MainWindow::toggle_school_management()
 {
     stackWidget.setCurrentIndex(!stackWidget.currentIndex());
-}
+}*/
 
 void MainWindow::retranslateUi()
 {
@@ -133,7 +135,7 @@ void MainWindow::retranslateUi()
     displaystat_val[i++].setText(QApplication::translate("HHSpp", "$10,000", Q_NULLPTR));
 
     for (i = 0; i != ARRAY_LEN(wait_time); ++i)
-        push_wait[i].setText(QApplication::translate("HHSpp", QString::fromLatin1("Wait %1 Min").arg(wait_time[i]).toUtf8(), Q_NULLPTR));
+        push_wait[i]->setText(QApplication::translate("HHSpp", QString::fromLatin1("Wait %1 Min").arg(wait_time[i]).toUtf8(), Q_NULLPTR));
 
     time_display.setText(QApplication::translate("HHSpp", "8:00", Q_NULLPTR));
 

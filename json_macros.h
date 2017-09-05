@@ -14,8 +14,9 @@
 
 #define __OBJLIST_FROM_JSON_RESOLVED(_ref, _var, _class) \
     if (_ref.isArray()) {\
-        foreach (const QJsonValue &el, _ref.toArray()) {\
-            QJsonObject v = el.toObject();\
+        QJsonArray qa = _ref.toArray();\
+        for (QJsonArray::iterator _it = qa.begin(); _it != qa.end(); ++_it) {\
+            QJsonObject v = _it->toObject();\
             _var.append(_class(&v));\
         }\
     } else {\
@@ -40,15 +41,16 @@
 if (it.key() == #_arr) { \
     QJsonObject obj = it.value().toObject();\
     if (obj.length() != 1) qFatal("Expected one element");\
-    foreach (const QJsonValue & _var, obj["string"].toArray())\
+    QJsonArray qa = obj["string"].toArray();\
+    for (QJsonArray::iterator _var = qa.begin(); _var != qa.end(); ++_var)\
         _arr.append(_var_resolved);\
 }
 
 #define __IF_LIST_FROM_JSON_TYPED(it, _arr, _toType) \
-    __IF_LIST_FROM_JSON_TYPE_RESOLVED(it, _arr, value, value._toType())
+    __IF_LIST_FROM_JSON_TYPE_RESOLVED(it, _arr, value, value->_toType())
 
 #define __IF_LIST_FROM_JSON_ENUM(it, _arr, _cast) \
-    __IF_LIST_FROM_JSON_TYPE_RESOLVED(it, _arr, value, _cast(value.toInt()))
+    __IF_LIST_FROM_JSON_TYPE_RESOLVED(it, _arr, value, _cast(value->toInt()))
 
 #define __IF_OBJ_FROM_JSON(it, _instance) \
 if (it.key() == #_instance) {\

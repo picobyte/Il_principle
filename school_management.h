@@ -80,8 +80,8 @@ private:
     QListWidgetItem item[30];
 public:
     StatsTab();
-public slots:
-    void statClicked(QListWidgetItem* item);
+/*public slots:
+    void statClicked(QListWidgetItem* item);*/
 };
 
 
