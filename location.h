@@ -67,16 +67,16 @@ public:
     {
         int classindex = 0;
         // try {
-        for (QHash<int, QString>::iterator it = Game.ClassAssignments.AssignedClassrooms.Keys.begin();
-                it != Game.ClassAssignments.AssignedClassrooms.Keys.end(); ++it) {
+        for (QHash<int, QString>::iterator it = Game::ClassAssignments.AssignedClassrooms.Keys.begin();
+                it != Game::ClassAssignments.AssignedClassrooms.Keys.end(); ++it) {
 
-            if (Game.ClassAssignments.AssignedClassrooms[it.key()].Equals(Name))
+            if (Game::ClassAssignments.AssignedClassrooms[it.key()].Equals(Name))
                 classindex = it.key();
         }
         // }
         SchoolSubject CurrentSubject;
         if (classindex > 0)
-            return Game.GetSubject(Game.ClassAssignments.AssignedSubjects[classindex]);
+            return Game::GetSubject(Game::ClassAssignments.AssignedSubjects[classindex]);
 
         return NULL;
     }
@@ -253,7 +253,7 @@ public:
         //object obj = occupantLock;
         //ObjectFlowControl.CheckForSyncLockOnValueType(obj);
         // lock (obj) {
-        if (P != Game.HeadTeacher && !Occupants.contains(P.Name))
+        if (P != Game::HeadTeacher && !Occupants.contains(P.Name))
             Occupants.Add(P.Name, P);
         // }
     }
@@ -274,9 +274,9 @@ public:
         //ObjectFlowControl.CheckForSyncLockOnValueType(obj);
         // lock (obj) {
         QList<Item> ActiveItems = Inventory.GetSingleActiveItems();
-        if (ActiveItems.count() > 0 && Game.RNG.Next(5) == 0) {
+        if (ActiveItems.count() > 0 && Game::RNG.Next(5) == 0) {
 
-            Item Itm = ActiveItems[Game.RNG.Next(ActiveItems.count() - 1)];
+            Item Itm = ActiveItems[Game::RNG.Next(ActiveItems.count() - 1)];
             if (Itm.ShouldBePickedUpBy(Per)) {
                 Per.Inventory.AddInventory(Itm);
                 Inventory.RemoveSpecific(Itm);
@@ -288,9 +288,9 @@ public:
     {
         QString GetUILocationName;
         if (!DisplayName.isEmpty())
-            return ((SecurityLevel > 0 && !Game.HeadTeacher.Inventory.HasKey(this)) ? (DisplayName + " (\ud83d\udd12)") : DisplayName);
+            return ((SecurityLevel > 0 && !Game::HeadTeacher.Inventory.HasKey(this)) ? (DisplayName + " (\ud83d\udd12)") : DisplayName);
 
-        return ((SecurityLevel > 0 && !Game.HeadTeacher.Inventory.HasKey(this)) ? (Name + " (\ud83d\udd12)") : Name);
+        return ((SecurityLevel > 0 && !Game::HeadTeacher.Inventory.HasKey(this)) ? (Name + " (\ud83d\udd12)") : Name);
     }
     QString ToString()
     {
@@ -372,8 +372,8 @@ public:
             bool nudity = false;
             if (room->region == Region::School) {
                 // try {
-                for (IEnumerator<Rule>::iterator rule = Game.ListOfRules.Values.begin();
-                        rule != Game.ListOfRules.Values.end(); ++rule) {
+                for (IEnumerator<Rule>::iterator rule = Game::ListOfRules.Values.begin();
+                        rule != Game::ListOfRules.Values.end(); ++rule) {
                     if (rule->ActiveRuleChoice != NULL) {
                         if (room->GetActualSpecialOutfit() == OutfitType::Swimsuit) {
                             if (rule->ActiveRuleChoice.NudeSwimsuit) {
@@ -391,32 +391,32 @@ public:
             } else if (room->Occupants.Values.Average((Location._ClosureS__.SI154_0 == NULL) ? (Location._ClosureS__.SI154_0 = new Func<Person, double>(Location._ClosureS__.SI._LambdaS__154_0)) : Location._ClosureS__.SI154_0) < 30.0) {
                 nudity = true;
             }
-            if (nudity && Game.GameTime.CheckDaylightTime == Daylight.Night && File.Exists(Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, room->Imagelocation, "crowdednudenight.jpg")))
-                return Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, room->Imagelocation, "crowdednudenight.jpg");
+            if (nudity && Game::GameTime.CheckDaylightTime == Daylight.Night && File.Exists(Path.Combine(Game::GamePath, Game::TheSchool.FolderLocation, room->Imagelocation, "crowdednudenight.jpg")))
+                return Path.Combine(Game::GamePath, Game::TheSchool.FolderLocation, room->Imagelocation, "crowdednudenight.jpg");
 
-            if (nudity && (Game.GameTime.CheckDaylightTime == Daylight.Sunrise || Game.GameTime.CheckDaylightTime == Daylight.Sunset) && File.Exists(Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, room->Imagelocation, "crowdednudesunset.jpg")))
-                return Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, room->Imagelocation, "crowdednudesunset.jpg");
+            if (nudity && (Game::GameTime.CheckDaylightTime == Daylight.Sunrise || Game::GameTime.CheckDaylightTime == Daylight.Sunset) && File.Exists(Path.Combine(Game::GamePath, Game::TheSchool.FolderLocation, room->Imagelocation, "crowdednudesunset.jpg")))
+                return Path.Combine(Game::GamePath, Game::TheSchool.FolderLocation, room->Imagelocation, "crowdednudesunset.jpg");
 
-            if (nudity && Game.GameTime.CheckDaylightTime == Daylight.Day && File.Exists(Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, room->Imagelocation, "crowdednude.jpg")))
-                return Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, room->Imagelocation, "crowdednude.jpg");
+            if (nudity && Game::GameTime.CheckDaylightTime == Daylight.Day && File.Exists(Path.Combine(Game::GamePath, Game::TheSchool.FolderLocation, room->Imagelocation, "crowdednude.jpg")))
+                return Path.Combine(Game::GamePath, Game::TheSchool.FolderLocation, room->Imagelocation, "crowdednude.jpg");
 
-            if (Game.GameTime.CheckDaylightTime == Daylight.Night && File.Exists(Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, room->Imagelocation, "crowdednight.jpg")))
-                return Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, room->Imagelocation, "crowdednight.jpg");
+            if (Game::GameTime.CheckDaylightTime == Daylight.Night && File.Exists(Path.Combine(Game::GamePath, Game::TheSchool.FolderLocation, room->Imagelocation, "crowdednight.jpg")))
+                return Path.Combine(Game::GamePath, Game::TheSchool.FolderLocation, room->Imagelocation, "crowdednight.jpg");
 
-            if ((Game.GameTime.CheckDaylightTime == Daylight.Sunrise || Game.GameTime.CheckDaylightTime == Daylight.Sunset) && File.Exists(Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, room->Imagelocation, "crowdedsunset.jpg")))
-                return Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, room->Imagelocation, "crowdedsunset.jpg");
+            if ((Game::GameTime.CheckDaylightTime == Daylight.Sunrise || Game::GameTime.CheckDaylightTime == Daylight.Sunset) && File.Exists(Path.Combine(Game::GamePath, Game::TheSchool.FolderLocation, room->Imagelocation, "crowdedsunset.jpg")))
+                return Path.Combine(Game::GamePath, Game::TheSchool.FolderLocation, room->Imagelocation, "crowdedsunset.jpg");
 
-            if (Game.GameTime.CheckDaylightTime == Daylight.Day && File.Exists(Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, room->Imagelocation, "crowded.jpg")))
-                return Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, room->Imagelocation, "crowded.jpg");
+            if (Game::GameTime.CheckDaylightTime == Daylight.Day && File.Exists(Path.Combine(Game::GamePath, Game::TheSchool.FolderLocation, room->Imagelocation, "crowded.jpg")))
+                return Path.Combine(Game::GamePath, Game::TheSchool.FolderLocation, room->Imagelocation, "crowded.jpg");
         }
 
-        if (Game.GameTime.CheckDaylightTime == Daylight.Night && File.Exists(Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, room->Imagelocation, "emptynight.jpg")))
-            return Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, room->Imagelocation, "emptynight.jpg");
+        if (Game::GameTime.CheckDaylightTime == Daylight.Night && File.Exists(Path.Combine(Game::GamePath, Game::TheSchool.FolderLocation, room->Imagelocation, "emptynight.jpg")))
+            return Path.Combine(Game::GamePath, Game::TheSchool.FolderLocation, room->Imagelocation, "emptynight.jpg");
 
-        if ((Game.GameTime.CheckDaylightTime == Daylight.Sunrise || Game.GameTime.CheckDaylightTime == Daylight.Sunset) && File.Exists(Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, room->Imagelocation, "emptysunset.jpg")))
-            return Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, room->Imagelocation, "emptysunset.jpg");
+        if ((Game::GameTime.CheckDaylightTime == Daylight.Sunrise || Game::GameTime.CheckDaylightTime == Daylight.Sunset) && File.Exists(Path.Combine(Game::GamePath, Game::TheSchool.FolderLocation, room->Imagelocation, "emptysunset.jpg")))
+            return Path.Combine(Game::GamePath, Game::TheSchool.FolderLocation, room->Imagelocation, "emptysunset.jpg");
 
-        QString imgpath = Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, room->Imagelocation, "empty.jpg");
+        QString imgpath = Path.Combine(Game::GamePath, Game::TheSchool.FolderLocation, room->Imagelocation, "empty.jpg");
         return File.Exists(imgpath) ? imgpath : "";
 
     }
@@ -425,7 +425,7 @@ public:
         //object obj = Location.updateLocSelectorLock;
         //ObjectFlowControl.CheckForSyncLockOnValueType(obj);
         // lock (obj) {
-        if (Location.lastSelectorTimestamp != Game.GameTime.CurrentTimestamp) {
+        if (Location.lastSelectorTimestamp != Game::GameTime.CurrentTimestamp) {
 
             // try {
             for (QHash<Gender, WeightedRandomizer<Location> >::iterator it = locationSelector.Values.begin();
@@ -434,8 +434,8 @@ public:
 
             // }
             // try {
-            for (IEnumerator<Location>::iterator room = Game.TheSchool.DictOfLocation.Values.begin();
-                    room != Game.TheSchool.DictOfLocation.Values.end(); ++room) {
+            for (IEnumerator<Location>::iterator room = Game::TheSchool.DictOfLocation.Values.begin();
+                    room != Game::TheSchool.DictOfLocation.Values.end(); ++room) {
 
                 PeopleAmount visitFrequency = room->GetActualVisitFrequency();
                 // try {
@@ -462,7 +462,7 @@ public:
                 // }
             }
             // }
-            lastSelectorTimestamp = Game.GameTime.CurrentTimestamp;
+            lastSelectorTimestamp = Game::GameTime.CurrentTimestamp;
         }
         // }
         return locationSelector[ForGender].GetRandomItem();

@@ -1,20 +1,35 @@
 #ifndef TIMEDATA_H
 #define TIMEDATA_H
 #include "json_macros.h"
+#include <QString>
 
 class TimeData {
 public:
-	int Hour;
-	int Minute;
-
-	TimeData(int h, int m = 0): Hour(h), Minute(m) {}
-	void init(QJsonObject *d)
-	{
-		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			__IF_VAR_FROM_JSON_AS(it, Hour, toInt)
-			else __IF_VAR_FROM_JSON_AS(it, Minute, toInt)
-		}
-	}
+    unsigned Hour;
+    unsigned Minute;
+    const unsigned Ticks() const
+    {
+        return Hour * 60 + Minute;
+    }
+    void init(QJsonObject *d)
+    {
+        Hour = d->value("Hour").toInt();
+        Minute = d->value("Minute").toInt();
+    }
+    TimeData(unsigned Hour = 0, unsigned Minute = 0)
+    {
+        unsigned tick = Hour * 60 + Minute;
+        Hour = tick / 60 < 0 ? 0 : (tick / 60 > 23 ? 23 : tick / 60);
+        Minute = tick % 60 < 0 ? 0 : (tick % 60 > 59 ? 59 : tick % 60);
+    }
+    inline bool operator==(const TimeData& other){
+        return Ticks() == other.Ticks();
+    }
+    int cmp(TimeData& other)
+    {
+        return Ticks() - other.Ticks();
+    }
+    QString& ToString();
 };
 
 #endif // TIMEDATA_H

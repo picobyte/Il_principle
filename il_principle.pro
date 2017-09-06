@@ -51,6 +51,13 @@ HEADERS += \
         statuseffect.h \
         mind.h \
         range.h \
+        classroomassignments.h \
+gamecalendar.h \
+notificationmanager.h \
+personrelationshipdatabase.h \
+populationgenerator.h \
+statisticsmanager.h \
+        time.h \
         adjustment.h \
         person.h \
         visualevent.h \

@@ -491,7 +491,7 @@ public:
             else __IF_VAR_FROM_JSON_AS(it, GoodInSubject, toString)
             else __IF_LIST_FROM_JSON_TYPED(it, TeacherSubjects, toString)
             //QHash<SchoolSubjectFamily, double> SubjectFamilyExp
-            else __IF_HASH_FROM_JSON_TYPED(it, SubjectInstanceExp, double)
+            else __IF_HASH_FROM_JSON_TYPED(it, SubjectInstanceExp, toDouble)
             else __IF_OBJ_FROM_JSON(it, subjectStatLock)
             else __IF_OBJ_FROM_JSON(it, DictProposalSupport)
             else __IF_VAR_FROM_JSON_AS(it, HasDetention, toBool)

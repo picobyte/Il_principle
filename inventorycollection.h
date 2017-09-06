@@ -187,7 +187,7 @@ public:
     }
     int SubtractInventory(QString displayName)
     {
-        if (!ContainsKey(displayName)) {
+        if (!ContainsKey(displayName))
             return 0;
 
         InventoryList expr_14 = base[displayName];

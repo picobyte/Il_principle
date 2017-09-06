@@ -175,6 +175,32 @@ enum class FacialExpressions
     Ahegao
 };
 
+enum class EventDayTypes
+{
+        All,
+        Weekday,
+        Weekend,
+        Schoolday,
+        Monday,
+        Tuesday,
+        Wednesday,
+        Thursday,
+        Friday,
+        Saturday,
+        Sunday
+};
+
+enum class DayOfWeek
+{
+    Monday,
+    Tuesday,
+    Wednesday,
+    Thursday,
+    Friday,
+    Saturday,
+    Sunday
+};
+
 enum class RuleStatus
 {
     Available,

@@ -17,6 +17,7 @@
 #include <QList>
 #include <QLocale>
 #include <QHash>
+#include <QPushButton>
 #include "person.h"
 #include "account.h"
 #include "clubs.h"
@@ -27,67 +28,76 @@
 #include "item.h"
 #include "statuseffect.h"
 #include "schoolupgrade.h"
-#include "rule.h"
+#include "schoolclass.h"
 #include "eventstructmanager.h"
 
-//#include
+#include "classroomassignments.h"
+#include "gamecalendar.h"
+#include "notificationmanager.h"
+#include "personrelationshipdatabase.h"
+#include "populationgenerator.h"
+#include "statisticsmanager.h"
+#include "gtime.h"
+#include "personschedulehandler.h"
+#include "gamescenarioconfig.h"
+
 
 
 class Game {
+public:
     //int seed = Environment.TickCount;
     //ThreadLocal<Random> _rng = new ThreadLocal<Random>(new Func<Random>(_ClosureS__.SI._LambdaS__0_0));
-    QMap<QString, Account> DictOfAccounts;
-    QMap<QString, Clubs> ListOfClubs;
-    QHash<long, Person> DictOfPersonIDs;
-    QHash<QString, Person> DictOfPersonNames;
-    QMap<QString, Person> HiredTeacher;
-    QMap<QString, Person> NotHiredTeacher;
-    QMap<QString, Person> AvailableStaff;
-    QMap<QString, Person> HiredStaff;
-    QHash<QString, Person> OwnStudents;
-    QHash<QString, Person> OtherStudents;
-    QHash<QString, Person> ListOfPTA;
-    QHash<QString, Person> UnemployedPersons;
-    QList<Person> occupandlist;
-    QList<SchoolClass> ListSchoolClasses;
-    QHash<QString, StatusEffect> DictOfStatusEffects;
-    QHash<QString, Stat> DictOfStats;
-    QHash<QString, Skill> DictOfSkills;
-    QList<QString> _ListOfJobs;
-    ObservableCollection<SchoolUpgrade> ListOfSchoolUpgrades;
-    QMap<QString, Rule> ListOfRules;
-    QHash<QString, Item> ListOfBaseItems;
-    QHash<QString, SchoolSubject> DictOfSubjects;
-    QList<PersonScheduleHandler> ListOfScheduleHandlers;
-    QHash<QString, double> CachedGlobalStats;
-    QList<Button> lstbutton;
-    QList<long> FavoriteStudentList;
-public:
-    QLocale GameCulture; //orig: CultureInfo GameCulture;
-    StatisticsManager StatisticsManager;
-    EventStructManager StructManager;
-    NotificationManager NotifyManager;
-    PersonRelationshipDatabase RelationshipDatabase;
-    TheWorld TheSchool;
-    ClassroomAssignments ClassAssignments;
-    GameCalendar SchoolCalendar;
-    Time GameTime;
-    Person HeadTeacher;
+    static QMap<QString, Account> DictOfAccounts;
+    static QMap<QString, Clubs> ListOfClubs;
+    static QHash<long, Person> DictOfPersonIDs;
+    static QHash<QString, Person> DictOfPersonNames;
+    static QMap<QString, Person> HiredTeacher;
+    static QMap<QString, Person> NotHiredTeacher;
+    static QMap<QString, Person> AvailableStaff;
+    static QMap<QString, Person> HiredStaff;
+    static QHash<QString, Person> OwnStudents;
+    static QHash<QString, Person> OtherStudents;
+    static QHash<QString, Person> ListOfPTA;
+    static QHash<QString, Person> UnemployedPersons;
+    static QList<Person> occupandlist;
+    static QList<SchoolClass> ListSchoolClasses;
+    static QHash<QString, StatusEffect> DictOfStatusEffects;
+    static QHash<QString, Stat> DictOfStats;
+    static QHash<QString, Skill> DictOfSkills;
+    static QList<QString> _ListOfJobs;
+    static QList<SchoolUpgrade> ListOfSchoolUpgrades;
+    static QMap<QString, Rule> ListOfRules;
+    static QHash<QString, Item> ListOfBaseItems;
+    static QHash<QString, SchoolSubject> DictOfSubjects;
+    static QList<PersonScheduleHandler> ListOfScheduleHandlers;
+    static QHash<QString, double> CachedGlobalStats;
+    static QList<QPushButton> lstbutton;
+    static QList<long> FavoriteStudentList;
+    static QLocale GameCulture; //orig: CultureInfo GameCulture;
+    static StatisticsManager StatisticsManager;
+    static EventStructManager StructManager;
+    static NotificationManager NotifyManager;
+    static PersonRelationshipDatabase RelationshipDatabase;
+    static TheWorld TheSchool;
+    static ClassroomAssignments ClassAssignments;
+    static GameCalendar SchoolCalendar;
+    static gTime GameTime;
+    static Person HeadTeacher;
 
-    QString GamePath;
-    QString inteventlog;
-    bool EventLogflag;
-    int DesiredNumSchoolClasses;
-    SchoolClass SpareStudentsClass;
-    GameScenarioConfig ScenarioConfig;
-    PopulationGenerator PopulationManager;
-    int TickCount;
-    int helpercounter;
-    QString LastWorldLocationPath;
-    bool GameInitialized;
-    bool GameLoading;
-    int LastAutosaveDay;
-    bool CheatsUsed;
+    static QString GamePath;
+    static QString inteventlog;
+    static bool EventLogflag;
+    static int DesiredNumSchoolClasses;
+    static SchoolClass SpareStudentsClass;
+    static GameScenarioConfig ScenarioConfig;
+    static PopulationGenerator PopulationManager;
+    static int TickCount;
+    static int helpercounter;
+    static QString LastWorldLocationPath;
+    static bool GameInitialized;
+    static bool GameLoading;
+    static int LastAutosaveDay;
+    static bool CheatsUsed;
     const Random RNG() const
     {
         return _rng.Value;

@@ -1,5 +1,8 @@
-#ifndef VISUALEVENT_H
-#define VISUALEVENT_H
+#ifndef gVISUALEVENT_H
+#define gVISUALEVENT_H
+#include <QString>
+#include <QHash>
+#include <QDateTime>
 #include "json_macros.h"
 
 class VisualEvent {
@@ -653,4 +656,4 @@ public:
     }*/
 };
 
-#endif // VISUALEVENT_H
+#endif // gVISUALEVENT_H

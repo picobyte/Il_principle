@@ -2,8 +2,8 @@
 #define CLUBS_H
 #include <QString>
 #include <QList>
-#include "person.h"
 #include "json_macros.h"
+#include "person.h"
 #include "statchange.h"
 #include "bodysizechange.h"
 #include "timedata.h"

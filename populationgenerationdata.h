@@ -3,14 +3,13 @@
 #include "json_macros.h"
 
 class PopulationGenerationData {
+	QList<PopulationGenerationGenderSpecificData> GenderSpecific;
+	QList<StatRange> StatRanges;
 public:
 	SizeRange AgeRange;
-	QList<PopulationGenerationGenderSpecificData> GenderSpecific;
 	double MalePercentage;
 	double FemalePercentage;
 	double FutanariPercentage;
-	QList<StatRange> StatRanges;
-
 	PopulationGenerationData(QJsonObject *d = NULL)
 	{
 		if (d) init(d);
@@ -18,14 +17,15 @@ public:
 	void init(QJsonObject *d)
 	{
 		for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-			//SizeRange AgeRange
-			//QList<PopulationGenerationGenderSpecificData> GenderSpecific
-			__IF_VAR_FROM_JSON_AS(it, MalePercentage, toDouble)
+			// *INDENT-OFF*
+			__IF_OBJ_FROM_JSON(it, AgeRange)
+			else __IF_OBJLIST_FROM_JSON(it, GenderSpecific, PopulationGenerationGenderSpecificData)
+			else __IF_VAR_FROM_JSON_AS(it, MalePercentage, toDouble)
 			else __IF_VAR_FROM_JSON_AS(it, FemalePercentage, toDouble)
 			else __IF_VAR_FROM_JSON_AS(it, FutanariPercentage, toDouble)
-			//QList<StatRange> StatRanges
+			else __IF_OBJLIST_FROM_JSON(it, StatRanges, StatRange)
+			// *INDENT-ON*
 		}
 	}
 };
-
 #endif // POPULATIONGENERATIONDATA_H

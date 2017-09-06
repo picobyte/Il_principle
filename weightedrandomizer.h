@@ -34,5 +34,6 @@ public:
 	}
 
 	WeightedRandomizer(QJsonObject *d = NULL) {}
+};
 
 #endif // WEIGHTEDRANDOMIZER_H
