@@ -18,9 +18,9 @@ public:
     virtual QSize sizeHint() const;
     QPixmap scaledPixmap() const;
     void toggle_blur();
-/*public slots:
+public slots:
     void setPixmap ( const QPixmap &);
-    void resizeEvent(QResizeEvent *);*/
+    void resizeEvent(QResizeEvent *);
 private:
     QPixmap* pix;
     QPixmap blur;

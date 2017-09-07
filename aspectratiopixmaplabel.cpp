@@ -10,14 +10,14 @@ AspectRatioPixmapLabel::AspectRatioPixmapLabel(QWidget *parent) :
     setScaledContents(false);
 }
 
-/*void AspectRatioPixmapLabel::setPixmap (const QPixmap & p)
+void AspectRatioPixmapLabel::setPixmap (const QPixmap & p)
 {
     orig = p;
     pix = &orig;
     blur = QPixmap();
     is_blurred = false;
     QLabel::setPixmap(scaledPixmap());
-}*/
+}
 
 int AspectRatioPixmapLabel::heightForWidth(int width) const
 {
@@ -35,11 +35,11 @@ QPixmap AspectRatioPixmapLabel::scaledPixmap() const
     return pix->scaled(size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
-/*void AspectRatioPixmapLabel::resizeEvent(QResizeEvent * e)
+void AspectRatioPixmapLabel::resizeEvent(QResizeEvent * e)
 {
     if(!pix->isNull())
         QLabel::setPixmap(scaledPixmap());
-}*/
+}
 
 void AspectRatioPixmapLabel::toggle_blur()
 {
