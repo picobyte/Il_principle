@@ -18,6 +18,7 @@
 #include <QLocale>
 #include <QHash>
 #include <QPushButton>
+
 #include "person.h"
 #include "account.h"
 #include "clubs.h"
@@ -72,9 +73,9 @@ public:
     static QList<PersonScheduleHandler> ListOfScheduleHandlers;
     static QHash<QString, double> CachedGlobalStats;
     static QList<QPushButton> lstbutton;
-    static QList<long> FavoriteStudentList;
+    static QSet<long> FavoriteStudentList;
     static QLocale GameCulture; //orig: CultureInfo GameCulture;
-    static StatisticsManager StatisticsManager;
+    static StatisticsManager statisticsManager;
     static EventStructManager StructManager;
     static NotificationManager NotifyManager;
     static PersonRelationshipDatabase RelationshipDatabase;
@@ -82,7 +83,7 @@ public:
     static ClassroomAssignments ClassAssignments;
     static GameCalendar SchoolCalendar;
     static gTime GameTime;
-    static Person HeadTeacher;
+    static Person* HeadTeacher;
 
     static QString GamePath;
     static QString inteventlog;
@@ -102,60 +103,54 @@ public:
     {
         return _rng.Value;
     }
-    const Location PlayerLocation() const
+    Location* PlayerLocation() const
     {
-        Location PlayerLocation;
         if (HeadTeacher == NULL)
-        {
             return NULL;
-                }
-                return HeadTeacher.CurrentLocation;
+
+        return &HeadTeacher->CurrentLocation;
     }
-    Person GetPerson(long PerID)
+    Person* GetPerson(long PerID)
     {
-        Person GetPerson;
-        if (DictOfPersonIDs.ContainsKey(PerID))
-            return DictOfPersonIDs[PerID];
+        if (DictOfPersonIDs.contains(PerID))
+            return &DictOfPersonIDs[PerID];
 
         return NULL;
     }
-    Person GetPerson(QString PerName)
+    Person* GetPerson(QString PerName)
     {
-        Person GetPerson;
-        if (!$1.isEmpty() && DictOfPersonNames.ContainsKey(PerName))
-            return DictOfPersonNames[PerName];
+        if (DictOfPersonNames.contains(PerName))
+            return &DictOfPersonNames[PerName];
 
         return NULL;
     }
     QString GetPersonDisplayName(QString PerName)
     {
-        Person per = GetPerson(PerName);
-        QString GetPersonDisplayName;
+        Person* per = GetPerson(PerName);
         if (per != NULL)
-            return per.DisplayName;
+            return per->DisplayName;
 
         return PerName;
     }
-    Location GetLocation(QString LocName)
+    static Location* GetLocation(QString LocName)
     {
-        Location GetLocation;
-        if (!$1.isEmpty() && TheSchool.DictOfLocation.ContainsKey(LocName))
-            return TheSchool.DictOfLocation[LocName];
+        if (TheSchool.DictOfLocation.contains(LocName))
+            return &TheSchool.DictOfLocation[LocName];
 
         return NULL;
     }
-    Location GetWorkForJob(QString JobName)
+    Location* GetWorkForJob(QString JobName)
     {
         Predicate<LocationJobDetails> SI1 = (LocationJobDetails j) => JobName.Equals(j.JobTitle) && !j.IsFullyStaffed();
-        return TheSchool.DictOfLocation.Values.FirstOrDefault((Location loc) => loc.AssociatedJobs.Exists(SI1));
+        return &TheSchool.DictOfLocation.Values.FirstOrDefault((Location loc) => loc.AssociatedJobs.Exists(SI1));
     }
     Clubs* GetClub(QString ClubName)
     {
         if (ClubName.isEmpty())
             return NULL;
 
-        if (ListOfClubs.ContainsKey(ClubName))
-            return ListOfClubs[ClubName];
+        if (ListOfClubs.contains(ClubName))
+            return &ListOfClubs[ClubName];
 
         // try {
         for (IEnumerator<Clubs>::iterator it = ListOfClubs.Values.begin();
@@ -164,15 +159,15 @@ public:
             for (QList<ClubLevel>::iterator it2 = Club->ClubLevels.begin();
                     it2 != Club->ClubLevels.end(); ++it2)
                 if (enumerator2.Current.Name.Equals(ClubName))
-                    return *Club;
+                    return &(*Club);
             // }
         }
         // }
         return NULL;
     }
-    SchoolSubject* GetSubject(QString SubjName)
+    static SchoolSubject* GetSubject(QString SubjName)
     {
-        if (DictOfSubjects.ContainsKey(SubjName))
+        if (DictOfSubjects.contains(SubjName))
             return &DictOfSubjects[SubjName];
 
         return NULL;
@@ -189,7 +184,7 @@ public:
             Total -= Per.Salary;
         }
         // }
-        if (!DictOfAccounts.ContainsKey("Staff Salary"))
+        if (!DictOfAccounts.contains("Staff Salary"))
         {
             Account ac = new Account
             {

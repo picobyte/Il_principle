@@ -26,8 +26,8 @@ class Location {
     //readonly object pickupLock;
     QHash<Gender, WeightedRandomizer<Location> > locationSelector;
     //object updateLocSelectorLock;
-    QList<LocationJobDetails> AssociatedJobs;
 public:
+    QList<LocationJobDetails> AssociatedJobs;
     enum class RoomPopWeight
     {
         VerySparse = 1,
@@ -248,21 +248,21 @@ public:
     {
         return LocationModifiers.count() > 0;
     }
-    void OccupantEnter(Person P)
+    void OccupantEnter(Person* P)
     {
         //object obj = occupantLock;
         //ObjectFlowControl.CheckForSyncLockOnValueType(obj);
         // lock (obj) {
         if (P != Game::HeadTeacher && !Occupants.contains(P.Name))
-            Occupants.Add(P.Name, P);
+            Occupants.Add(P->Name, P);
         // }
     }
-    void OccupantLeave(Person P)
+    void OccupantLeave(Person* P)
     {
         //object obj = occupantLock;
         //ObjectFlowControl.CheckForSyncLockOnValueType(obj);
         // lock (obj) {
-        Occupants.remove(P.Name);
+        Occupants.remove(P->Name);
         // }
     }
     void LocationInteractions(Person Per)

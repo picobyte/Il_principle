@@ -6,6 +6,7 @@
 
 QT	   += core gui
 QT	   += charts
+QT     += sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -60,6 +61,7 @@ HEADERS += \
         range.h \
         classroomassignments.h \
         calendarentry.h \
+        gamescenarioconfig \
 gamecalendar.h \
 notificationmanager.h \
 personrelationshipdatabase.h \

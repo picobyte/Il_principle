@@ -26,9 +26,9 @@ public:
     void AssignClassrooms(Qt::DayOfWeek Day, int Slot);
     void UnassignClassrooms()
     {
-        AssignedClassrooms.Clear();
-        AssignedTeachers.Clear();
-        AssignedSubjects.Clear();
+        AssignedClassrooms.clear();
+        AssignedTeachers.clear();
+        AssignedSubjects.clear();
     }
     void CheckUpdate();
 };

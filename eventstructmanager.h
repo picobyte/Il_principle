@@ -44,7 +44,7 @@ public:
     bool IsValidEventStruct(EventStructDefinition sd)
     {
         // try {
-        for (QHash<QString, VarType>::iterator it = sd.MemberDefinitions.Keys.begin();
+        for (QHash<QString, QVariant>::iterator it = sd.MemberDefinitions.Keys.begin();
                 it != sd.MemberDefinitions.Keys.end(); ++it) {
 
             QString memberDef = enumerator.Current;

@@ -16,6 +16,7 @@
 #include "inventorycollection.h"
 #include "locationjobdetails.h"
 #include "mind.h"
+#include "visualevent.h"
 
 class Game;
 class Person {
@@ -57,8 +58,8 @@ public:
     {
         if (d) init(d);
         // try {
-        for (QHash<QString, Stat>::iterator it = Game::DictOfStats.Keys.begin();
-                it != Game::DictOfStats.Keys.end(); ++it)
+        for (QHash<QString, Stat>::iterator it = Game::DictOfStats.begin();
+                it != Game::DictOfStats.end(); ++it)
             SetStat(*it, 0.0);
         // }
         if (!Game::GameLoading)
@@ -69,7 +70,7 @@ public:
     QString Lastname;
     QString CustomForename;
     Gender gender;
-    QDateTime Birthday;
+    QDate Birthday;
     bool SpecialPerson;
     QString TextColor;
     QString InitParams;
@@ -78,7 +79,7 @@ public:
     bool Virgin;
     bool AnalVirgin;
     QString Job;
-    uint intJobSlot;
+    int intJobSlot;
     int Salary;
     //static readonly object unemployedQListLock = RuntimeHelpers.GetObjectValue(new object());
     //static readonly object jobLock = RuntimeHelpers.GetObjectValue(new object());
@@ -132,8 +133,8 @@ public:
     QString Trait;
     QHash<QString, int> Skills;
     QList<uint> AttachedEventIDs;
-    const static char TRAIT_SEPARATOR_CHAR = ',';
-    const QString Name() const
+    const static char TRAIT_SEPARATOR_CHAR;
+    QString Name() const
     {
         if (Lastname.isNull() || Lastname.contains(QRegExp("^\\s*$")))
             return Forename;
@@ -143,14 +144,14 @@ public:
 
         return Forename + " " + Lastname;
     }
-    const QString DisplayForename() const
+    QString DisplayForename() const
     {
         if (CustomForename.isNull() || CustomForename.contains(QRegExp("^\\s*$")))
             return Forename;
 
         return CustomForename;
     }
-    const QString DisplayName() const
+    QString DisplayName() const
     {
         QString displayForename = DisplayForename();
         if (Lastname.isNull() || Lastname.contains(QRegExp("^\\s*$")))
@@ -161,7 +162,7 @@ public:
 
         return displayForename + " " + Lastname;
     }
-    const QString NameAndTitle() const
+    QString NameAndTitle() const
     {
         QString sb = DisplayName();
         QTextStream(&sb) << " (" << Age() << ")";
@@ -177,7 +178,7 @@ public:
 
         return sb;
     }
-    const int Age() const
+    int Age() const
     {
         // checked {
         int age = Game::SchoolCalendar.TodayDate.Year - Birthday.Year;
@@ -188,7 +189,7 @@ public:
         return age;
         // }
     }
-    const SexualPref SexualOrientation() const
+    SexualPref SexualOrientation() const
     {
         double likesMale = GetGenderPreference(Gender::Male);
         double likesFemale = GetGenderPreference(Gender::Female);
@@ -223,17 +224,17 @@ public:
     }
     LocationJobDetails *const JobDetails() const
     {
-        const Location* w = Work();
+        Location* w = Work();
 
         if (w && w->AssociatedJobs.count() > intJobSlot)
-            return w->AssociatedJobs[(int)intJobSlot];
+            return &w->AssociatedJobs[intJobSlot];
 
         return NULL;
     }
     Person *const Father() const
     {
         if (Game::DictOfPersonNames.contains(intFather))
-            return Game::DictOfPersonNames[intFather];
+            return &Game::DictOfPersonNames[intFather];
 
         return NULL;
     }
@@ -244,7 +245,7 @@ public:
     Person *const Mother() const
     {
         if (Game::DictOfPersonNames.contains(intMother))
-            return Game::DictOfPersonNames[intMother];
+            return &Game::DictOfPersonNames[intMother];
 
         return NULL;
     }
@@ -258,43 +259,43 @@ public:
             return Game::HeadTeacher;
 
         if (Game::DictOfPersonNames.contains(intLove))
-            return Game::DictOfPersonNames[intLove];
+            return &Game::DictOfPersonNames[intLove];
 
         return NULL;
     }
     void Love(Person *v)
     {
-        intLove = v ? (*v == Game::HeadTeacher ? "Principal" : intLove = v->Name) : "";
+        intLove = v ? (v == Game::HeadTeacher ? "Principal" : intLove = v->Name()) : "";
     }
-    const bool IsCouple() const
+    bool IsCouple() const
     {
-        return !QString.isEmpty(intLove);
+        return !intLove.isEmpty();
     }
-    const bool IsParent() const
+    bool IsParent() const
     {
         return Children.count() > 0;
     }
-    const bool IsFavorite() const
+    bool IsFavorite() const
     {
         return Game::FavoriteStudentList.contains(UID);
     }
     void IsFavorite(bool& value)
     {
         if (value) {
-            if (!IsFavorite)
-                Game::FavoriteStudentList.Add(UID);
+            if (!IsFavorite())
+                Game::FavoriteStudentList.insert(UID);
         } else {
-            Game::FavoriteStudentList.Remove(UID);
+            Game::FavoriteStudentList.remove(UID);
         }
     }
-    const double ProposalSupport() const
+    double ProposalSupport(QString& ProposalName) const
     {
         if (DictProposalSupport.contains(ProposalName))
             return DictProposalSupport[ProposalName];
         else
             return 0.0;
     }
-    void ProposalSupport(double& value)
+    void ProposalSupport(QString& ProposalName, double& value)
     {
         if (value == 0.0) {
             if (DictProposalSupport.contains(ProposalName))
@@ -303,7 +304,7 @@ public:
             DictProposalSupport[ProposalName] = value;
         }
     }
-    const Clubs* Club() const
+    Clubs* Club() const
     {
         return &Game::GetClub(ClubMember);
     }
@@ -311,94 +312,94 @@ public:
     {
         ClubMember = v ? v->Name : "";
     }
-    const Body::Size BreastSize() const
+    Body::Size BreastSize() const
     {
-        return (Body::Size)round(intBreastSize < 0.0 ? 0.0 : (intBreastSize > 10.0 ? 10.0 : intBreastSize), 0);
+        return static_cast<Body::Size>(round(intBreastSize < 0.0 ? 0.0 : (intBreastSize > 10.0 ? 10.0 : intBreastSize)));
     }
     void BreastSize(Body::Size& value)
     {
         if (gender == Gender::Male)
             intBreastSize = 0.0;
         else
-            intBreastSize = value < 0 ? 0 : (value > 10 ? 10 : value);
+            intBreastSize = static_cast<double>(value);
     }
-    const Body::Size StomachSize() const
+    Body::Size StomachSize() const
     {
-        return (Body::Size)round(intStomachSize < 0.0 ? 0.0 : (intStomachSize > 10.0 ? 10.0 : intStomachSize), 0);
+        return static_cast<Body::Size>(round(intStomachSize < 0.0 ? 0.0 : (intStomachSize > 10.0 ? 10.0 : intStomachSize)));
     }
     void StomachSize(Body::Size& value)
     {
         if (gender == Gender::Male)
             intStomachSize = 0.0;
         else
-            intStomachSize = value < 0 ? 0 : (value > 10 ? 10 : value);
+            intStomachSize = static_cast<double>(value);
     }
-    const Body::Size PenisSize() const
+    Body::Size PenisSize() const
     {
-        return (Body::Size)round(intPenisSize < 0.0 ? 0.0 : (intPenisSize > 10.0 ? 10.0 : intPenisSize), 0);
+        return static_cast<Body::Size>(round(intPenisSize < 0.0 ? 0.0 : (intPenisSize > 10.0 ? 10.0 : intPenisSize)));
     }
     void PenisSize(Body::Size& value)
     {
         if (gender == Gender::Female)
             intPenisSize = 0.0;
         else
-            intPenisSize = value < 1 ? 1 : (value > 10 ? 10 : value);
+            intPenisSize = value < Body::Size::Tiny ? 1.0 : static_cast<double>(value);
     }
-    const Body::Size TesticleSize() const
+    Body::Size TesticleSize() const
     {
-        return (Body::Size)round(intTesticleSize < 0.0 ? 0.0 : (intTesticleSize > 10.0 ? 10.0 : intTesticleSize), 0);
+        return static_cast<Body::Size>(round(intTesticleSize < 0.0 ? 0.0 : (intTesticleSize > 10.0 ? 10.0 : intTesticleSize)));
     }
     void TesticleSize(Body::Size& value)
     {
         if (gender == Gender::Female)
             intTesticleSize = 0.0;
         else
-            intTesticleSize = value < 1 ? 1 : (value > 10 ? 10 : value);
+            intTesticleSize = value < Body::Size::Tiny ?1.0 : static_cast<double>(value);
     }
-    const Body::Size VaginaSize() const
+    Body::Size VaginaSize() const
     {
-        return (Body::Size)round(intVaginaSize < 0.0 ? 0.0 : (intVaginaSize > 10.0 ? 10.0 : intVaginaSize), 0);
+        return static_cast<Body::Size>(round(intVaginaSize < 0.0 ? 0.0 : (intVaginaSize > 10.0 ? 10.0 : intVaginaSize)));
     }
     void VaginaSize(Body::Size& value)
     {
-        intVaginaSize = (gender == Gender::Male ? 0.0 : (value < 1.0 ? 1.0 : (value > 10.0 ? 10.0 : value));
+        intVaginaSize = (gender == Gender::Male ? 0.0 : (value < Body::Size::Tiny ? 1.0 : static_cast<double>(value)));
     }
-    const Body::Size AnalSize() const
+    Body::Size AnalSize() const
     {
-        return (Body::Size)round(intAnalSize < 0.0 ? 0.0 : (intAnalSize > 10.0 ? 10.0 : intAnalSize), 0);
+        return static_cast<Body::Size>(round(intAnalSize < 0.0 ? 0.0 : (intAnalSize > 10.0 ? 10.0 : intAnalSize)));
     }
     void AnalSize(Body::Size& value)
     {
-        intAnalSize = v < 1 ? 1 : (v > 10 ? 10 : v);
+        intAnalSize = value < Body::Size::Tiny ? 1.0 : static_cast<double>(value);
     }
-    const Location* CurrentLocation() const
+    Location* CurrentLocation() const
     {
         if (intLoc.isEmpty())
             return NULL;
 
-        return &Game::GetLocation(intLoc);
+        return Game::GetLocation(intLoc);
     }
-    void CurrentLocation(Location& value)
+    void CurrentLocation(Location* value)
     {
         intOldLoc = intLoc;
 
         if (value == NULL) {
             if (!intLoc.isEmpty()) {
-                Game::GetLocation(intLoc).OccupantLeave(this);
+                Game::GetLocation(intLoc)->OccupantLeave(this);
                 intLoc = "";
             }
         } else {
             if (!intLoc.isEmpty())
-                Game::GetLocation(intLoc).OccupantLeave(this);
+                Game::GetLocation(intLoc)->OccupantLeave(this);
 
-            intLoc = value.Name;
-            Game::GetLocation(intLoc).OccupantEnter(this);
+            intLoc = value->Name;
+            Game::GetLocation(intLoc)->OccupantEnter(this);
         }
     }
-    const Location* OldLocation() const
+    Location* OldLocation() const
     {
         if (!intOldLoc.isEmpty())
-            return &Game::GetLocation(intOldLoc);
+            return Game::GetLocation(intOldLoc);
 
         return NULL;
     }
@@ -406,12 +407,12 @@ public:
     {
         intOldLoc = ((v == NULL) ? "" : v->Name);
     }
-    const Location* Home() const
+    Location* Home() const
     {
         if (intHome.isEmpty())
-            return &Game::GetLocation("General Home");
+            return Game::GetLocation("General Home");
 
-        return &Game::GetLocation(intHome);
+        return Game::GetLocation(intHome);
     }
     void Home(Location *v)
     {
@@ -420,12 +421,12 @@ public:
         else
             intHome = v->Name;
     }
-    const Location* Bedroom() const
+    Location* Bedroom() const
     {
         if (intBedroom.isEmpty())
-            return &Game::GetLocation("General Home");
+            return Game::GetLocation("General Home");
 
-        return &Game::GetLocation(intBedroom);
+        return Game::GetLocation(intBedroom);
     }
     void Bedroom(Location *v)
     {
@@ -439,12 +440,12 @@ public:
     {
         return CurrentLocation() == Home() || CurrentLocation() == Bedroom();
     }
-    const Location* Work() const
+    Location* Work() const
     {
         if (intWork.isEmpty())
             return NULL;
 
-        return &Game::GetLocation(intWork);
+        return Game::GetLocation(intWork);
     }
     void Work(Location *value)
     {
@@ -454,9 +455,9 @@ public:
         }
         intWork = value->Name;
     }
-    const QString InventoryName() const
+    QString InventoryName() const
     {
-        return DisplayName;
+        return DisplayName();
     }
     void init(QJsonObject *d)
     {
@@ -530,7 +531,6 @@ public:
             else __IF_VAR_FROM_JSON_AS(it, Trait, toString)
             else __IF_HASH_FROM_JSON_TYPED(it, Skills, toInt)
             else __IF_LIST_FROM_JSON_TYPED(it, AttachedEventIDs, toInt)
-            else __IF_VAR_FROM_JSON_AS(it, ProposalName, toString)
             // *INDENT-ON*
         }
     }
@@ -552,12 +552,13 @@ public:
     }
     bool HasBirthday()
     {
-        QDateTime today = Game::SchoolCalendar.TodayDate;
-        return (Birthday.Day == today.Day && Birthday.Month == today.Month) || (DateTime.IsLeapYear(Birthday.Year) && !DateTime.IsLeapYear(today.Year) && Birthday.Month == 2 && Birthday.Day == 29 && today.Month == 3 && today.Day == 1);
+        QDate today = Game::SchoolCalendar.TodayDate();
+        return (Birthday.day() == today.day() && Birthday.month() == today.month()) ||
+                (Birthday.day() == 29 && today.day() == 1 && today.addDays(-1).day() == 28);
     }
     QString ToString()
     {
-        return Name.prepend("Person: ");
+        return Name().prepend("Person: ");
     }
     double GetGenderPreference(Gender genderName) const
     {
@@ -567,7 +568,7 @@ public:
         //object statusEffects = StatusEffects;
         // lock (statusEffects) {
         // try {
-        for (QList<StatusEffectInstance>::iterator se = StatusEffects.begin();
+        for (QList<StatusEffectInstance>::const_iterator se = StatusEffects.begin();
                 se != StatusEffects.end(); ++se) {
 
             StatusEffect effect = Game::DictOfStatusEffects[se->Name];
@@ -746,7 +747,7 @@ public:
         // lock (obj) {
         LocationJobDetails *jb = JobDetails();
         if (jb != NULL)
-            jb->Staff.removeOne(Name);
+            jb->Staff.removeOne(Name());
 
         Work(NULL);
         intJobSlot = 0u;
@@ -755,10 +756,10 @@ public:
             //object obj2 = Person.unemployedListLock;
             //ObjectFlowControl.CheckForSyncLockOnValueType(obj2);
             // lock (obj2) {
-            if (Game::UnemployedPersons.contains(Name))
-                Game::UnemployedPersons[Name] = this;
+            if (Game::UnemployedPersons.contains(Name()))
+                Game::UnemployedPersons[Name()] = this;
             else
-                Game::UnemployedPersons.Add(Name, this);
+                Game::UnemployedPersons.Add(Name(), this);
             // }
         }
         // }
@@ -820,9 +821,9 @@ public:
         // object obj = subjectStatLock;
         // ObjectFlowControl.CheckForSyncLockOnValueType(obj);
         // lock (obj) {
-        SchoolSubject s = Game::GetSubject(SubjectInstanceName);
+        SchoolSubject* s = Game::GetSubject(SubjectInstanceName);
         if (s != NULL)
-            return s.GetSubjectExp(this);
+            return s->GetSubjectExp(this);
 
         return 0.0;
         // }
@@ -832,9 +833,9 @@ public:
         // object obj = subjectStatLock;
         // ObjectFlowControl.CheckForSyncLockOnValueType(obj);
         // lock (obj) {
-        SchoolSubject s = Game::GetSubject(SubjectInstanceName);
+        SchoolSubject* s = Game::GetSubject(SubjectInstanceName);
         if (s != NULL)
-            s.AddSubjectExp(this, Value);
+            s->AddSubjectExp(this, Value);
         // }
     }
     double GetSubjectFamilyExp(SchoolSubjectFamily SubjectFamily)
@@ -964,7 +965,7 @@ public:
         if (SubjectInstanceExp.contains(SubjectInstanceName))
             SubjectInstanceExp[SubjectInstanceName] = SubjectInstanceExp[SubjectInstanceName] + Value < 0.0 ? 0.0 : (SubjectInstanceExp[SubjectInstanceName] + Value > 100.0 ? 100.0 : SubjectInstanceExp[SubjectInstanceName] + Value);
         else
-            SubjectInstanceExp.inser(SubjectInstanceName, Value < 0.0 ? 0.0 : (Value > 100.0 ? 100.0 : Value));
+            SubjectInstanceExp.insert(SubjectInstanceName, Value < 0.0 ? 0.0 : (Value > 100.0 ? 100.0 : Value));
         // }
     }
     bool ShouldSerializeProposalSupport()
@@ -989,7 +990,7 @@ public:
     }
     bool ShouldSerializeImageLocation()
     {
-        return (Name() == Game::HeadTeacher.Name || SpecialPerson) && !ImageLocation.isEmpty();
+        return (Name() == Game::HeadTeacher.Name() || SpecialPerson) && !ImageLocation.isEmpty();
     }
     bool ShouldSerializeOutfitLevel()
     {
@@ -1011,7 +1012,7 @@ public:
         else if (!OutfitName.isEmpty())
             CurrentOutfit = OutfitType::ClothingItem;
 
-        else if (Club() != NULL && Game::GameTime.IsTimeForClub(Club()) && CurrentLocation().Name == Club()->ClubRoom)
+        else if (Club() != NULL && Game::GameTime.IsTimeForClub(Club()) && CurrentLocation().Name() == Club()->ClubRoom)
             CurrentOutfit = OutfitType::Club;
 
         else if (CurrentLocation()->GetActualSpecialOutfit() != OutfitType::DefaultOutfit)
@@ -1025,7 +1026,7 @@ public:
         else
             CurrentOutfit = OutfitType::DefaultOutfit;
 
-        VisualEvent pdev = VisualEventManager.GetEventByFilename(PaperDollEventFileName, VisualEventKind.PaperDollHandler);
+        VisualEvent* pdev = VisualEventManager.GetEventByFilename(PaperDollEventFileName, VisualEventKind.PaperDollHandler);
         if (pdev != NULL)
             pdev.Execute(this);
     }
@@ -1122,7 +1123,7 @@ public:
     }
     void AdjustStatsByMind()
     {
-        int popTagIndex = Game::ScenarioConfig.PopulationTag.IndexOf(Job);
+        int popTagIndex = Game::ScenarioConfig.PopulationTag.indexOf(Job);
         Mind GameMind;
         if (popTagIndex >= 0)
             GameMind = Game::ScenarioConfig.MindData[popTagIndex];
