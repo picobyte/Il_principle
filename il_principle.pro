@@ -71,8 +71,8 @@ FORMS +=
 DISTFILES += \
     initialize.py
 
-CONFIG += no_keywords # Python redefines some qt keywords
 INCLUDEPATH += /usr/include/python3.6m/
+LIBS += -lpython3.6m
 #LIBS += -lpython3.6
 LIBS += -lPythonQt-Qt5-Python3
 

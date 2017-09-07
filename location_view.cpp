@@ -152,9 +152,9 @@ void Location_view::setImg(QString s)
     siteView->setPixmap(QPixmap(s));
 }
 
-/*void Location_view::slot_selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
+void Location_view::slot_selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
     siteView->toggle_blur();
     pplInterAct->setVisible();
     //selected.at(0).topLeft().row();
-}*/
+}

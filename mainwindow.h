@@ -64,8 +64,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     void dummy_startup();
     void retranslateUi();
-/*public slots:
-    void toggle_school_management();*/
+public slots:
+    void toggle_school_management();
 };
 
 #endif // MAINWINDOW_H

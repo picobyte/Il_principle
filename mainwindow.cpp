@@ -116,10 +116,10 @@ void MainWindow::dummy_startup()
     loc->addPerson(&peter_hooter);
 }
 
-/*void MainWindow::toggle_school_management()
+void MainWindow::toggle_school_management()
 {
     stackWidget.setCurrentIndex(!stackWidget.currentIndex());
-}*/
+}
 
 void MainWindow::retranslateUi()
 {
