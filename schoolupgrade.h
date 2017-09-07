@@ -3,8 +3,8 @@
 #include "json_macros.h"
 #include "locationpropertychange.h"
 #include "rulechange.h"
-#include "location.h"
 
+class Location;
 class SchoolUpgradeLevel {
     QList<QString> ActivateRules;
     QList<RuleChange> ChangeRuleList;
@@ -50,22 +50,16 @@ public:
     QString Name;
     QString LocationName;
     int CurrentLevel;
-    Location* getLocation() const
-    {
-        return &Game.GetLocation(LocationName);
-    }
-    void setLocation(Location* v = NULL)
-    {
-        LocationName = v ? v->Name : "";
-    }
-    SchoolUpgradeLevel const*const CurrentLevelObject() const
+    Location* getLocation() const;
+    void setLocation(Location* v = NULL);
+    const SchoolUpgradeLevel* CurrentLevelObject() const
     {
         if (CurrentLevel > -1 && CurrentLevel < ListUpgradeLevels.count())
             return &ListUpgradeLevels[CurrentLevel];
 
         return NULL;
     }
-    SchoolUpgradeLevel const*const NextLevelObject() const
+    const SchoolUpgradeLevel* NextLevelObject() const
     {
         int next = CurrentLevel + 1;
         if (next > -1 && next < ListUpgradeLevels.count() && ListUpgradeLevels[next].CanBeChosen)
@@ -75,8 +69,8 @@ public:
     }
     const QString DisplayName() const
     {
-        SchoolUpgradeLevel const*const clo = CurrentLevelObject();
-        SchoolUpgradeLevel const*const nlo = NextLevelObject();
+        const SchoolUpgradeLevel* clo = CurrentLevelObject();
+        const SchoolUpgradeLevel* nlo = NextLevelObject();
         if (clo == NULL)
             return nlo ? "Purchase " + nlo->Name : "Nothing;";
 
@@ -86,32 +80,32 @@ public:
     }
     const QString CurrentName() const
     {
-        SchoolUpgradeLevel const*const clo = CurrentLevelObject();
+        const SchoolUpgradeLevel* clo = CurrentLevelObject();
         return clo ? clo->Name : "Nothing";
     }
     const QString UpgradeName() const
     {
-        SchoolUpgradeLevel const*const nlo = NextLevelObject();
+        const SchoolUpgradeLevel* nlo = NextLevelObject();
         return nlo ? nlo->Name : "No upgrade available";
     }
     const QString Description() const
     {
-        SchoolUpgradeLevel const*const clo = CurrentLevelObject();
+        const SchoolUpgradeLevel* clo = CurrentLevelObject();
         return clo ? clo->Description : "";
     }
     const QString UpgradeDescription() const
     {
-        SchoolUpgradeLevel const*const nlo = NextLevelObject();
+        const SchoolUpgradeLevel* nlo = NextLevelObject();
         return nlo ? nlo->Description : "";
     }
     const int MaintenanceCost() const
     {
-        SchoolUpgradeLevel const*const clo = CurrentLevelObject();
+        const SchoolUpgradeLevel* clo = CurrentLevelObject();
         return clo ? clo->MaintenanceCost : 0;
     }
     const int UpgradeCost() const
     {
-        SchoolUpgradeLevel const*const nlo = NextLevelObject();
+        const SchoolUpgradeLevel* nlo = NextLevelObject();
         return nlo ? nlo->Cost : -1;
     }
     SchoolUpgrade(QJsonObject *d = NULL) : _thisSchoolUpgradeNr(schoolupgradeCounter++)

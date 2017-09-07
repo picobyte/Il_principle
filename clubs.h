@@ -8,6 +8,7 @@
 #include "bodysizechange.h"
 #include "timedata.h"
 
+class Location;
 class ClubLevel {
 public:
     ClubLevel(QJsonObject *d = NULL):
@@ -17,6 +18,17 @@ public:
         EndTime(16)
     {
         if (d) init(d);
+    }
+    const QString EditorName() const
+    {
+        if (intEditorName.isNull() || intEditorName.contains(QRegExp("^\\s*$")))
+            return Name;
+
+        return intEditorName;
+    }
+    void EditorName(QString& v)
+    {
+        intEditorName = v;
     }
     void init(QJsonObject *d)
     {
@@ -56,6 +68,57 @@ public:
     QList<uint> ClubEventIDs;
     QList<StatChange> StatChanges;
     QList<BodySizeChange> BodySizeChanges;
+    bool ShouldSerializeintEditorName()
+    {
+        return !(intEditorName.isNull() || intEditorName.contains(QRegExp("^\\s*$")));
+    }
+    bool ShouldSerializeForGender()
+    {
+        return ForGender.count() > 0;
+    }
+    bool ShouldSerializeImportantStat()
+    {
+        return ImportantStat == "Happiness";
+    }
+    bool ShouldSerializeImportantStatInverted()
+    {
+        return ImportantStatInverted;
+    }
+    bool ShouldSerializeCorruptionLevel()
+    {
+        return CorruptionLevel != 0;
+    }
+    bool ShouldSerializeWeeklyAccount()
+    {
+        return WeeklyAccount != 0.0;
+    }
+    bool ShouldSerializeDescription()
+    {
+        return !(Description.isNull() || Description.contains(QRegExp("^\\s*$")));
+    }
+    bool ShouldSerializeImagePath()
+    {
+        return !(ImagePath.isNull() || ImagePath.contains(QRegExp("^\\s*$")));
+    }
+    bool ShouldSerializeClubRoom()
+    {
+        return ClubRoom != "Normal School";
+    }
+    bool ShouldSerializeStatChanges()
+    {
+        return StatChanges.count() != 0;
+    }
+    bool ShouldSerializeBodySizeChanges()
+    {
+        return BodySizeChanges.count() != 0;
+    }
+    void OpenAccount();
+    void CloseAccount();
+    void ClubMeeting();
+    QString ToString()
+    {
+        return Name;
+    }
 };
 
 class Clubs {
@@ -98,6 +161,31 @@ public:
     int DesiredCount;
     int currentClubLevelIndex;
     QList<ClubLevel> ClubLevels;
+
+    int CurrentClubLevelIndex() const;
+    void CurrentClubLevelIndex(int v);
+    ClubLevel* CurrentClubLevel() const;
+    Location* ClubRoom() const;
+    void ClubRoom(Location* v);
+    bool ShouldSerializeAutomaticJoiningEnabled();
+    bool ShouldSerializeHideFromManagementPanel();
+    bool ShouldSerializeActive();
+    bool ShouldSerializeCanBeChosen();
+    bool ShouldSerializeClubPresident();
+    bool ShouldSerializePreferredPresident();
+    bool ShouldSerializeMemberCount();
+    bool ShouldSerializeCurrentClubLevelIndex();
+    bool ShouldSerializeClubLevels();
+    void ValidateMembers();
+    void AddMember(Person& Per);
+    void RemoveMember(Person& Per, bool ValidatePresidency = true);
+    void ChoosePresident(bool AllowCoups = false);
+    void SetRandomPresident();
+    void ClubMeeting();
+    void AdjustClubSize();
+    void AdjustAllClubSizes();
+    int IndexOf(ClubLevel& clubLevel);
+    QString ToString();
 };
 
 #endif // CLUBS_H

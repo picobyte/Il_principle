@@ -175,6 +175,14 @@ enum class FacialExpressions
     Ahegao
 };
 
+enum class Daylight
+{
+        Day,
+        Night,
+        Sunrise,
+        Sunset
+};
+
 enum class EventDayTypes
 {
         All,
@@ -190,7 +198,8 @@ enum class EventDayTypes
         Sunday
 };
 
-enum class DayOfWeek
+/* use Qt::<day> instead.
+ * enum class DayOfWeek
 {
     Monday,
     Tuesday,
@@ -199,7 +208,7 @@ enum class DayOfWeek
     Friday,
     Saturday,
     Sunday
-};
+};*/
 
 enum class RuleStatus
 {
@@ -225,6 +234,14 @@ enum class PeopleAmount
     Normal,
     Crowded,
     VeryCrowded
+};
+
+enum class CalendarEntryStatus
+{
+    Standard,
+    Important,
+    Holiday,
+    Finished
 };
 
 #endif // GENERIC_H

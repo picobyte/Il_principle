@@ -15,7 +15,7 @@ public:
     void init(QJsonObject *d) {}
     void AddStructDefinition(EventStructDefinition sd)
     {
-        if (!StructDefinitions.ContainsKey(sd.Name) && EventStructManager.IsValidEventStruct(sd))
+        if (!StructDefinitions.contains(sd.Name) && EventStructManager.IsValidEventStruct(sd))
             StructDefinitions.Add(sd.Name, sd);
     }
     EventStructDefinition GetStructDefinition(QString structName)

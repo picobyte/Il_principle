@@ -57,11 +57,11 @@ public:
     {
         if (d) init(d);
         // try {
-        for (QHash<QString, Stat>::iterator it = Game.DictOfStats.Keys.begin();
-                it != Game.DictOfStats.Keys.end(); ++it)
+        for (QHash<QString, Stat>::iterator it = Game::DictOfStats.Keys.begin();
+                it != Game::DictOfStats.Keys.end(); ++it)
             SetStat(*it, 0.0);
         // }
-        if (!Game.GameLoading)
+        if (!Game::GameLoading)
             UIDManager.AssignUID(this);
     }
     long UID;
@@ -180,9 +180,9 @@ public:
     const int Age() const
     {
         // checked {
-        int age = Game.SchoolCalendar.TodayDate.Year - Birthday.Year;
+        int age = Game::SchoolCalendar.TodayDate.Year - Birthday.Year;
 
-        if (DateTime.Compare(Birthday, Game.SchoolCalendar.TodayDate.AddYears(0 - age)) > 0)
+        if (DateTime.Compare(Birthday, Game::SchoolCalendar.TodayDate.AddYears(0 - age)) > 0)
             --age;
 
         return age;
@@ -232,8 +232,8 @@ public:
     }
     Person *const Father() const
     {
-        if (Game.DictOfPersonNames.contains(intFather))
-            return Game.DictOfPersonNames[intFather];
+        if (Game::DictOfPersonNames.contains(intFather))
+            return Game::DictOfPersonNames[intFather];
 
         return NULL;
     }
@@ -243,8 +243,8 @@ public:
     }
     Person *const Mother() const
     {
-        if (Game.DictOfPersonNames.contains(intMother))
-            return Game.DictOfPersonNames[intMother];
+        if (Game::DictOfPersonNames.contains(intMother))
+            return Game::DictOfPersonNames[intMother];
 
         return NULL;
     }
@@ -255,16 +255,16 @@ public:
     Person *const Love() const
     {
         if (intLove == "Principal")
-            return Game.HeadTeacher;
+            return Game::HeadTeacher;
 
-        if (Game.DictOfPersonNames.contains(intLove))
-            return Game.DictOfPersonNames[intLove];
+        if (Game::DictOfPersonNames.contains(intLove))
+            return Game::DictOfPersonNames[intLove];
 
         return NULL;
     }
     void Love(Person *v)
     {
-        intLove = v ? (*v == Game.HeadTeacher ? "Principal" : intLove = v->Name) : "";
+        intLove = v ? (*v == Game::HeadTeacher ? "Principal" : intLove = v->Name) : "";
     }
     const bool IsCouple() const
     {
@@ -276,15 +276,15 @@ public:
     }
     const bool IsFavorite() const
     {
-        return Game.FavoriteStudentList.contains(UID);
+        return Game::FavoriteStudentList.contains(UID);
     }
     void IsFavorite(bool& value)
     {
         if (value) {
             if (!IsFavorite)
-                Game.FavoriteStudentList.Add(UID);
+                Game::FavoriteStudentList.Add(UID);
         } else {
-            Game.FavoriteStudentList.Remove(UID);
+            Game::FavoriteStudentList.Remove(UID);
         }
     }
     const double ProposalSupport() const
@@ -305,7 +305,7 @@ public:
     }
     const Clubs* Club() const
     {
-        return &Game.GetClub(ClubMember);
+        return &Game::GetClub(ClubMember);
     }
     void Club(Clubs *v)
     {
@@ -376,30 +376,29 @@ public:
         if (intLoc.isEmpty())
             return NULL;
 
-        return &Game.GetLocation(intLoc);
+        return &Game::GetLocation(intLoc);
     }
     void CurrentLocation(Location& value)
     {
-        if (Operators.CompareString(intLoc, intOldLoc, false) != 0)
-            intOldLoc = intLoc;
+        intOldLoc = intLoc;
 
         if (value == NULL) {
             if (!intLoc.isEmpty()) {
-                Game.GetLocation(intLoc).OccupantLeave(this);
+                Game::GetLocation(intLoc).OccupantLeave(this);
                 intLoc = "";
             }
         } else {
             if (!intLoc.isEmpty())
-                Game.GetLocation(intLoc).OccupantLeave(this);
+                Game::GetLocation(intLoc).OccupantLeave(this);
 
             intLoc = value.Name;
-            Game.GetLocation(intLoc).OccupantEnter(this);
+            Game::GetLocation(intLoc).OccupantEnter(this);
         }
     }
     const Location* OldLocation() const
     {
         if (!intOldLoc.isEmpty())
-            return &Game.GetLocation(intOldLoc);
+            return &Game::GetLocation(intOldLoc);
 
         return NULL;
     }
@@ -410,9 +409,9 @@ public:
     const Location* Home() const
     {
         if (intHome.isEmpty())
-            return &Game.GetLocation("General Home");
+            return &Game::GetLocation("General Home");
 
-        return &Game.GetLocation(intHome);
+        return &Game::GetLocation(intHome);
     }
     void Home(Location *v)
     {
@@ -424,9 +423,9 @@ public:
     const Location* Bedroom() const
     {
         if (intBedroom.isEmpty())
-            return &Game.GetLocation("General Home");
+            return &Game::GetLocation("General Home");
 
-        return &Game.GetLocation(intBedroom);
+        return &Game::GetLocation(intBedroom);
     }
     void Bedroom(Location *v)
     {
@@ -445,7 +444,7 @@ public:
         if (intWork.isEmpty())
             return NULL;
 
-        return &Game.GetLocation(intWork);
+        return &Game::GetLocation(intWork);
     }
     void Work(Location *value)
     {
@@ -553,7 +552,7 @@ public:
     }
     bool HasBirthday()
     {
-        QDateTime today = Game.SchoolCalendar.TodayDate;
+        QDateTime today = Game::SchoolCalendar.TodayDate;
         return (Birthday.Day == today.Day && Birthday.Month == today.Month) || (DateTime.IsLeapYear(Birthday.Year) && !DateTime.IsLeapYear(today.Year) && Birthday.Month == 2 && Birthday.Day == 29 && today.Month == 3 && today.Day == 1);
     }
     QString ToString()
@@ -571,7 +570,7 @@ public:
         for (QList<StatusEffectInstance>::iterator se = StatusEffects.begin();
                 se != StatusEffects.end(); ++se) {
 
-            StatusEffect effect = Game.DictOfStatusEffects[se->Name];
+            StatusEffect effect = Game::DictOfStatusEffects[se->Name];
             // try {
             for (QList<ModifierBase>::iterator modi = effect.Modifiers.begin();
                     modi != effect.Modifiers.end(); ++modi) {
@@ -614,7 +613,7 @@ public:
         for (QList<StatusEffectInstance>::iterator se = StatusEffects.begin();
                 se != StatusEffects.end(); ++se)
         {
-            StatusEffect effect = Game.DictOfStatusEffects[se->Name];
+            StatusEffect effect = Game::DictOfStatusEffects[se->Name];
             // try {
             for (QList<ModifierBase>::iterator modi = effect.Modifiers.begin();
                     modi != effect.Modifiers.end(); ++modi)
@@ -735,7 +734,7 @@ public:
             object obj2 = Person.unemployedListLock;
             ObjectFlowControl.CheckForSyncLockOnValueType(obj2);
             // lock (obj2) {
-            Game.UnemployedPersons.Remove(Name);
+            Game::UnemployedPersons.Remove(Name);
             // }
         }
         // }
@@ -756,10 +755,10 @@ public:
             //object obj2 = Person.unemployedListLock;
             //ObjectFlowControl.CheckForSyncLockOnValueType(obj2);
             // lock (obj2) {
-            if (Game.UnemployedPersons.contains(Name))
-                Game.UnemployedPersons[Name] = this;
+            if (Game::UnemployedPersons.contains(Name))
+                Game::UnemployedPersons[Name] = this;
             else
-                Game.UnemployedPersons.Add(Name, this);
+                Game::UnemployedPersons.Add(Name, this);
             // }
         }
         // }
@@ -821,7 +820,7 @@ public:
         // object obj = subjectStatLock;
         // ObjectFlowControl.CheckForSyncLockOnValueType(obj);
         // lock (obj) {
-        SchoolSubject s = Game.GetSubject(SubjectInstanceName);
+        SchoolSubject s = Game::GetSubject(SubjectInstanceName);
         if (s != NULL)
             return s.GetSubjectExp(this);
 
@@ -833,7 +832,7 @@ public:
         // object obj = subjectStatLock;
         // ObjectFlowControl.CheckForSyncLockOnValueType(obj);
         // lock (obj) {
-        SchoolSubject s = Game.GetSubject(SubjectInstanceName);
+        SchoolSubject s = Game::GetSubject(SubjectInstanceName);
         if (s != NULL)
             s.AddSubjectExp(this, Value);
         // }
@@ -853,7 +852,7 @@ public:
         for (QList<StatusEffectInstance>::iterator se = StatusEffects.begin();
                 se != StatusEffects.end(); ++se) {
 
-            StatusEffect effect = Game.DictOfStatusEffects[se->Name];
+            StatusEffect effect = Game::DictOfStatusEffects[se->Name];
             // try {
             for (QList<ModifierBase>::iterator modi = effect.Modifiers.begin();
                     modi != effect.Modifiers.end(); ++modi) {
@@ -932,7 +931,7 @@ public:
         for (QList<StatusEffectInstance>::iterator se = StatusEffects.begin();
                 se != StatusEffects.end(); ++se) {
 
-            StatusEffect effect = Game.DictOfStatusEffects[se->Name];
+            StatusEffect effect = Game::DictOfStatusEffects[se->Name];
             // try {
             for (QList<ModifierBase>::iterator modi = effect.Modifiers.begin();
                     modi != effect.Modifiers.end(); ++modi) {
@@ -990,7 +989,7 @@ public:
     }
     bool ShouldSerializeImageLocation()
     {
-        return (Name() == Game.HeadTeacher.Name || SpecialPerson) && !ImageLocation.isEmpty();
+        return (Name() == Game::HeadTeacher.Name || SpecialPerson) && !ImageLocation.isEmpty();
     }
     bool ShouldSerializeOutfitLevel()
     {
@@ -1012,7 +1011,7 @@ public:
         else if (!OutfitName.isEmpty())
             CurrentOutfit = OutfitType::ClothingItem;
 
-        else if (Club() != NULL && Game.GameTime.IsTimeForClub(Club()) && CurrentLocation().Name == Club()->ClubRoom)
+        else if (Club() != NULL && Game::GameTime.IsTimeForClub(Club()) && CurrentLocation().Name == Club()->ClubRoom)
             CurrentOutfit = OutfitType::Club;
 
         else if (CurrentLocation()->GetActualSpecialOutfit() != OutfitType::DefaultOutfit)
@@ -1036,7 +1035,7 @@ public:
     }
     double GetStat(QString statName)
     {
-        Stat arg_31_0 = Game.DictOfStats[statName];
+        Stat arg_31_0 = Game::DictOfStats[statName];
         double retVal = dictStats.contains(statName) ? dictStats[statName] : 0.0;
         double minVal = arg_31_0.MinValue;
         double maxVal = arg_31_0.MaxValue;
@@ -1046,7 +1045,7 @@ public:
         for (QList<StatusEffectInstance>::iterator se = StatusEffects.begin();
                 se != StatusEffects.end(); ++se) {
 
-            StatusEffect effect = Game.DictOfStatusEffects[se->Name];
+            StatusEffect effect = Game::DictOfStatusEffects[se->Name];
             // try {
             for (QList<ModifierBase>::iterator modi = effect.Modifiers.begin();
                     modi != effect.Modifiers.end(); ++modi) {
@@ -1054,19 +1053,19 @@ public:
                 if (*modi is Modifier_AddStatValue) {
 
                     Modifier_AddStatValue addConstMod = (Modifier_AddStatValue)*modi;
-                    if (Operators.CompareString(addConstMod.StatName, statName, false) == 0)
+                    if (addConstMod.StatName == statName)
                         retVal += addConstMod.GetValue(*se);
 
                 } else if (*modi is Modifier_MinStatValue) {
 
                     Modifier_MinStatValue minValMod = (Modifier_MinStatValue)*modi;
-                    if (Operators.CompareString(minValMod.StatName, statName, false) == 0 && minValMod.GetValue(*se) > minVal)
+                    if (minValMod.StatName == statName && minValMod.GetValue(*se) > minVal)
                         minVal = minValMod.GetValue(*se);
 
                 } else if (*modi is Modifier_MaxStatValue) {
 
                     Modifier_MaxStatValue maxValMod = (Modifier_MaxStatValue)*modi;
-                    if (Operators.CompareString(maxValMod.StatName, statName, false) == 0 && maxValMod.GetValue(*se) < maxVal)
+                    if (maxValMod.StatName == statName && maxValMod.GetValue(*se) < maxVal)
                         minVal = maxValMod.GetValue(*se);
                 }
             }
@@ -1078,17 +1077,17 @@ public:
     }
     void SetStat(QString statName, double value)
     {
-        if (Game.DictOfStats.contains(statName))
+        if (Game::DictOfStats.contains(statName))
         {
-            Stat statBase = Game.DictOfStats[statName];
+            Stat statBase = Game::DictOfStats[statName];
             dictStats[statName] = value < statBase.MinValue ? statBase.MinValue : (value > statBase.MaxValue ? statBase.MaxValue : value);
         }
     }
     void AddStat(QString statName, double value)
     {
-        if (Game.DictOfStats.contains(statName))
+        if (Game::DictOfStats.contains(statName))
         {
-            Stat statBase = Game.DictOfStats[statName];
+            Stat statBase = Game::DictOfStats[statName];
             double addValue = value;
             //object statusEffects = StatusEffects;
             // lock (statusEffects) {
@@ -1096,7 +1095,7 @@ public:
             for (QList<StatusEffectInstance>::iterator se = StatusEffects.begin();
                     se != StatusEffects.end(); ++se)
             {
-                StatusEffect effect = Game.DictOfStatusEffects[se->Name];
+                StatusEffect effect = Game::DictOfStatusEffects[se->Name];
                 // try {
                 for (QList<ModifierBase>::iterator modi = effect.Modifiers.begin();
                         modi != effect.Modifiers.end(); ++modi)
@@ -1104,13 +1103,13 @@ public:
                     if (*modi is Modifier_IncreaseStatMultiplier)
                     {
                         Modifier_IncreaseStatMultiplier scaleMod = (Modifier_IncreaseStatMultiplier)*modi;
-                        if (Operators.CompareString(statName, scaleMod.StatName, false) == 0 && value > 0.0)
+                        if (statName == scaleMod.StatName && value > 0.0)
                             addValue *= scaleMod.GetScaleFactor(this, *se);
                     }
                     else if (*modi is Modifier_DecreaseStatMultiplier)
                     {
                         Modifier_DecreaseStatMultiplier scaleMod2 = (Modifier_DecreaseStatMultiplier)*modi;
-                        if (Operators.CompareString(statName, scaleMod2.StatName, false) == 0 && value < 0.0)
+                        if (statName == scaleMod2.StatName && value < 0.0)
                             addValue *= scaleMod2.GetScaleFactor(this, *se);
                     }
                 }
@@ -1123,12 +1122,12 @@ public:
     }
     void AdjustStatsByMind()
     {
-        int popTagIndex = Game.ScenarioConfig.PopulationTag.IndexOf(Job);
+        int popTagIndex = Game::ScenarioConfig.PopulationTag.IndexOf(Job);
         Mind GameMind;
         if (popTagIndex >= 0)
-            GameMind = Game.ScenarioConfig.MindData[popTagIndex];
+            GameMind = Game::ScenarioConfig.MindData[popTagIndex];
         else
-            GameMind = Game.ScenarioConfig.MindData[0];
+            GameMind = Game::ScenarioConfig.MindData[0];
 
         // try {
         QList<QString> MindStats = GameMind.GetStats();
@@ -1183,28 +1182,28 @@ public:
     }
     void ApplyFuzziness(QString SE)
     {
-        AddStat(SE, (Game.RNG.NextDouble() - 0.5) * 0.3);
+        AddStat(SE, (Game::RNG.NextDouble() - 0.5) * 0.3);
     }
     void RandomizeArousalAndEnergy()
     {
-        if (this != Game.HeadTeacher)
+        if (this != Game::HeadTeacher)
         {
-            AddStat("Arousal", (double)Game.RNG.Next(-20, 20));
-            AddStat("Energy", (double)Game.RNG.Next((int)round(Math.Truncate(GetStat("Stamina")) * 2.0), (int)round(Game.DictOfStats["Energy"].MaxValue)));
+            AddStat("Arousal", (double)Game::RNG.Next(-20, 20));
+            AddStat("Energy", (double)Game::RNG.Next((int)round(Math.Truncate(GetStat("Stamina")) * 2.0), (int)round(Game::DictOfStats["Energy"].MaxValue)));
         }
     }
     void AddStatusEffect(QString effectName)
     {
-        StatusEffect effect = Game.DictOfStatusEffects[effectName];
+        StatusEffect effect = Game::DictOfStatusEffects[effectName];
         object statusEffects = StatusEffects;
         // lock (statusEffects) {
         switch (effect.AccumulationType) {
         case StatusEffectAccumulationType.None:
-            if (!StatusEffects.Exists((StatusEffectInstance se) => Operators.CompareString(se.Name, effect.Name, false) == 0))
+            if (!StatusEffects.Exists((StatusEffectInstance se) => se.Name == effect.Name))
                 StatusEffects.Add(effect.GetInstance());
             break;
         case StatusEffectAccumulationType.Refresh:
-            StatusEffects.RemoveAll((StatusEffectInstance se) => Operators.CompareString(se.Name, effect.Name, false) == 0);
+            StatusEffects.RemoveAll((StatusEffectInstance se) => se.Name == effect.Name);
             StatusEffects.Add(effect.GetInstance());
             break;
         case StatusEffectAccumulationType.Stack:
@@ -1216,7 +1215,7 @@ public:
     {
         object statusEffects = StatusEffects;
         // lock (statusEffects) {
-        StatusEffects.RemoveAll((StatusEffectInstance se) => Operators.CompareString(se.Name, effectName, false) == 0);
+        StatusEffects.RemoveAll((StatusEffectInstance se) => se.Name == effectName);
         // }
     }
     QString GetPersonalityArchetype()
@@ -1231,10 +1230,10 @@ public:
         {
             StatusEffectInstance se = enumerator.Current;
             if (se.Name.StartsWith("Personality"))
-                personality = Game.DictOfStatusEffects[se.Name].DisplayName;
+                personality = Game::DictOfStatusEffects[se.Name].DisplayName;
 
             else if (se.Name.StartsWith("Archetype"))
-                archetype = Game.DictOfStatusEffects[se.Name].DisplayName;
+                archetype = Game::DictOfStatusEffects[se.Name].DisplayName;
         }
         // }
         // }
@@ -1259,7 +1258,7 @@ public:
                 it != expiredEffects.end(); ++it) {
 
             StatusEffectInstance se = enumerator.Current;
-            StatusEffect effect = Game.DictOfStatusEffects[se.Name];
+            StatusEffect effect = Game::DictOfStatusEffects[se.Name];
             // try {
             for (QList<ModifierBase>::iterator it2 = effect.Modifiers.begin();
                     it2 != effect.Modifiers.end(); ++it2) {
@@ -1292,7 +1291,7 @@ public:
                 it != StatusEffects.end(); ++it) {
 
             StatusEffectInstance se = enumerator.Current;
-            StatusEffect effect = Game.DictOfStatusEffects[se.Name];
+            StatusEffect effect = Game::DictOfStatusEffects[se.Name];
             // try {
             for (QList<ModifierBase>::iterator it2 = effect.Modifiers.begin();
                     it2 != effect.Modifiers.end(); ++it2) {
@@ -1425,20 +1424,20 @@ public:
     bool IsWorkTime()
     {
         LocationJobDetails jb = JobDetails;
-        if (jb != NULL && !Game.SchoolCalendar.IsHoliday)
+        if (jb != NULL && !Game::SchoolCalendar.IsHoliday)
         {
-            if (Game.SchoolCalendar.IsWeekend) {
-                if (jb.WeekendShift && Game.GameTime.IsWeekendWorkTime)
+            if (Game::SchoolCalendar.IsWeekend) {
+                if (jb.WeekendShift && Game::GameTime.IsWeekendWorkTime)
                     return true;
             }
-            else if ((jb.SchoolShift && Game.GameTime.IsSchoolTime) || (jb.WeekdayShift && Game.GameTime.IsStandardWorkTime) || (jb.EveningShift && Game.GameTime.IsEveningWorkTime))
+            else if ((jb.SchoolShift && Game::GameTime.IsSchoolTime) || (jb.WeekdayShift && Game::GameTime.IsStandardWorkTime) || (jb.EveningShift && Game::GameTime.IsEveningWorkTime))
                 return true;
         }
         return false;
     }
     bool IsAsleep()
     {
-        return CurrentLocation == Bedroom && Game.GameTime.IsSleepTime;
+        return CurrentLocation == Bedroom && Game::GameTime.IsSleepTime;
     }
     bool IsWorking()
     {
@@ -1449,7 +1448,7 @@ public:
         OutLateLastNight = OutLateTonight;
         UpEarly = false;
         OutLateTonight = false;
-        int randomNumber = Game.RNG.Next(100);
+        int randomNumber = Game::RNG.Next(100);
         if (Job == "Student")
         {
             if (randomNumber < 25)
@@ -1522,7 +1521,7 @@ public:
     int GetSkill(QString skillName) const
     {
         CheckSkill(skillName);
-        Skill arg_30_0 = Game.DictOfSkills[skillName];
+        Skill arg_30_0 = Game::DictOfSkills[skillName];
         int retVal = Skills.contains(skillName) ? Skills[skillName] : 0;
         int minVal = arg_30_0.MinValue;
         int maxVal = arg_30_0.MaxValue;
@@ -1533,26 +1532,26 @@ public:
         for (QList<StatusEffectInstance>::iterator se = StatusEffects.begin();
                 se != StatusEffects.end(); ++se) {
 
-            StatusEffect effect = Game.DictOfStatusEffects[se->Name];
+            StatusEffect effect = Game::DictOfStatusEffects[se->Name];
             // try {
             for (QList<ModifierBase>::iterator modi = effect.Modifiers.begin();
                     modi != effect.Modifiers.end(); ++modi) {
 
                 if (*modi is Modifier_AddSkillValue) {
                     Modifier_AddSkillValue addConstMod = (Modifier_AddSkillValue)*modi;
-                    if (Operators.CompareString(addConstMod.SkillName, skillName, false) == 0)
+                    if (addConstMod.SkillName == skillName)
                         retVal += addConstMod.GetValue(*se);
                 }
                 else if (*modi is Modifier_MinSkillValue)
                 {
                     Modifier_MinSkillValue minValMod = (Modifier_MinSkillValue)*modi;
-                    if (Operators.CompareString(minValMod.SkillName, skillName, false) == 0 && minValMod.GetValue(*se) > minVal)
+                    if (minValMod.SkillName == skillName && minValMod.GetValue(*se) > minVal)
                         minVal = minValMod.GetValue(*se);
                 }
                 else if (*modi is Modifier_MaxSkillValue)
                 {
                     Modifier_MaxSkillValue maxValMod = (Modifier_MaxSkillValue)*modi;
-                    if (Operators.CompareString(maxValMod.SkillName, skillName, false) == 0 && maxValMod.GetValue(*se) < maxVal)
+                    if (maxValMod.SkillName == skillName && maxValMod.GetValue(*se) < maxVal)
                         minVal = maxValMod.GetValue(*se);
                 }
             }
@@ -1566,16 +1565,16 @@ public:
     void SetSkill(QString skillName, int value)
     {
         CheckSkill(skillName);
-        Skill baseSkill = Game.DictOfSkills[skillName];
+        Skill baseSkill = Game::DictOfSkills[skillName];
         int oldValue = Skills.contains(skillName) ? Skills[skillName] : 0;
         int newValue = value < baseSkill.MinValue ? baseSkill.MinValue : (value > baseSkill.MaxValue ? baseSkill.MaxValue : value);
         Skills[skillName] = newValue;
-        Game.NotifyManager.HandleSkillNotification(this, skillName, newValue - oldValue);
+        Game::NotifyManager.HandleSkillNotification(this, skillName, newValue - oldValue);
     }
     void AddSkill(QString skillName, int value)
     {
         CheckSkill(skillName);
-        Skill baseSkill = Game.DictOfSkills[skillName];
+        Skill baseSkill = Game::DictOfSkills[skillName];
         int oldValue = Skills.contains(skillName) ? Skills[skillName] : 0;
         int addValue = value;
         object statusEffects = StatusEffects;
@@ -1586,7 +1585,7 @@ public:
                 it != StatusEffects.end(); ++it) {
 
             StatusEffectInstance se = enumerator.Current;
-            StatusEffect effect = Game.DictOfStatusEffects[se.Name];
+            StatusEffect effect = Game::DictOfStatusEffects[se.Name];
             // try {
             for (QList<ModifierBase>::iterator it2 = effect.Modifiers.begin();
                     it2 != effect.Modifiers.end(); ++it2) {
@@ -1594,13 +1593,13 @@ public:
                 ModifierBase modi = enumerator2.Current;
                 if (modi is Modifier_IncreaseSkillMultiplier) {
                     Modifier_IncreaseSkillMultiplier scaleMod = (Modifier_IncreaseSkillMultiplier)modi;
-                    if (Operators.CompareString(skillName, scaleMod.SkillName, false) == 0 && value > 0)
+                    if (skillName == scaleMod.SkillName && value > 0)
                         addValue = (int)round((double)addValue * scaleMod.GetScaleFactor(this, se));
 
                 } else if (modi is Modifier_DecreaseSkillMultiplier) {
 
                     Modifier_DecreaseSkillMultiplier scaleMod2 = (Modifier_DecreaseSkillMultiplier)modi;
-                    if (Operators.CompareString(skillName, scaleMod2.SkillName, false) == 0 && value < 0)
+                    if (skillName == scaleMod2.SkillName && value < 0)
                         addValue = (int)round((double)addValue * scaleMod2.GetScaleFactor(this, se));
                 }
             }
@@ -1610,33 +1609,31 @@ public:
         // }
         int newValue = oldValue + addValue < baseSkill.MinValue ? baseSkill.MinValue : (oldValue + addValue > baseSkill.MaxValue ? baseSkill.MaxValue : oldValue + addValue);
         Skills[skillName] = newValue;
-        Game.NotifyManager.HandleSkillNotification(this, skillName, newValue - oldValue);
+        Game::NotifyManager.HandleSkillNotification(this, skillName, newValue - oldValue);
         // }
     }
     void CheckSkill(QString skillName)
     {
-        if (!Game.DictOfSkills.contains(skillName))
+        if (!Game::DictOfSkills.contains(skillName))
         {
-            throw new ArgumentException(QString.Format("'{0}' was not declared as valid skill for the current scenario!", skillName));
+            throw new ArgumentException(skillName.prepend("'") + "' was not declared as valid skill for the current scenario!"));
         }
     }
     bool ShouldSerializeAttachedEventIDs()
     {
         return AttachedEventIDs.count() > 0;
     }
-    int CompareByLastname(Person x, Person y)
+    int CompareByLastname(Person& x, Person& y)
     {
-        return QString.Compare(x.Lastname + " " + x.DisplayForename, y.Lastname + " " + y.DisplayForename);
+        return QString::compare(x.Lastname + " " + x.DisplayForename, y.Lastname + " " + y.DisplayForename);
     }
-    int CompareByFirstname(Person x, Person y)
+    int CompareByFirstname(Person& x, Person& y)
     {
-        return QString.Compare(x.DisplayForename, y.DisplayForename);
+        return QString::compare(x.DisplayForename, y.DisplayForename);
     }
-    int CompareForPublicArea(Person x, Person y)
+    int CompareForPublicArea(Person& x, Person& y)
     {
         int CompareForPublicArea;
-        if (x == NULL || y == NULL)
-            return 0;
 
         if (x.IsWorking() && !y.IsWorking())
             return -1;
@@ -1650,21 +1647,18 @@ public:
         if (y.IsFavorite && !x.IsFavorite)
             return 1;
 
-        return QString.Compare(x.DisplayName, y.DisplayName);
+        return QString::compare(x.DisplayName, y.DisplayName);
     }
-    int CompareForSchoolRoom(Person x, Person y)
+    int CompareForSchoolRoom(Person& x, Person& y)
     {
-        if (x == NULL || y == NULL)
-            return 0;
+        if (x.Job == "Teacher") {
 
-        if (Operators.CompareString(x.Job, "Teacher", false) == 0) {
-
-            if (Operators.CompareString(y.Job, "Teacher", false) == 0)
-                return QString.Compare(x.DisplayName, y.DisplayName);
+            if (y.Job == "Teacher")
+                return QString::compare(x.DisplayName, y.DisplayName);
 
             return -1;
         }
-        if (Operators.CompareString(y.Job, "Teacher", false) == 0)
+        if (y.Job == "Teacher")
             return 1;
 
         return Person.CompareForPublicArea(x, y);

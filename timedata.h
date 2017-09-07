@@ -19,13 +19,13 @@ public:
     TimeData(unsigned Hour = 0, unsigned Minute = 0)
     {
         unsigned tick = Hour * 60 + Minute;
-        Hour = tick / 60 < 0 ? 0 : (tick / 60 > 23 ? 23 : tick / 60);
-        Minute = tick % 60 < 0 ? 0 : (tick % 60 > 59 ? 59 : tick % 60);
+        Hour = tick / 60 > 23 ? 23 : tick / 60;
+        Minute = tick % 60 > 59 ? 59 : tick % 60;
     }
     inline bool operator==(const TimeData& other){
         return Ticks() == other.Ticks();
     }
-    int cmp(TimeData& other)
+    int CompareTo(const TimeData& other) const
     {
         return Ticks() - other.Ticks();
     }

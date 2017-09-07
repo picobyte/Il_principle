@@ -11,7 +11,7 @@ public:
     TimeFrame(TimeData start, TimeData end): TimeFrame(start.Hour, start.Minute, end.Hour, end.Minute) {}
     TimeFrame(int StartHour, int StartMinute, int EndHour, int EndMinute):
         StartTime(StartHour, StartMinute), EndTime(EndHour, EndMinute) {}
-    bool Contains(TimeData time)
+    bool contains(const TimeData time) const
     {
         int timeTicks = time.Ticks();
         int startTicks = StartTime.Ticks();
@@ -22,9 +22,9 @@ public:
 
         return (timeTicks >= startTicks && timeTicks < endTicks);
     }
-    bool Contains(int hr, int mn)
+    bool Contains(int hr, int mn) const
     {
-        return Contains(TimeData(hr, mn));
+        return contains(TimeData(hr, mn));
     }
     QString& ToString();
 };

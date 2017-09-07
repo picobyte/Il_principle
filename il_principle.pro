@@ -38,7 +38,14 @@ SOURCES += \
     ruleeffect.cpp \
     modifier.cpp \
     person.cpp \
-    locationjobdetails.cpp
+    locationjobdetails.cpp \
+    timedata.cpp \
+    timeframe.cpp \
+    gtime.cpp \
+    schoolclass.cpp \
+    clubs.cpp \
+    classroomassignment.cpp \
+    gamecalendar.cpp
 
 HEADERS += \
                 mainwindow.h \
@@ -57,7 +64,7 @@ notificationmanager.h \
 personrelationshipdatabase.h \
 populationgenerator.h \
 statisticsmanager.h \
-        time.h \
+timeframe.h \
         adjustment.h \
         person.h \
         visualevent.h \
@@ -83,7 +90,8 @@ statisticsmanager.h \
         statchange.h \
         clubs.h \
         json_macros.h \
-        gametime.h
+        gametime.h \
+    gtime.h
 
 FORMS +=
 
