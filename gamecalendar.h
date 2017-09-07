@@ -9,19 +9,19 @@ class GameCalendar {
 public:
     QList<CalendarEntry> ListOfCalendarEntries;
     int intCurrentDay;
-    QDateTime MinDate() const;
-    QDateTime MaxDate() const;
+    QDate MinDate() const;
+    QDate MaxDate() const;
     int CurrentDay() const
     {
         return intCurrentDay;
     }
-    QDateTime& TodayDate() const
+    QDate TodayDate() const
     {
         return GetDateForDay(CurrentDay());
     }
     QString DayName() const
     {
-        return QDate::longDayName(TodayDate().date().dayOfWeek());
+        return QDate::longDayName(TodayDate().dayOfWeek());
     }
     bool IsWeekend() const
     {
@@ -33,11 +33,11 @@ public:
     }
     bool IsFirstDayOfWeek() const
     {
-        return TodayDate().date().dayOfWeek() == Qt::Monday;
+        return TodayDate().dayOfWeek() == Qt::Monday;
     }
     bool IsFirstDayOfMonth() const
     {
-        return TodayDate().date().day() == 1;
+        return TodayDate().day() == 1;
     }
     bool IsLastDayOfMonth() const
     {
@@ -60,54 +60,40 @@ public:
     }
     int GetDaysInMonth()
     {
-        return TodayDate().date().daysInMonth();
+        return TodayDate().daysInMonth();
     }
     int GetRemainingDaysInMonth() const
     {
-        QDate D = TodayDate().date();
+        QDate D = TodayDate();
         return D.daysInMonth() - D.day();
     }
     int GetWeekendDaysInMonth()
     {
         int remain = GetRemainingDaysInMonth();
         int WeekendDays = (2 * remain / 7);
-        QDate D = TodayDate().date();
+        QDate D = TodayDate();
         int today = D.dayOfWeek();
         int endDay = D.addDays(remain % 7).dayOfWeek();
         if (endDay < today)
             return WeekendDays + (today == Qt::Sunday ? 1 : 2);
 
         return WeekendDays + (endDay < Qt::Saturday ? 0 : endDay - Qt::Friday);
-        // }
     }
     int GetWorkDaysInMonth()
     {
-        QDateTime T = TodayDate;
-        int M = T.Month;
-        // checked {
-        QDateTime Start = T.AddDays((double)(0 - (T.Day - 1)));
-        int WorkDays = 0;
-        while (Start.Month == M)
-        {
-            if (Start.DayOfWeek != Qt::Saturday && Start.DayOfWeek != Qt::Sunday && !CheckIsHoliday(Start))
-                WorkDays++;
-
-            Start = Start.AddDays(1.0);
-        }
-        return WorkDays;
-        // }
+        return GetRemainingDaysInMonth() - GetWeekendDaysInMonth();
     }
-    QDateTime& GetDateForDay(const int SchoolDay) const
+    QDate GetDateForDay(const int SchoolDay) const
     {
-        return GameCalendar.MinDate.addDays(SchoolDay - 1);
+        return MinDate().addDays(SchoolDay - 1);
     }
-    int GetDayForDate(const QDateTime Dt) const
+    int GetDayForDate(const QDate& Dt) const
     {
-        return (Dt - GameCalendar.MinDate).Days;
+        return MinDate().daysTo(Dt);
     }
-    bool DateIsWeekend(const QDateTime Dt) const
+    bool DateIsWeekend(const QDate& Dt) const
     {
-        return Dt.date().dayOfWeek() == Qt::Saturday || Dt.date().dayOfWeek() == Qt::Sunday;
+        return Dt.dayOfWeek() == Qt::Saturday || Dt.dayOfWeek() == Qt::Sunday;
     }
     void AddCalendarNote(CalendarEntry& Note)
     {
@@ -116,16 +102,16 @@ public:
     }
     void RemoveCalendarNote(CalendarEntry& Note)
     {
-        ListOfCalendarEntries.Remove(Note);
+        ListOfCalendarEntries.removeOne(Note);
     }
-    bool CheckIsHoliday(const QDateTime Dt) const
+    bool CheckIsHoliday(const QDate& Dt) const
     {
-        for (QList<CalendarEntry>::iterator ce = ListOfCalendarEntries.begin(); ce != ListOfCalendarEntries.end(); ++ce)
-            if (ce->ApplyDate == Dt && ce->Status == CalendarEntryStatus.Holiday)
+        for (QList<CalendarEntry>::const_iterator ce = ListOfCalendarEntries.begin(); ce != ListOfCalendarEntries.end(); ++ce)
+            if (ce->ApplyDate.date() == Dt && ce->Status == CalendarEntryStatus::Holiday)
                 return true;
         return false;
     }
-    bool CheckDayType(const EventDayTypes& DayType, const QDateTime& CheckDate) const;
+    bool CheckDayType(const EventDayTypes& DayType, const QDate& CheckDate) const;
     void NextDay();
     int GetHashCode()
     {

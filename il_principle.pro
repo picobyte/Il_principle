@@ -59,6 +59,7 @@ HEADERS += \
         mind.h \
         range.h \
         classroomassignments.h \
+        calendarentry.h \
 gamecalendar.h \
 notificationmanager.h \
 personrelationshipdatabase.h \
