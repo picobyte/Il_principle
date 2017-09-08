@@ -12,33 +12,33 @@ void SchoolClass::init(QJsonObject *d)
     }
 }
 
-SchoolSubject SchoolClass::GetCurriculum() const
+SchoolSubject* SchoolClass::GetCurriculum() const
 {
     if (gTime::SecondPeriod.contains(Game::GameTime.CurrentTime))
-        return GetCurriculum(Game::SchoolCalendar.TodayDate.DayOfWeek, 1);
+        return &GetCurriculum(Game::SchoolCalendar.TodayDate.DayOfWeek, 1);
 
     if (gTime::ThirdPeriod.contains(Game::GameTime.CurrentTime))
-        return GetCurriculum(Game::SchoolCalendar.TodayDate.DayOfWeek, 2);
+        return &GetCurriculum(Game::SchoolCalendar.TodayDate.DayOfWeek, 2);
 
     if (gTime::FourthPeriod.contains(Game::GameTime.CurrentTime))
-        return GetCurriculum(Game::SchoolCalendar.TodayDate.DayOfWeek, 3);
+        return &GetCurriculum(Game::SchoolCalendar.TodayDate.DayOfWeek, 3);
 
-    return GetCurriculum(Game::SchoolCalendar.TodayDate.DayOfWeek, 0);
+    return &GetCurriculum(Game::SchoolCalendar.TodayDate.DayOfWeek, 0);
 }
-SchoolSubject SchoolClass::GetCurriculum(DayOfWeek Day, size_t Slot) const
+SchoolSubject* SchoolClass::GetCurriculum(DayOfWeek Day, size_t Slot) const
 {
     switch (Day)
     {
     case DayOfWeek::Monday:
-        return Game::GetSubject(Monday[Slot]);
+        return &Game::GetSubject(Monday[Slot]);
     case DayOfWeek::Tuesday:
-        return Game::GetSubject(Tuesday[Slot]);
+        return &Game::GetSubject(Tuesday[Slot]);
     case DayOfWeek::Wednesday:
-        return Game::GetSubject(Wednesday[Slot]);
+        return &Game::GetSubject(Wednesday[Slot]);
     case DayOfWeek::Thursday:
-        return Game::GetSubject(Thursday[Slot]);
+        return &Game::GetSubject(Thursday[Slot]);
     case DayOfWeek::Friday:
-        return Game::GetSubject(Friday[Slot]);
+        return &Game::GetSubject(Friday[Slot]);
     default:
         return NULL;
     }
@@ -56,19 +56,47 @@ void SchoolClass::SetCurriculum(SchoolSubject S)
 
     SetCurriculum(S, Game::SchoolCalendar.TodayDate.DayOfWeek, 0);
 }
+
+void SchoolClass::SetCurriculum(SchoolSubject* S, Qt::DayOfWeek Day, size_t Slot)
+{
+    if (S != NULL)
+    {
+        switch (Day)
+        {
+        case Qt::Monday:
+            Monday[Slot] = S->Name;
+            return;
+        case Qt::Tuesday:
+            Tuesday[Slot] = S->Name;
+            return;
+        case Qt::Wednesday:
+            Wednesday[Slot] = S->Name;
+            return;
+        case Qt::Thursday:
+            Thursday[Slot] = S->Name;
+            return;
+        case Qt::Friday:
+            Friday[Slot] = S->Name;
+            break;
+        default:
+            return;
+        }
+    }
+}
+
 Location* SchoolClass::GetLessonLocation() const
 {
     if (Game::ClassAssignments == NULL)
         return NULL;
 
     if (Game::ClassAssignments.AssignedClassrooms.ContainsKey(ClassIndex))
-        return Game::GetLocation(Game::ClassAssignments.AssignedClassrooms[ClassIndex]);
+        return &Game::GetLocation(Game::ClassAssignments.AssignedClassrooms[ClassIndex]);
 
     return NULL;
 
 }
 
-void SchoolClass::AddStudent(Person Student)
+void SchoolClass::AddStudent(Person& Student)
 {
     //object obj = thisLock;
     //ObjectFlowControl.CheckForSyncLockOnValueType(obj);
@@ -81,7 +109,7 @@ void SchoolClass::AddStudent(Person Student)
         Game::SpareStudentsClass.RemoveStudent(Student);
     // }
 }
-void SchoolClass::RemoveStudent(Person Student)
+void SchoolClass::RemoveStudent(Person& Student)
 {
     //object obj = thisLock;
     //ObjectFlowControl.CheckForSyncLockOnValueType(obj);

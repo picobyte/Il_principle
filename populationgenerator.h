@@ -5,162 +5,63 @@
 
 class PopulationGenerator {
 public:
-    QString[] GirlNames;
-    QString[] BoyNames;
-    QString[] Surnames;
+    QList<QString> GirlNames;
+    QList<QString> BoyNames;
+    QList<QString> Surnames;
     int PopulationOffset;
     QList<int> AdultHeads;
     QList<int> StudentHeads;
     QList<SchoolSubject> availableSubjects;
-    const int StudentIndex() const
-    {
-        return Game::ScenarioConfig.PopulationTag.IndexOf("Student");
-    }
+    int StudentIndex() const;
 
     PopulationGenerator(QJsonObject *d = NULL)
     {
         if (d) init(d);
-        AdultHeads = new QList<int>();
-        StudentHeads = new QList<int>();
-        availableSubjects = new QList<SchoolSubject>();
     }
     void init(QJsonObject *d)
     {
         for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
             // *INDENT-OFF*
             __IF_VAR_FROM_JSON_AS(it, PopulationOffset, toInt)
+            else __IF_LIST_FROM_JSON_TYPED(it, GirlNames, toString)
+            else __IF_LIST_FROM_JSON_TYPED(it, BoyNames, toString)
+            else __IF_LIST_FROM_JSON_TYPED(it, Surnames, toString)
             else __IF_LIST_FROM_JSON_TYPED(it, AdultHeads, toInt)
             else __IF_LIST_FROM_JSON_TYPED(it, StudentHeads, toInt)
             else __IF_OBJLIST_FROM_JSON(it, availableSubjects, SchoolSubject)
             // *INDENT-ON*
         }
+        LoadNames();
+        for (int i = 0; i < 100; ++i) {
+            AdultHeads.add(i);
+            StudentHeads.Add(i);
+        }
     }
-    void LoadNames()
+    void LoadNames();
+    QString GetForename(Gender G) const
     {
-        // checked {
-        // try {
-        GirlNames = File.ReadAllLines(Path.Combine(Game::GamePath, Game::TheSchool.FolderLocation, "PopulationData", "girlname.txt"));
-        int num = GirlNames.Length - 1;
-        for (int i = 0; i <= num; i++)
-        {
-            GirlNames[i] = GirlNames[i].Trim();
-        }
-        BoyNames = File.ReadAllLines(Path.Combine(Game::GamePath, Game::TheSchool.FolderLocation, "PopulationData", "boyname.txt"));
-        int num2 = BoyNames.Length - 1;
-        for (int j = 0; j <= num2; j++)
-        {
-            BoyNames[j] = BoyNames[j].Trim();
-        }
-        Surnames = File.ReadAllLines(Path.Combine(Game::GamePath, Game::TheSchool.FolderLocation, "PopulationData", "lastname.txt"));
-        int num3 = Surnames.Length - 1;
-        for (int k = 0; k <= num3; k++)
-        {
-            Surnames[k] = Surnames[k].Trim();
-        }
-        // }
-        catch (Exception expr_109)
-        {
-            ProjectData.SetProjectError(expr_109);
-            Exception e = expr_109;
-            ExceptionHandler.HandleException(e);
-            System.Windows.Application.Current.Shutdown();
-            ProjectData.ClearProjectError();
-        }
-        // }
-    }
-    QString GetForename(Gender G)
-    {
-        QString GetForename;
         if (G == Gender::Male)
-        {
-            if (BoyNames == NULL)
-            {
-                LoadNames();
-            }
-            GetForename = BoyNames[Game::RNG.Next(0, BoyNames.Length)];
-        }
+            return BoyNames[qrand() % BoyNames.length()];
         else
-        {
-            if (GirlNames == NULL)
-            {
-                LoadNames();
-            }
-            GetForename = GirlNames[Game::RNG.Next(0, GirlNames.Length)];
-        }
-        return GetForename;
+            return GirlNames[qrand() % GirlNames.length()];
     }
-    QString GetLastname()
+    QString GetLastname() const
     {
-        if (Surnames == NULL)
-        {
-            LoadNames();
-        }
-        return Surnames[Game::RNG.Next(0, Surnames.Length)];
+        return Surnames[qrand() % Surnames.length()];
     }
-    DateTime GetRandomDateForAge(int Age, DateTime ReferenceDate)
+    QDate GetRandomDateForAge(int Age, QDate& ReferenceDate)
     {
-        return ReferenceDate.AddYears(checked(0 - (Age + 1))).AddDays((double)Game::RNG.Next(365));
+        return ReferenceDate.addYears(-(Age + 1)).addDays(qrand() % 365);
     }
     int GetAdultHeadIndex()
     {
-        // checked {
-        if (AdultHeads.count() == 0)
-        {
-            int i = 0;
-            do
-            {
-                AdultHeads.Add(i);
-                i++;
-            }
-            while (i <= 99);
-        }
-        int index = Game::RNG.Next(AdultHeads.count());
-        int arg_52_0 = AdultHeads[index];
-        AdultHeads.RemoveAt(index);
-        return arg_52_0;
-        // }
+        return AdultHeads.takeAt(qrand() % AdultHeads.count());
     }
     int GetStudentHeadIndex()
     {
-        // checked {
-        if (StudentHeads.count() == 0)
-        {
-            int i = 0;
-            do
-            {
-                StudentHeads.Add(i);
-                i++;
-            }
-            while (i <= 99);
-        }
-        int index = Game::RNG.Next(StudentHeads.count());
-        int arg_52_0 = StudentHeads[index];
-        StudentHeads.RemoveAt(index);
-        return arg_52_0;
-        // }
+        return StudentHeads.takeAt(qrand() % StudentHeads.count());
     }
-    void ClearPopulation()
-    {
-        Game::DictOfPersonIDs.Clear();
-        Game::DictOfPersonNames.Clear();
-        Game::HiredStaff.Clear();
-        Game::AvailableStaff.Clear();
-        Game::HiredTeacher.Clear();
-        Game::NotHiredTeacher.Clear();
-        Game::OwnStudents.Clear();
-        Game::OtherStudents.Clear();
-        Game::ListOfPTA.Clear();
-    }
-    void CreatePopulation(int count)
-    {
-        // checked {
-        count += Game::DictOfPersonIDs.count();
-        while (Game::DictOfPersonIDs.count() < count)
-        {
-            CreateFamily(NULL);
-        }
-        // }
-    }
+    void CreatePopulation(int count);
     void CreateFamily(IList<Person> outList = NULL)
     {
         QString familyName = GetLastname();
@@ -176,33 +77,27 @@ public:
             student.Birthday = Game::SchoolCalendar.TodayDate.AddDays((double)Game::RNG.Next(365));
             int AgeGoal = Game::RNG.Next(Game::ScenarioConfig.PopulationGenerationData[StudentIndex].AgeRange.Min, Game::ScenarioConfig.PopulationGenerationData[StudentIndex].AgeRange.Max);
             AgeGoal = Math.Max(Game::ScenarioConfig.MinimumAge, AgeGoal);
+
             while (student.Age < AgeGoal)
-            {
                 student.Birthday = student.Birthday.AddYears(-1);
-            }
+
             student.Virgin = (Game::RNG.Next(50) >= 1);
             student.Gender = Game::ScenarioConfig.GetGenderForIndex(StudentIndex);
             SetGenderPreferences(student, StudentIndex);
             SetGenderSizes(student, StudentIndex, "Students");
             student.Lastname = familyName;
-            do
-            {
+            do {
                 student.Forename = GetForename(student.Gender);
-            }
-            while (!PersonNameIsUnique(student));
+
+            } while (!PersonNameIsUnique(student));
+
             GenerateStatsFor(student, StudentIndex);
             AddFavoriteSubject(student);
             AddSubjectExperience(student);
-            int z = 0;
-            do
-            {
+            for (int i = 0; i < 100; ++i)
                 if (Game::RNG.Next(100) >= 70)
-                {
                     student.AddFetish((Fetish)Game::RNG.Next(1, Enum.GetNames(typeof(Fetish)).count()<QString>()));
-                }
-                z++;
-            }
-            while (z <= 2);
+
             children.Add(student);
             // try {
             Game::DictOfPersonIDs.Add(student.UID, student);

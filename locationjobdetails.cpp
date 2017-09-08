@@ -1,15 +1,15 @@
 #include "locationjobdetails.h"
 #include "person.h"
 
-bool LocationJobDetails::CanEmploy(Person& Per)
+bool LocationJobDetails::CanEmploy(Person* Per)
 {
-    return JobAllowed(Per) && GenderAllowed(Per) && !IsFullyStaffed();
+    return Per && JobAllowed(Per) && GenderAllowed(Per) && !IsFullyStaffed();
 }
-bool LocationJobDetails::JobAllowed(Person& Per)
+bool LocationJobDetails::JobAllowed(Person* Per)
 {
-    return QString.IsNullOrEmpty(Per.Job) || Per.Job == JobTitle;
+    return Per && QString.IsNullOrEmpty(Per->Job) || Per->Job == JobTitle;
 }
-bool LocationJobDetails::GenderAllowed(Person& Per)
+bool LocationJobDetails::GenderAllowed(Person* Per)
 {
-    return GenderRestriction.isEmpty() || Per.Gender == GenderRestriction;
+    return Per && GenderRestriction.isEmpty() || Per->Gender == GenderRestriction;
 }

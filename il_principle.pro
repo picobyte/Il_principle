@@ -46,7 +46,10 @@ SOURCES += \
     schoolclass.cpp \
     clubs.cpp \
     classroomassignment.cpp \
-    gamecalendar.cpp
+    gamecalendar.cpp \
+    schoolsubject.cpp \
+    schoolclass.cpp \
+    populationgenerator.cpp
 
 HEADERS += \
                 mainwindow.h \
@@ -62,6 +65,7 @@ HEADERS += \
         classroomassignments.h \
         calendarentry.h \
         gamescenarioconfig \
+populationgenerationdata.h \
 gamecalendar.h \
 notificationmanager.h \
 personrelationshipdatabase.h \

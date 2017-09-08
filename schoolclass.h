@@ -7,6 +7,7 @@
 #include "gtime.h"
 
 class person;
+class SchoolSubject;
 class SchoolClass {
 public:
     QList<Person> Students;
@@ -32,35 +33,10 @@ public:
         //thisLock = RuntimeHelpers.GetObjectValue(new object());
     }
     void init(QJsonObject *d);
-    SchoolSubject GetCurriculum() const;
-    SchoolSubject GetCurriculum(Qt::DayOfWeek Day, size_t Slot) const;
+    SchoolSubject* GetCurriculum() const;
+    SchoolSubject* GetCurriculum(Qt::DayOfWeek Day, size_t Slot) const;
     void SetCurriculum(SchoolSubject S);
-    void SetCurriculum(SchoolSubject* S, Qt::DayOfWeek Day, size_t Slot)
-    {
-        if (S != NULL)
-        {
-            switch (Day)
-            {
-            case Qt::Monday:
-                Monday[Slot] = S->Name;
-                return;
-            case Qt::Tuesday:
-                Tuesday[Slot] = S->Name;
-                return;
-            case Qt::Wednesday:
-                Wednesday[Slot] = S->Name;
-                return;
-            case Qt::Thursday:
-                Thursday[Slot] = S->Name;
-                return;
-            case Qt::Friday:
-                Friday[Slot] = S->Name;
-                break;
-            default:
-                return;
-            }
-        }
-    }
+    void SetCurriculum(SchoolSubject* S, Qt::DayOfWeek Day, size_t Slot);
     void CopyMondayTo(Qt::DayOfWeek Day)
     {
         switch (Day)

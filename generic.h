@@ -112,6 +112,21 @@ enum class SexualPref
     Asexual
 };
 
+enum class SchoolSubjectFamily
+{
+    NONE,
+    Mathematics,
+    LifeScience,
+    NaturalScience,
+    SocialScience,
+    ComputerStudies,
+    Humanities,
+    LanguageArts,
+    FineArts,
+    PhysicalEducation,
+    SexualEducation
+};
+
 enum class Fetish
 {
     None,

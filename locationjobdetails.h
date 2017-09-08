@@ -4,8 +4,8 @@
 
 class Person;
 class LocationJobDetails {
-    QList<QString> Staff;
 public:
+    QSet<QString> Staff;
     QString JobTitle;
     int NumberOfJobs;
     QString GenderRestriction;
@@ -35,7 +35,7 @@ public:
             else __IF_VAR_FROM_JSON_AS(it, SchoolShift, toBool)
             else __IF_VAR_FROM_JSON_AS(it, EveningShift, toBool)
             else __IF_VAR_FROM_JSON_AS(it, WeekendShift, toBool)
-            else __IF_LIST_FROM_JSON_TYPED(it, Staff, toString)
+            else __IF_SET_FROM_JSON_TYPED(it, Staff, toString)
             // *INDENT-ON*
         }
     }
@@ -90,9 +90,9 @@ public:
     {
         return "LocationJobDetails: " + JobTitle;
     }
-    bool CanEmploy(Person& Per);
-    bool JobAllowed(Person& Per);
-    bool GenderAllowed(Person& Per);
+    bool CanEmploy(Person* Per);
+    bool JobAllowed(Person* Per);
+    bool GenderAllowed(Person* Per);
     bool IsFullyStaffed()
     {
         return NumberOfJobs > 0 && Staff.count() >= NumberOfJobs;

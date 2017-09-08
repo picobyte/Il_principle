@@ -1,12 +1,13 @@
 /*
  * (c) Picobyte 2017, GPL2
  */
-
-#include "mainwindow.h"
 #include <QApplication>
+#include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
+    //seed random number
+    qsrand(QDateTime::currentMSecsSinceEpoch() / 1000);
     QApplication a(argc, argv);
     MainWindow w;
     w.show();

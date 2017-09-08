@@ -4,10 +4,11 @@
 #include "populationgenerationdata.h"
 #include "mind.h"
 #include <math.h>
+#include "game.h"
 
 class GameScenarioConfig {
     QList<QString> PopulationTag;
-    QList<PopulationGenerationData> PopulationGenerationData;
+    QList<PopulationGenerationData> popGenData;
 public:
     QList<Mind> MindData;
     QString ConfigName;
@@ -27,32 +28,32 @@ public:
             else __IF_VAR_FROM_JSON_AS(it, StartEventName, toString)
             else __IF_VAR_FROM_JSON_AS(it, MinimumAge, toInt)
             else __IF_LIST_FROM_JSON_TYPED(it, PopulationTag, toString)
-            else __IF_OBJLIST_FROM_JSON(it, PopulationGenerationData, PopulationGenerationData)
+            else __IF_OBJLIST_FROM_JSON(it, popGenData, PopulationGenerationData)
             else __IF_OBJLIST_FROM_JSON(it, MindData, Mind)
             // *INDENT-ON*
         }
     }
     int GetAgeForIndex(int Index)
     {
-        return std::max(MinimumAge,
-                        Game::RNG.Next(PopulationGenerationData[Index].AgeRange.Min,
-                                       PopulationGenerationData[Index].AgeRange.Max));
+        return std::max(MinimumAge, Game::RNG().Next(popGenData[Index].AgeRange.Min, popGenData[Index].AgeRange.Max));
     }
     Gender GetGenderForIndex(int Index)
     {
-        int randomnum = Game.RNG.Next(0, round(PopulationGenerationData[Index].MalePercentage + PopulationGenerationData[Index].FemalePercentage + PopulationGenerationData[Index].FutanariPercentage))));
+        int randomnum = Game::RNG.Next(0, round(popGenData[Index].MalePercentage + popGenData[Index].FemalePercentage +
+                                                popGenData[Index].FutanariPercentage));
 
-        if ((double)randomnum < PopulationGenerationData[Index].MalePercentage)
+        if ((double)randomnum < popGenData[Index].MalePercentage)
             return Gender::Male;
 
-        if ((double)randomnum < PopulationGenerationData[Index].MalePercentage + PopulationGenerationData[Index].FemalePercentage)
+        if ((double)randomnum < popGenData[Index].MalePercentage + popGenData[Index].FemalePercentage)
             return Gender::Female;
 
         return Gender::Futanari;
     }
     PopulationGenerationGenderSpecificData GetGenderSpecificDataForIndex(int Index, Gender Gender)
     {
-        return PopulationGenerationData[Index].GenderSpecific.First((PopulationGenerationGenderSpecificData gs) => gs.Gender == Gender);
+        //for
+        return popGenData[Index].GenderSpecific.First((PopulationGenerationGenderSpecificData gs) => gs.Gender == Gender);
     }
     QString ToString()
     {

@@ -222,7 +222,7 @@ public:
         }
         return SexualPref::Heterosexual;
     }
-    LocationJobDetails *const JobDetails() const
+    LocationJobDetails* JobDetails() const
     {
         Location* w = Work();
 
@@ -231,7 +231,7 @@ public:
 
         return NULL;
     }
-    Person *const Father() const
+    Person* Father() const
     {
         if (Game::DictOfPersonNames.contains(intFather))
             return &Game::DictOfPersonNames[intFather];
@@ -242,7 +242,7 @@ public:
     {
         intFather = v ? v->Name() : "";
     }
-    Person *const Mother() const
+    Person* Mother() const
     {
         if (Game::DictOfPersonNames.contains(intMother))
             return &Game::DictOfPersonNames[intMother];
@@ -253,7 +253,7 @@ public:
     {
         intMother = v ? v->Name() : "";
     }
-    Person *const Love() const
+    Person* Love() const
     {
         if (intLove == "Principal")
             return Game::HeadTeacher;
@@ -299,14 +299,14 @@ public:
     {
         if (value == 0.0) {
             if (DictProposalSupport.contains(ProposalName))
-                DictProposalSupport.Remove(ProposalName);
+                DictProposalSupport.remove(ProposalName);
         } else {
             DictProposalSupport[ProposalName] = value;
         }
     }
     Clubs* Club() const
     {
-        return &Game::GetClub(ClubMember);
+        return Game::GetClub(ClubMember);
     }
     void Club(Clubs *v)
     {
@@ -490,9 +490,10 @@ public:
             else __IF_VAR_FROM_JSON_AS(it, Subject, toString)
             else __IF_VAR_FROM_JSON_AS(it, GoodInSubject, toString)
             else __IF_LIST_FROM_JSON_TYPED(it, TeacherSubjects, toString)
+            //else __IF_OBJHASH_FROM_JSON_TYPED(it, subjectStatLock)
             //QHash<SchoolSubjectFamily, double> SubjectFamilyExp
             else __IF_HASH_FROM_JSON_TYPED(it, SubjectInstanceExp, toDouble)
-            else __IF_OBJ_FROM_JSON(it, subjectStatLock)
+            //else __IF_OBJ_FROM_JSON(it, subjectStatLock)
             else __IF_OBJ_FROM_JSON(it, DictProposalSupport)
             else __IF_VAR_FROM_JSON_AS(it, HasDetention, toBool)
             else __IF_VAR_FROM_JSON_AS(it, IsRogue, toBool)
@@ -726,16 +727,15 @@ public:
         // lock (obj) {
         if (Room != NULL && Room->AssociatedJobs.contains(jb) && jb.CanEmploy(this))
         {
-            jb.Staff.Add(Name);
-            Work = Room;
-            intJobSlot = (unsigned)Room->AssociatedJobs.IndexOf(jb);
+            jb.Staff.insert(Name());
+            intJobSlot = (unsigned)Room->AssociatedJobs.indexOf(jb);
             if (Job.isEmpty())
                 Job = jb.JobTitle;
 
-            object obj2 = Person.unemployedListLock;
-            ObjectFlowControl.CheckForSyncLockOnValueType(obj2);
+            //object obj2 = Person.unemployedListLock;
+            //ObjectFlowControl.CheckForSyncLockOnValueType(obj2);
             // lock (obj2) {
-            Game::UnemployedPersons.Remove(Name);
+            Game::UnemployedPersons.remove(Name());
             // }
         }
         // }
@@ -747,7 +747,7 @@ public:
         // lock (obj) {
         LocationJobDetails *jb = JobDetails();
         if (jb != NULL)
-            jb->Staff.removeOne(Name());
+            jb->Staff.remove(Name());
 
         Work(NULL);
         intJobSlot = 0u;
@@ -759,7 +759,7 @@ public:
             if (Game::UnemployedPersons.contains(Name()))
                 Game::UnemployedPersons[Name()] = this;
             else
-                Game::UnemployedPersons.Add(Name(), this);
+                Game::UnemployedPersons.add(Name(), this);
             // }
         }
         // }
@@ -1662,7 +1662,7 @@ public:
         if (y.Job == "Teacher")
             return 1;
 
-        return Person.CompareForPublicArea(x, y);
+        return CompareForPublicArea(x, y);
     }
 };
 

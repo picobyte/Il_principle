@@ -1,27 +1,22 @@
 #ifndef SCHOOLSUBJECT_H
 #define SCHOOLSUBJECT_H
+#include <QDir>
 #include "json_macros.h"
+#include "person.h"
+#include "game.h"
 
-enum class SchoolSubjectFamily
-{
-    NONE,
-    Mathematics,
-    LifeScience,
-    NaturalScience,
-    SocialScience,
-    ComputerStudies,
-    Humanities,
-    LanguageArts,
-    FineArts,
-    PhysicalEducation,
-    SexualEducation
-};
 
 class SchoolSubjectInfluence_Stat {
 public:
     double InfluenceFactor;
     QString StatName;
     double BaseValue;
+    double GetInfluenceFactor(/*person: removed*/)
+    {
+        return InfluenceFactor;
+    }
+    double GetInfluencedValue(Person* Per);
+    void SetInfluencedValue(Person* Per, double Value);
     SchoolSubjectInfluence_Stat(QJsonObject *d = NULL) {
         if (d) init(d);
     }
@@ -40,6 +35,12 @@ class SchoolSubjectInfluence_Family {
 public:
     double InfluenceFactor;
     SchoolSubjectFamily SubjectFamily;
+    double GetInfluenceFactor(/*person: removed*/)
+    {
+        return InfluenceFactor;
+    }
+    double GetInfluencedValue(Person* Per);
+    void SetInfluencedValue(Person* Per, double Value);
     SchoolSubjectInfluence_Family(QJsonObject *d = NULL) {
         if (d) init(d);
     }
@@ -85,14 +86,35 @@ public:
     SchoolSubjectInfluence EvaluationInfluence;
     SchoolSubjectInfluence ImprovementInfluence;
     SchoolSubjectInfluence LearningBoostInfluence;
+    int TotalTeacherNumber() const;
+    const QString TotalTeacherNumberString() const
+    {
+        if (!Name.isEmpty())
+            return QString::asprintf(" (%d)", TotalTeacherNumber());
+        return "";
+    }
+    double GetSubjectExp(Person* Per);
+    void AddSubjectExp(Person* Per, double Value);
+    double GetEvaluationInfluence(Person* Per);
+    void ApplyImprovementInfluence(Person* Per, double Value);
+    double GetLearningBoostInfluence(Person* Per);
+    QString GetAbsoluteSubjectIconPath()
+    {
+        return QDir(Game::GamePath+"/"+Game::TheSchool.FolderLocation+"/Images/"+ImageIconPath).path();
+    }
+    QString ToString()
+    {
+        return "Subject: " + Name;
+    }
+    bool is_teachers_subject(Person& t);
 
     SchoolSubject(QJsonObject *d = NULL):
-            Name(""),
-            Description(""),
-            SubjectFamily(SchoolSubjectFamily::NONE),
-            ImageIconPath(""),
-            CanBeTaught(true),
-            SubjectExperienceRatio(1.0)
+        Name(""),
+        Description(""),
+        SubjectFamily(SchoolSubjectFamily::NONE),
+        ImageIconPath(""),
+        CanBeTaught(true),
+        SubjectExperienceRatio(1.0)
     {
         if (d) init(d);
     }

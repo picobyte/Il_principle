@@ -36,19 +36,22 @@
         __OBJLIST_FROM_JSON_RESOLVED(ref, _class ## s, _class) \
     }
 
-#define __IF_LIST_FROM_JSON_TYPE_RESOLVED(it, _arr, _var, _var_resolved) \
+#define __IF_CONTAINER_FROM_JSON_TYPE_RESOLVED(it, _arr, _append, _var, _var_resolved) \
 if (it.key() == #_arr) { \
     QJsonObject obj = it.value().toObject();\
     if (obj.length() != 1) qFatal("Expected one element");\
     foreach (const QJsonValue & _var, obj["string"].toArray())\
-        _arr.append(_var_resolved);\
+        _arr._append(_var_resolved);\
 }
 
+#define __IF_SET_FROM_JSON_TYPED(it, _arr, _toType) \
+    __IF_CONTAINER_FROM_JSON_TYPE_RESOLVED(it, _arr, insert, value, value._toType())
+
 #define __IF_LIST_FROM_JSON_TYPED(it, _arr, _toType) \
-    __IF_LIST_FROM_JSON_TYPE_RESOLVED(it, _arr, value, value._toType())
+    __IF_CONTAINER_FROM_JSON_TYPE_RESOLVED(it, _arr, append, value, value._toType())
 
 #define __IF_LIST_FROM_JSON_ENUM(it, _arr, _cast) \
-    __IF_LIST_FROM_JSON_TYPE_RESOLVED(it, _arr, value, _cast(value.toInt()))
+    __IF_CONTAINER_FROM_JSON_TYPE_RESOLVED(it, _arr, append, value, _cast(value.toInt()))
 
 #define __IF_OBJ_FROM_JSON(it, _instance) \
 if (it.key() == #_instance) {\
@@ -59,8 +62,11 @@ if (it.key() == #_instance) {\
 #define __IF_HASH_FROM_JSON_TYPED(it, _hash, _toType)\
 if (it.key() == #_hash) {\
     QJsonObject v = it.value().toObject();\
-    for (QJsonObject::iterator oit = v->begin(); oit != v->end(); ++oit)\
+    for (QJsonObject::iterator oit = v->begin(); oit != v->end(); ++oit) {\
+        QJsonObject v2 = oit.value().toObject();\
         _hash.insert(oit.key(), oit.value()._toType());\
+    }\
 }
+
 
 #endif // JSON_MACROS_H
