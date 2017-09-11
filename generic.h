@@ -129,7 +129,6 @@ enum class SchoolSubjectFamily
 
 enum class Fetish
 {
-    None,
     Anal,
     BigBreasts,
     BigCocks,
@@ -169,7 +168,8 @@ enum class Fetish
     Uniforms,
     Voyeurism,
     Yaoi,
-    Yuri
+    Yuri,
+    None
 };
 
 enum class FacialExpressions

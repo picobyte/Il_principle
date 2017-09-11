@@ -1230,10 +1230,10 @@ public:
                 it != StatusEffects.end(); ++it)
         {
             StatusEffectInstance se = enumerator.Current;
-            if (se.Name.StartsWith("Personality"))
+            if (se.Name.startsWith("Personality"))
                 personality = Game::DictOfStatusEffects[se.Name].DisplayName;
 
-            else if (se.Name.StartsWith("Archetype"))
+            else if (se.Name.startsWith("Archetype"))
                 archetype = Game::DictOfStatusEffects[se.Name].DisplayName;
         }
         // }
@@ -1258,13 +1258,13 @@ public:
         for (QList<StatusEffectInstance>::iterator it = expiredEffects.begin();
                 it != expiredEffects.end(); ++it) {
 
-            StatusEffectInstance se = enumerator.Current;
+            StatusEffectInstance se = *it;
             StatusEffect effect = Game::DictOfStatusEffects[se.Name];
             // try {
             for (QList<ModifierBase>::iterator it2 = effect.Modifiers.begin();
                     it2 != effect.Modifiers.end(); ++it2) {
 
-                ModifierBase modi = enumerator2.Current;
+                ModifierBase modi = *it2;
                 if (modi is Modifier_ExpirationEvent)
                     VisualEventManager.GetEventByFilename(((Modifier_ExpirationEvent)modi).EventPath, VisualEventKind.NONE).Execute(this);
             }
@@ -1277,7 +1277,7 @@ public:
         for (QList<StatusEffectInstance>::iterator it = expiredEffects.begin();
                 it != expiredEffects.end(); ++it) {
 
-            StatusEffectInstance se2 = enumerator3.Current;
+            StatusEffectInstance se2 = *it;
             StatusEffects.Remove(se2);
         }
         // }
@@ -1291,13 +1291,13 @@ public:
         for (QList<StatusEffectInstance>::iterator it = StatusEffects.begin();
                 it != StatusEffects.end(); ++it) {
 
-            StatusEffectInstance se = enumerator.Current;
+            StatusEffectInstance se = *it;
             StatusEffect effect = Game::DictOfStatusEffects[se.Name];
             // try {
             for (QList<ModifierBase>::iterator it2 = effect.Modifiers.begin();
                     it2 != effect.Modifiers.end(); ++it2) {
 
-                ModifierBase modi = enumerator2.Current;
+                ModifierBase modi = *it2;
                 if (modi is Modifier_BodySizeChange) {
 
                     Modifier_BodySizeChange change = (Modifier_BodySizeChange)modi;
@@ -1642,10 +1642,10 @@ public:
         if (y.IsWorking() && !x.IsWorking())
             return 1;
 
-        if (x.IsFavorite && !y.IsFavorite)
+        if (x.IsFavorite() && !y.IsFavorite())
             return -1;
 
-        if (y.IsFavorite && !x.IsFavorite)
+        if (y.IsFavorite() && !x.IsFavorite())
             return 1;
 
         return QString::compare(x.DisplayName, y.DisplayName);

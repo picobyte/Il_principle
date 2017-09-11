@@ -3,6 +3,7 @@
 #include <QColor>
 #include "json_macros.h"
 #include "person.h"
+#include "game.h"
 
 class NotificationManager {
 public:
@@ -120,9 +121,9 @@ public:
         Point startPoint = baseComponent.TransformToAncestor(FormManager.GameForm).Transform(new Point(FormManager.GameForm.Left, FormManager.GameForm.Top));
         return new Point(startPoint.X + baseComponent.ActualWidth / 2.0, startPoint.Y + baseComponent.ActualHeight);
     }
-    void HandleSkillNotification(Person& per, QString skill, int change)
+    void HandleSkillNotification(Person* per, QString skill, int change)
     {
-        if (per == Game.HeadTeacher)
+        if (per && per == Game::HeadTeacher)
         {
             if (change > 0)
             {

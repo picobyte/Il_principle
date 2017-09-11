@@ -237,15 +237,11 @@ public:
                 {
                     updateSql.CommandText = "SELECT id FROM relationships WHERE ownerId = @ownId AND targetId = @tarId";
                     long id = -1L;
-                    using (SQLiteDataReader reader = updateSql.ExecuteReader())
-                    {
+                    using (SQLiteDataReader reader = updateSql.ExecuteReader()) {
                         if (reader.Read())
-                        {
                             id = reader.GetInt64(0);
-                        }
                     }
-                    if (id >= 0L)
-                    {
+                    if (id >= 0L) {
                         updateSql.CommandText = "INSERT INTO relationshipdata (relationshipId, dataKey, dataValue) VALUES (@id, @key, @value)";
                         updateSql.Parameters.AddWithValue("id", id);
                         updateSql.ExecuteNonQuery();
