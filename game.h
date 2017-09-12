@@ -18,6 +18,7 @@
 #include <QLocale>
 #include <QHash>
 #include <QPushButton>
+#include <random>
 
 #include "person.h"
 #include "account.h"
@@ -31,6 +32,7 @@
 #include "schoolupgrade.h"
 #include "schoolclass.h"
 #include "eventstructmanager.h"
+#include "theworld.h"
 
 #include "classroomassignments.h"
 #include "gamecalendar.h"
@@ -42,108 +44,100 @@
 #include "personschedulehandler.h"
 #include "gamescenarioconfig.h"
 
-
-
-class Game {
+class RandomGen {
+    static std::default_random_engine roll;
 public:
+    static int Next(int min, int max)
+    {
+        std::uniform_int_distribution<int> dist(min, max);
+        return dist(roll);
+    }
+    static int NextGaussian(double mean, double stdev)
+    {
+        std::normal_distribution<> d(mean, stdev);
+        return d(roll);
+    }
+};
+
+namespace Game {
+    RandomGen RNG;
     //int seed = Environment.TickCount;
     //ThreadLocal<Random> _rng = new ThreadLocal<Random>(new Func<Random>(_ClosureS__.SI._LambdaS__0_0));
-    static QMap<QString, Account> DictOfAccounts;
-    static QMap<QString, Clubs> ListOfClubs;
-    static QHash<long, Person*> DictOfPersonIDs;
-    static QHash<QString, Person*> DictOfPersonNames;
-    static QMap<QString, Person*> HiredTeacher;
-    static QMap<QString, Person*> NotHiredTeacher;
-    static QMap<QString, Person*> AvailableStaff;
-    static QMap<QString, Person*> HiredStaff;
-    static QHash<QString, Person*> OwnStudents;
-    static QHash<QString, Person*> OtherStudents;
-    static QHash<QString, Person*> ListOfPTA;
-    static QHash<QString, Person*> UnemployedPersons;
-    static QList<Person> occupandlist;
-    static QList<SchoolClass> ListSchoolClasses;
-    static QHash<QString, StatusEffect> DictOfStatusEffects;
-    static QHash<QString, Stat> DictOfStats;
-    static QHash<QString, Skill> DictOfSkills;
-    static QList<QString> _ListOfJobs;
-    static QList<SchoolUpgrade> ListOfSchoolUpgrades;
-    static QMap<QString, Rule> ListOfRules;
-    static QHash<QString, Item> ListOfBaseItems;
-    static QHash<QString, SchoolSubject> DictOfSubjects;
-    static QList<PersonScheduleHandler> ListOfScheduleHandlers;
-    static QHash<QString, double> CachedGlobalStats;
-    static QList<QPushButton> lstbutton;
-    static QSet<long> FavoriteStudentList;
-    static QLocale GameCulture; //orig: CultureInfo GameCulture;
-    static StatisticsManager statisticsManager;
-    static EventStructManager StructManager;
-    static NotificationManager NotifyManager;
-    static PersonRelationshipDatabase RelationshipDatabase;
-    static TheWorld TheSchool;
-    static ClassroomAssignments ClassAssignments;
-    static GameCalendar SchoolCalendar;
-    static gTime GameTime;
-    static Person* HeadTeacher;
+    QMap<QString, Account> DictOfAccounts;
+    QMap<QString, Clubs> ListOfClubs;
+    QHash<long, Person*> DictOfPersonIDs;
+    QHash<QString, Person*> DictOfPersonNames;
+    QMap<QString, Person*> HiredTeacher;
+    QMap<QString, Person*> NotHiredTeacher;
+    QMap<QString, Person*> AvailableStaff;
+    QMap<QString, Person*> HiredStaff;
+    QHash<QString, Person*> OwnStudents;
+    QHash<QString, Person*> OtherStudents;
+    QHash<QString, Person*> ListOfPTA;
+    QHash<QString, Person*> UnemployedPersons;
+    QList<Person> occupandlist;
+    QList<SchoolClass> ListSchoolClasses;
+    QHash<QString, StatusEffect> DictOfStatusEffects;
+    QHash<QString, Stat> DictOfStats;
+    QHash<QString, Skill> DictOfSkills;
+    QList<QString> ListOfJobs;
+    QList<SchoolUpgrade> ListOfSchoolUpgrades;
+    QMap<QString, Rule> ListOfRules;
+    QHash<QString, Item> ListOfBaseItems;
+    QHash<QString, SchoolSubject> DictOfSubjects;
+    QList<PersonScheduleHandler> ListOfScheduleHandlers;
+    QHash<QString, double> CachedGlobalStats;
+    QList<QPushButton> lstbutton;
+    QSet<long> FavoriteStudentList;
+    QLocale GameCulture = QString("en-GB"); //orig: CultureInfo GameCulture;
+    StatisticsManager statisticsManager;
+    EventStructManager StructManager;
+    NotificationManager NotifyManager;
+    PersonRelationshipDatabase RelationshipDatabase;
+    ClassroomAssignments ClassAssignments;
+    GameCalendar SchoolCalendar;
+    gTime GameTime;
+    Person* HeadTeacher;
 
-    static QString GamePath;
-    static QString inteventlog;
-    static bool EventLogflag;
-    static int DesiredNumSchoolClasses;
-    static SchoolClass SpareStudentsClass;
-    static GameScenarioConfig ScenarioConfig;
-    static PopulationGenerator PopulationManager;
-    static int TickCount;
-    static int helpercounter;
-    static QString LastWorldLocationPath;
-    static bool GameInitialized;
-    static bool GameLoading;
-    static int LastAutosaveDay;
-    static bool CheatsUsed;
-    const Random RNG() const
-    {
-        return _rng.Value;
-    }
-    Location* PlayerLocation() const
-    {
-        if (HeadTeacher == NULL)
-            return NULL;
+    QString GamePath;
+    QString inteventlog;
+    bool EventLogflag = false;
+    int DesiredNumSchoolClasses = 2;
+    SchoolClass SpareStudentsClass;
+    GameScenarioConfig ScenarioConfig;
+    PopulationGenerator PopulationManager;
+    int TickCount = 0;
+    int helpercounter;
+    QString LastWorldLocationPath = "";
+    bool GameInitialized = false;
+    bool GameLoading = false;
+    int LastAutosaveDay = 1;
+    bool CheatsUsed = false;
 
-        return &HeadTeacher->CurrentLocation;
-    }
+    Location* PlayerLocation();
     Person* GetPerson(long PerID)
     {
         if (DictOfPersonIDs.contains(PerID))
-            return &DictOfPersonIDs[PerID];
+            return DictOfPersonIDs[PerID];
 
         return NULL;
     }
     Person* GetPerson(QString PerName)
     {
         if (DictOfPersonNames.contains(PerName))
-            return &DictOfPersonNames[PerName];
+            return DictOfPersonNames[PerName];
 
         return NULL;
     }
-    QString GetPersonDisplayName(QString PerName)
+    QString GetPersonDisplayName(QString& PerName);
+    Location* GetLocation(QString LocName)
     {
-        Person* per = GetPerson(PerName);
-        if (per != NULL)
-            return per->DisplayName;
-
-        return PerName;
-    }
-    static Location* GetLocation(QString LocName)
-    {
-        if (TheSchool.DictOfLocation.contains(LocName))
-            return &TheSchool.DictOfLocation[LocName];
+        if (TheWorld::DictOfLocation.contains(LocName))
+            return &TheWorld::DictOfLocation[LocName];
 
         return NULL;
     }
-    Location* GetWorkForJob(QString JobName)
-    {
-        Predicate<LocationJobDetails> SI1 = (LocationJobDetails j) => JobName.Equals(j.JobTitle) && !j.IsFullyStaffed();
-        return &TheSchool.DictOfLocation.Values.FirstOrDefault((Location loc) => loc.AssociatedJobs.Exists(SI1));
-    }
+    Location* GetWorkForJob(QString& JobName);
     Clubs* GetClub(QString ClubName)
     {
         if (ClubName.isEmpty())
@@ -153,50 +147,26 @@ public:
             return &ListOfClubs[ClubName];
 
         // try {
-        for (IEnumerator<Clubs>::iterator it = ListOfClubs.Values.begin();
-                it != ListOfClubs.Values.end(); ++it) {
+        for (QMap<QString, Clubs>::iterator Club = ListOfClubs.begin();
+                Club != ListOfClubs.end(); ++Club) {
             // try {
             for (QList<ClubLevel>::iterator it2 = Club->ClubLevels.begin();
-                    it2 != Club->ClubLevels.end(); ++it2)
-                if (enumerator2.Current.Name.Equals(ClubName))
+                 it2 != Club->ClubLevels.end(); ++it2) {
+                if (it2->Name == ClubName)
                     return &(*Club);
-            // }
+            }
         }
         // }
         return NULL;
     }
-    static SchoolSubject* GetSubject(QString SubjName)
+    SchoolSubject* GetSubject(QString SubjName)
     {
         if (DictOfSubjects.contains(SubjName))
             return &DictOfSubjects[SubjName];
 
         return NULL;
     }
-    void RecalculateStaffSalary()
-    {
-        // checked {
-        int Total = 0;
-        // try {
-        for (IEnumerator<Person>::iterator it = HiredStaff.Values.begin();
-                it != HiredStaff.Values.end(); ++it)
-        {
-            Person Per = enumerator.Current;
-            Total -= Per.Salary;
-        }
-        // }
-        if (!DictOfAccounts.contains("Staff Salary"))
-        {
-            Account ac = new Account
-            {
-                Name = "Staff Salary",
-                PayPeriode = Payperiode.Monthly,
-                Active = true
-            };
-            DictOfAccounts.Add(ac.Name, ac);
-        }
-        DictOfAccounts["Staff Salary"].Payment = Total;
-        // }
-    }
+    void RecalculateStaffSalary();
     void ClearAllLists()
     {
         DictOfAccounts.clear();
@@ -213,7 +183,7 @@ public:
         UnemployedPersons.clear();
         occupandlist.clear();
         ListSchoolClasses.clear();
-        SpareStudentsClass = new SchoolClass();
+        SpareStudentsClass = SchoolClass();
         DictOfStatusEffects.clear();
         DictOfStats.clear();
         DictOfSkills.clear();
@@ -225,48 +195,19 @@ public:
         ListOfScheduleHandlers.clear();
         FavoriteStudentList.clear();
     }
-
-    Game(QJsonObject *d = NULL)
+    void RecalculateBuildingMaintenance()
     {
-        if (d) init(d);
+        int Total = 0;
+        QList<SchoolUpgrade>::iterator it;
+        for (it = ListOfSchoolUpgrades.begin(); it != ListOfSchoolUpgrades.end(); ++it)
+            Total -= it->MaintenanceCost();
 
-    }
-    void init(QJsonObject *d)
-    {
-        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-            // *INDENT-OFF*
-            __IF_OBJ_FROM_JSON(it, GameCulture)
-            else __IF_OBJ_FROM_JSON(it, StatisticsManager)
-            else __IF_OBJ_FROM_JSON(it, StructManager)
-            else __IF_OBJ_FROM_JSON(it, NotifyManager)
-            else __IF_OBJ_FROM_JSON(it, RelationshipDatabase)
-            else __IF_OBJ_FROM_JSON(it, TheSchool)
-            else __IF_OBJ_FROM_JSON(it, ClassAssignments)
-            else __IF_OBJ_FROM_JSON(it, SchoolCalendar)
-            else __IF_OBJ_FROM_JSON(it, GameTime)
-            else __IF_OBJ_FROM_JSON(it, HeadTeacher)
-            else __IF_VAR_FROM_JSON_AS(it, GamePath, toString)
-            else __IF_VAR_FROM_JSON_AS(it, inteventlog, toString)
-            else __IF_VAR_FROM_JSON_AS(it, EventLogflag, toBool)
-            else __IF_OBJLIST_FROM_JSON(it, occupandlist, Person)
-            else __IF_OBJLIST_FROM_JSON(it, ListSchoolClasses, SchoolClass)
-            else __IF_VAR_FROM_JSON_AS(it, DesiredNumSchoolClasses, toInt)
-            else __IF_OBJ_FROM_JSON(it, SpareStudentsClass)
-            else __IF_LIST_FROM_JSON_TYPED(it, ListOfJobs, toString)
-            else __IF_OBJLIST_FROM_JSON(it, ListOfScheduleHandlers, PersonScheduleHandler)
-            else __IF_OBJ_FROM_JSON(it, ScenarioConfig)
-            else __IF_OBJLIST_FROM_JSON(it, lstbutton, Button)
-            else __IF_OBJ_FROM_JSON(it, PopulationManager)
-            else __IF_VAR_FROM_JSON_AS(it, TickCount, toInt)
-            else __IF_OBJLIST_FROM_JSON(it, FavoriteStudentList, long)
-            else __IF_VAR_FROM_JSON_AS(it, helpercounter, toInt)
-            else __IF_VAR_FROM_JSON_AS(it, LastWorldLocationPath, toString)
-            else __IF_VAR_FROM_JSON_AS(it, GameInitialized, toBool)
-            else __IF_VAR_FROM_JSON_AS(it, GameLoading, toBool)
-            else __IF_VAR_FROM_JSON_AS(it, LastAutosaveDay, toInt)
-            else __IF_VAR_FROM_JSON_AS(it, CheatsUsed, toBool)
-            // *INDENT-ON*
+        if (!DictOfAccounts.contains("Building Maintenance"))
+        {
+            Account ac("Building Maintenance", 0, Payperiode::Weekly, false, true);
+            DictOfAccounts.insert(ac.Name, ac);
         }
+        DictOfAccounts["Building Maintenance"].Payment = Total;
     }
 };
 #endif // GAME_H

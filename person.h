@@ -234,7 +234,7 @@ public:
     Person* Father() const
     {
         if (Game::DictOfPersonNames.contains(intFather))
-            return &Game::DictOfPersonNames[intFather];
+            return Game::DictOfPersonNames[intFather];
 
         return NULL;
     }
@@ -245,7 +245,7 @@ public:
     Person* Mother() const
     {
         if (Game::DictOfPersonNames.contains(intMother))
-            return &Game::DictOfPersonNames[intMother];
+            return Game::DictOfPersonNames[intMother];
 
         return NULL;
     }
@@ -259,7 +259,7 @@ public:
             return Game::HeadTeacher;
 
         if (Game::DictOfPersonNames.contains(intLove))
-            return &Game::DictOfPersonNames[intLove];
+            return Game::DictOfPersonNames[intLove];
 
         return NULL;
     }

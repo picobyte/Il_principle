@@ -121,18 +121,18 @@ public:
         Point startPoint = baseComponent.TransformToAncestor(FormManager.GameForm).Transform(new Point(FormManager.GameForm.Left, FormManager.GameForm.Top));
         return new Point(startPoint.X + baseComponent.ActualWidth / 2.0, startPoint.Y + baseComponent.ActualHeight);
     }
-    void HandleSkillNotification(Person* per, QString skill, int change)
+    void HandleSkillNotification(Person* per, QString& skill, int change)
     {
         if (per && per == Game::HeadTeacher)
         {
             if (change > 0)
             {
-                EnqueueNotification(per, QString.Format("+{0} {1}", change, skill), QColor(0x7f,0xff,0x0));
+                EnqueueNotification(per, QString:asprintf("+%d ", change) + skill, QColor(0x7f,0xff,0x0));
                 return;
             }
             if (change < 0)
             {
-                EnqueueNotification(per, QString.Format("{0} {1}", change, skill), QColor(0xff,0x45,0x0));
+                EnqueueNotification(per, QString:asprintf("+%d ", change) +  skill, QColor(0xff,0x45,0x0));
             }
         }
     }
