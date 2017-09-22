@@ -49,7 +49,10 @@ SOURCES += \
     gamecalendar.cpp \
     schoolsubject.cpp \
     schoolclass.cpp \
-    populationgenerator.cpp
+    populationgenerator.cpp \
+    rulechoice.cpp \
+    gamescenarioconfig.cpp \
+    statuseffect.cpp
 
 HEADERS += \
                 mainwindow.h \
@@ -62,6 +65,7 @@ HEADERS += \
         statuseffect.h \
         mind.h \
         range.h \
+        theworld.h \
         classroomassignments.h \
         calendarentry.h \
         gamescenarioconfig \

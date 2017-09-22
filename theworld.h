@@ -27,11 +27,11 @@ namespace TheWorld {
     QString StartLocationName;
     QString MapLocationName;
 
-    double get_Reputation()
+    double Reputation()
     {
         return reputation;
     }
-    void set_Reputation(double& value)
+    void Reputation(double& value)
     {
         reputation = value < 0.0 ? 0.0 : (value > 100.0 ? 100.0 : value);
     }

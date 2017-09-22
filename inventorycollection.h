@@ -5,11 +5,11 @@
 
 class InventoryCollection {
 public:
-    /*const bool IsEmpty() const
+    const bool IsEmpty() const
     {
         return Keys.count() == 0;
     }
-    XmlSchema GetSchema()
+    /*XmlSchema GetSchema()
     {
         return NULL;
     }

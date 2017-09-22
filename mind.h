@@ -12,11 +12,8 @@ public:
     }
     void init(QJsonObject *d)
     {
-        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it) {
-            // *INDENT-OFF*
+        for (QJsonObject::iterator it = d->begin(); it != d->end(); ++it)
             __IF_OBJLIST_FROM_JSON(it, AdjustStatList, Adjustment)
-            // *INDENT-ON*
-        }
     }
     bool ShouldSerializeAdjustStatList()
     {
@@ -24,12 +21,9 @@ public:
     }
     Adjustment* AdjustmentByStat(QString& Stat)
     {
-        // try {
-        for (QList<Adjustment>::iterator it = AdjustStatList.begin();
-                it != AdjustStatList.end(); ++it)
+        for (QList<Adjustment>::iterator it = AdjustStatList.begin(); it != AdjustStatList.end(); ++it)
             if (it->StatName == Stat)
                 return &(*it); //yes, it's an iterator.
-        // }
         return NULL;
     }
 };

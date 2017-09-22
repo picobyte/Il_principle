@@ -7,6 +7,9 @@
 #include <QList>
 #include <QDateTime>
 #include <QTextStream>
+#include <QMutableListIterator>
+#include <QListIterator>
+#include <stdexcept>
 #include "json_macros.h"
 #include "clubs.h"
 #include "location.h"
@@ -18,7 +21,7 @@
 #include "mind.h"
 #include "visualevent.h"
 
-class Game;
+//class Game;
 class Person {
 public:
     Person(QJsonObject *d = NULL):
@@ -75,7 +78,7 @@ public:
     QString TextColor;
     QString InitParams;
     QHash<Gender, double> GenderPreferences;
-    QList<Fetish> fetish;
+    QSet<Fetish> fetish;
     bool Virgin;
     bool AnalVirgin;
     QString Job;
@@ -114,7 +117,7 @@ public:
     QString OutfitName;
     bool OutfitUseEverywhere;
     QHash<QString, double> dictStats;
-    QList<StatusEffectInstance> StatusEffects;
+    QList<StatusEffectInstance*> StatusEffects;
     double intBreastSize;
     double intStomachSize;
     double intPenisSize;
@@ -180,10 +183,9 @@ public:
     }
     int Age() const
     {
-        // checked {
-        int age = Game::SchoolCalendar.TodayDate.Year - Birthday.Year;
-
-        if (DateTime.Compare(Birthday, Game::SchoolCalendar.TodayDate.AddYears(0 - age)) > 0)
+        QDate& today = Game::SchoolCalendar.TodayDate();
+        int age = today.year() - Birthday.year();
+        if (Birthday.daysTo(today.addYears(0 - age) > 0))
             --age;
 
         return age;
@@ -692,8 +694,8 @@ public:
     }
     void AddFetish(Fetish F)
     {
-        if (!fetish.contains(F) && F != hhs_.Fetish.None)
-            fetish.Add(F);
+        if (F != Fetish::None)
+            fetish.insert(F);
     }
     bool HasFetish(Fetish F) const
     {
@@ -759,7 +761,7 @@ public:
             if (Game::UnemployedPersons.contains(Name()))
                 Game::UnemployedPersons[Name()] = this;
             else
-                Game::UnemployedPersons.add(Name(), this);
+                Game::UnemployedPersons.insert(Name(), this);
             // }
         }
         // }
@@ -990,7 +992,7 @@ public:
     }
     bool ShouldSerializeImageLocation()
     {
-        return (Name() == Game::HeadTeacher.Name() || SpecialPerson) && !ImageLocation.isEmpty();
+        return (Name() == Game::HeadTeacher->Name() || SpecialPerson) && !ImageLocation.isEmpty();
     }
     bool ShouldSerializeOutfitLevel()
     {
@@ -1012,7 +1014,7 @@ public:
         else if (!OutfitName.isEmpty())
             CurrentOutfit = OutfitType::ClothingItem;
 
-        else if (Club() != NULL && Game::GameTime.IsTimeForClub(Club()) && CurrentLocation().Name() == Club()->ClubRoom)
+        else if (Club() != NULL && Game::GameTime.IsTimeForClub(Club()) && CurrentLocation()->Name() == Club()->ClubRoom)
             CurrentOutfit = OutfitType::Club;
 
         else if (CurrentLocation()->GetActualSpecialOutfit() != OutfitType::DefaultOutfit)
@@ -1131,10 +1133,10 @@ public:
             GameMind = Game::ScenarioConfig.MindData[0];
 
         // try {
-        QList<QString> MindStats = GameMind.GetStats();
-        MindStats.Remove("Arousal");
-        MindStats.Remove("Authority");
-        MindStats.Remove("Inhibition");
+        QList<QString>& MindStats = GameMind.GetStats();
+        MindStats.remove("Arousal");
+        MindStats.remove("Authority");
+        MindStats.remove("Inhibition");
         // try {
         for (QList<QString>::iterator it = MindStats.begin();
                 it != MindStats.end(); ++it)
@@ -1165,18 +1167,18 @@ public:
     }
     void AdjustStat(Mind mind, QString SE)
     {
-        Adjustment adj = mind.AdjustmentByStat(SE);
+        Adjustment* adj = mind.AdjustmentByStat(SE);
         if (adj != NULL)
         {
             double stat = GetStat(SE);
-            if (stat < adj.Range.Min) {
-                if (adj.lowMagnitude > 0.0) {
-                    double dif = adj.Range.Min - stat;
-                    AddStat(SE, dif * (adj.lowMagnitude * 0.0004));
+            if (stat < adj->range.Min) {
+                if (adj->lowMagnitude > 0.0) {
+                    double dif = adj->range.Min - stat;
+                    AddStat(SE, dif * (adj->lowMagnitude * 0.0004));
                 }
-            } else if (stat > adj.Range.Max && adj.highMagnitude > 0.0) {
-                double dif2 = stat - adj.Range.Max;
-                AddStat(SE, -dif2 * (adj.highMagnitude * 0.0004));
+            } else if (stat > adj->range.Max && adj->highMagnitude > 0.0) {
+                double dif2 = stat - adj->range.Max;
+                AddStat(SE, -dif2 * (adj->highMagnitude * 0.0004));
             }
             ApplyFuzziness(SE);
         }
@@ -1189,70 +1191,68 @@ public:
     {
         if (this != Game::HeadTeacher)
         {
-            AddStat("Arousal", (double)Game::RNG.Next(-20, 20));
-            AddStat("Energy", (double)Game::RNG.Next((int)round(Math.Truncate(GetStat("Stamina")) * 2.0), (int)round(Game::DictOfStats["Energy"].MaxValue)));
+            AddStat("Arousal", Game::RNG.Next(-20, 20));
+            AddStat("Energy", Game::RNG.Next(floor(GetStat("Stamina")) * 2, round(Game::DictOfStats["Energy"].MaxValue)));
         }
     }
     void AddStatusEffect(QString effectName)
     {
         StatusEffect effect = Game::DictOfStatusEffects[effectName];
-        object statusEffects = StatusEffects;
+        //object statusEffects = StatusEffects;
         // lock (statusEffects) {
         switch (effect.AccumulationType) {
-        case StatusEffectAccumulationType.None:
-            if (!StatusEffects.Exists((StatusEffectInstance se) => se.Name == effect.Name))
-                StatusEffects.Add(effect.GetInstance());
+        case StatusEffectAccumulationType::None:
+        {
+            QListIterator<StatusEffectInstance*> it(StatusEffects);
+            while(it.hasNext())
+                if (it.next()->Name == effect.Name)
+                    return;
+            StatusEffects.append(effect.GetInstance());
             break;
-        case StatusEffectAccumulationType.Refresh:
-            StatusEffects.RemoveAll((StatusEffectInstance se) => se.Name == effect.Name);
-            StatusEffects.Add(effect.GetInstance());
+        }
+        case StatusEffectAccumulationType::Refresh:
+            RemoveStatusEffect(effect.Name);
             break;
-        case StatusEffectAccumulationType.Stack:
-            StatusEffects.Add(effect.GetInstance());
+        case StatusEffectAccumulationType::Stack:
+            StatusEffects.append(effect.GetInstance());
         }
         // }
     }
     void RemoveStatusEffect(QString effectName)
     {
-        object statusEffects = StatusEffects;
-        // lock (statusEffects) {
-        StatusEffects.RemoveAll((StatusEffectInstance se) => se.Name == effectName);
-        // }
+        QMutableListIterator<StatusEffectInstance*> it(StatusEffects);
+        while(it.hasNext())
+            if (it.next()->Name == effectName)
+                it.remove();
     }
     QString GetPersonalityArchetype()
     {
-        QString personality = "";
-        QString archetype = "";
-        object statusEffects = StatusEffects;
-        // lock (statusEffects) {
-        // try {
-        for (QList<StatusEffectInstance>::iterator it = StatusEffects.begin();
-                it != StatusEffects.end(); ++it)
-        {
-            StatusEffectInstance se = enumerator.Current;
-            if (se.Name.startsWith("Personality"))
-                personality = Game::DictOfStatusEffects[se.Name].DisplayName;
+        QString personality;
+        QString archetype;
+        QListIterator<StatusEffectInstance*> se(StatusEffects);
+        while(se.hasNext()) {
+            QString& Name = se.next()->Name;
+            if (Name.startsWith("Personality"))
+                personality = Game::DictOfStatusEffects[Name].DisplayName;
 
-            else if (se.Name.startsWith("Archetype"))
-                archetype = Game::DictOfStatusEffects[se.Name].DisplayName;
+            else if (Name.startsWith("Archetype"))
+                archetype = Game::DictOfStatusEffects[Name].DisplayName;
         }
-        // }
-        // }
-        if (Operators.CompareString(personality, "", false) != 0)
-        {
-            if (Operators.CompareString(archetype, "", false) != 0)
-                return personality + " " + archetype;
 
-            return personality;
-        }
-        return archetype;
+        if (personality.isNull())
+            return archetype;
+
+        return archetype.isNull() ? personality : personality + " " + archetype;
     }
     void ClearExpiredStatusEffects()
     {
-        object statusEffects = StatusEffects;
+        //object statusEffects = StatusEffects;
         QList<StatusEffectInstance> expiredEffects;
         // lock (statusEffects) {
-        expiredEffects = StatusEffects.Where((Person._ClosureS__.SI297_0 == NULL) ? (Person._ClosureS__.SI297_0 = new Func<StatusEffectInstance, bool>(Person._ClosureS__.SI._LambdaS__297_0)) : Person._ClosureS__.SI297_0).ToList<StatusEffectInstance>();
+        expiredEffects = StatusEffects.Where(
+                    (Person._ClosureS__.SI297_0 == NULL) ?
+                        (Person._ClosureS__.SI297_0 = new Func<StatusEffectInstance, bool>(Person._ClosureS__.SI._LambdaS__297_0))
+                      : Person._ClosureS__.SI297_0).ToList<StatusEffectInstance>();
         // }
         // try {
         for (QList<StatusEffectInstance>::iterator it = expiredEffects.begin();
@@ -1268,20 +1268,10 @@ public:
                 if (modi is Modifier_ExpirationEvent)
                     VisualEventManager.GetEventByFilename(((Modifier_ExpirationEvent)modi).EventPath, VisualEventKind.NONE).Execute(this);
             }
-            // }
         }
-        // }
-        object statusEffects2 = StatusEffects;
-        // lock (statusEffects2) {
-        // try {
-        for (QList<StatusEffectInstance>::iterator it = expiredEffects.begin();
-                it != expiredEffects.end(); ++it) {
-
-            StatusEffectInstance se2 = *it;
-            StatusEffects.Remove(se2);
-        }
-        // }
-        // }
+        QListIterator it(expiredEffects);
+        while (it.hasNext())
+            StatusEffects.remove(it.next());
     }
     void ApplyStatusEffectBodyChanges()
     {
@@ -1311,11 +1301,11 @@ public:
     }
     void ApplyBodySizeChange(BodySizeChange& BSC)
     {
-        double minValue = (BSC.Minimum < 1.0) ? 1.0 : Math.Min(10.0, BSC.Minimum);
-        double maxValue = (BSC.Maximum == 0.0 || BSC.Maximum > 10.0) ? 10.0 : Math.Max(1.0, BSC.Maximum);
+        double minValue = (BSC.Minimum < 1.0) ? 1.0 : std::min(10.0, BSC.Minimum);
+        double maxValue = (BSC.Maximum == 0.0 || BSC.Maximum > 10.0) ? 10.0 : std::max(1.0, BSC.Maximum);
         switch (BSC.BodyPart)
         {
-        case BodyPart.Anal:
+        case Body::Part::Anal:
             if (BSCWithinRange(BSC, intAnalSize))
             {
                 intAnalSize += BSC.Change;
@@ -1326,11 +1316,11 @@ public:
                     intAnalSize = maxValue;
             }
             break;
-        case BodyPart.Breast:
+        case Body::Part::Breast:
             if ((gender == Gender::Female || gender == Gender::Futanari) && BSCWithinRange(BSC, intBreastSize))
             {
                 intBreastSize += BSC.Change;
-                minValue = ((BSC.Minimum < 0.0) ? 0.0 : Math.Min(10.0, BSC.Minimum));
+                minValue = ((BSC.Minimum < 0.0) ? 0.0 : std::min(10.0, BSC.Minimum));
                 if (intBreastSize < minValue)
                     intBreastSize = minValue;
 
@@ -1338,7 +1328,7 @@ public:
                     intBreastSize = maxValue;
             }
             break;
-        case BodyPart.Penis:
+        case Body::Part::Penis:
             if ((gender == Gender::Male || gender == Gender::Futanari) && BSCWithinRange(BSC, intPenisSize))
             {
                 intPenisSize += BSC.Change;
@@ -1349,11 +1339,11 @@ public:
                     intPenisSize = maxValue;
             }
             break;
-        case BodyPart.Stomach:
+        case Body::Part::Stomach:
             if ((gender == Gender::Male || gender == Gender::Futanari) && BSCWithinRange(BSC, intPenisSize))
             {
                 intStomachSize += BSC.Change;
-                minValue = ((BSC.Minimum < 0.0) ? 0.0 : Math.Min(10.0, BSC.Minimum));
+                minValue = ((BSC.Minimum < 0.0) ? 0.0 : std::min(10.0, BSC.Minimum));
                 if (intStomachSize < minValue)
                     intStomachSize = minValue;
 
@@ -1362,7 +1352,7 @@ public:
 
             }
             break;
-        case BodyPart.Testicle:
+        case Body::Part::Testicle:
             if ((gender == Gender::Male || gender == Gender::Futanari) && BSCWithinRange(BSC, intTesticleSize))
             {
                 intTesticleSize += BSC.Change;
@@ -1373,7 +1363,7 @@ public:
                     intTesticleSize = maxValue;
             }
             break;
-        case BodyPart.Vagina:
+        case Body::Part::Vagina:
             if ((gender == Gender::Female || gender == Gender::Futanari) && BSCWithinRange(BSC, intVaginaSize))
             {
                 intVaginaSize += BSC.Change;
@@ -1390,11 +1380,11 @@ public:
     }
     bool BSCWithinRange(BodySizeChange& BSC, double Value)
     {
-        double Minimum = (BSC.Minimum < 1.0) ? 1.0 : Math.Min(10.0, BSC.Minimum);
-        double Maximum = (BSC.Maximum == 0.0 || BSC.Maximum > 10.0) ? 10.0 : Math.Max(1.0, BSC.Maximum);
-        if (BSC.BodyPart == BodyPart.Breast || BSC.BodyPart == BodyPart.Stomach)
+        double Minimum = (BSC.Minimum < 1.0) ? 1.0 : std::min(10.0, BSC.Minimum);
+        double Maximum = (BSC.Maximum == 0.0 || BSC.Maximum > 10.0) ? 10.0 : std::max(1.0, BSC.Maximum);
+        if (BSC.BodyPart == Body::Part::Breast || BSC.BodyPart == Body::Part::Stomach)
         {
-            Minimum = ((BSC.Minimum < 0.0) ? 0.0 : Math.Min(10.0, BSC.Minimum));
+            Minimum = ((BSC.Minimum < 0.0) ? 0.0 : std::min(10.0, BSC.Minimum));
         }
         return Value <= Maximum && Value >= Minimum;
     }
@@ -1424,25 +1414,25 @@ public:
     }
     bool IsWorkTime()
     {
-        LocationJobDetails jb = JobDetails;
-        if (jb != NULL && !Game::SchoolCalendar.IsHoliday)
+        LocationJobDetails* jb = JobDetails();
+        if (jb != NULL && !Game::SchoolCalendar.IsHoliday())
         {
-            if (Game::SchoolCalendar.IsWeekend) {
-                if (jb.WeekendShift && Game::GameTime.IsWeekendWorkTime)
+            if (Game::SchoolCalendar.IsWeekend()) {
+                if (jb->WeekendShift && Game::GameTime.IsWeekendWorkTime())
                     return true;
             }
-            else if ((jb.SchoolShift && Game::GameTime.IsSchoolTime) || (jb.WeekdayShift && Game::GameTime.IsStandardWorkTime) || (jb.EveningShift && Game::GameTime.IsEveningWorkTime))
+            else if ((jb->SchoolShift && Game::GameTime.IsSchoolTime()) || (jb->WeekdayShift && Game::GameTime.IsStandardWorkTime()) || (jb->EveningShift && Game::GameTime.IsEveningWorkTime()))
                 return true;
         }
         return false;
     }
     bool IsAsleep()
     {
-        return CurrentLocation == Bedroom && Game::GameTime.IsSleepTime;
+        return CurrentLocation() == Bedroom() && Game::GameTime.IsSleepTime();
     }
     bool IsWorking()
     {
-        return (CurrentLocation == Work && IsWorkTime()) || ((Job == "Student" || Trait.contains("Staff")) && CurrentLocation.Region == Region.School);
+        return (CurrentLocation() == Work() && IsWorkTime()) || ((Job == "Student" || Trait.contains("Staff")) && CurrentLocation()->region == Region::School);
     }
     void RandomizeSchedule()
     {
@@ -1478,7 +1468,7 @@ public:
     }
     bool ShouldSerializeInventory()
     {
-        return !Inventory.isEmpty;
+        return !Inventory.IsEmpty();
     }
     bool ShouldSerializeTrait()
     {
@@ -1486,7 +1476,7 @@ public:
     }
     void AddTrait(QString TraitName)
     {
-        if (Trait.Length == 0) {
+        if (Trait.length() == 0) {
             Trait = TraitName;
             return;
         }
@@ -1503,8 +1493,8 @@ public:
     }
     bool HasTraitFromList(QString TraitList) const
     {
-        QStringList TraitListIn = TraitList.Split(TRAIT_SEPARATOR_CHAR);
-        QStringList MyTraitList = Trait.Split(TRAIT_SEPARATOR_CHAR);
+        QStringList TraitListIn = TraitList.split(TRAIT_SEPARATOR_CHAR);
+        QStringList MyTraitList = Trait.split(TRAIT_SEPARATOR_CHAR);
         for (QStringList::iterator it = TraitListIn.begin(); it != TraitListIn.end(); ++it)
             if (MyTraitList.contains(*it))
                 return true;
@@ -1613,11 +1603,11 @@ public:
         Game::NotifyManager.HandleSkillNotification(this, skillName, newValue - oldValue);
         // }
     }
-    void CheckSkill(QString skillName)
+    void CheckSkill(QString& skillName) const
     {
         if (!Game::DictOfSkills.contains(skillName))
         {
-            throw new ArgumentException(skillName.prepend("'") + "' was not declared as valid skill for the current scenario!"));
+            throw std::out_of_range(skillName.prepend("'").append("' was not declared as valid skill for the current scenario!").toUtf8());
         }
     }
     bool ShouldSerializeAttachedEventIDs()
@@ -1626,11 +1616,11 @@ public:
     }
     int CompareByLastname(Person& x, Person& y)
     {
-        return QString::compare(x.Lastname + " " + x.DisplayForename, y.Lastname + " " + y.DisplayForename);
+        return QString::compare(x.Lastname + " " + x.DisplayForename(), y.Lastname + " " + y.DisplayForename());
     }
     int CompareByFirstname(Person& x, Person& y)
     {
-        return QString::compare(x.DisplayForename, y.DisplayForename);
+        return QString::compare(x.DisplayForename(), y.DisplayForename());
     }
     int CompareForPublicArea(Person& x, Person& y)
     {
@@ -1648,14 +1638,14 @@ public:
         if (y.IsFavorite() && !x.IsFavorite())
             return 1;
 
-        return QString::compare(x.DisplayName, y.DisplayName);
+        return QString::compare(x.DisplayName(), y.DisplayName());
     }
     int CompareForSchoolRoom(Person& x, Person& y)
     {
         if (x.Job == "Teacher") {
 
             if (y.Job == "Teacher")
-                return QString::compare(x.DisplayName, y.DisplayName);
+                return QString::compare(x.DisplayName(), y.DisplayName());
 
             return -1;
         }

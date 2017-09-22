@@ -48,6 +48,13 @@ public:
     }
 };
 
+enum class StatusEffectAccumulationType
+{
+    None,
+    Refresh,
+    Stack
+};
+
 enum class OutfitType
 {
     DefaultOutfit,

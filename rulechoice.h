@@ -54,18 +54,7 @@ public:
     {
         return NudeSwimsuit;
     }
-    void ExecuteRule()
-    {
-        /*if (Game.HiredTeacher.count() > 0)
-        {
-            for (QList<RuleEffect>::iterator it = RuleEffects.begin();
-                    it != RuleEffects.end(); ++it)
-                it->ExecuteRuleForGroup();
-
-            TheWorld *theSchool = &Game.TheSchool;
-            theSchool->Reputation = theSchool->Reputation + RuleReputation / 5.0;
-        }*/
-    }
+    void ExecuteRule();
     QString ToString()
     {
         return "RuleChoice: " + Name;

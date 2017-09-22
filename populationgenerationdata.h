@@ -114,9 +114,9 @@ public:
 
 
 class PopulationGenerationData {
-    QList<PopulationGenerationGenderSpecificData> GenderSpecific;
     QList<StatRange> StatRanges;
 public:
+    QList<PopulationGenerationGenderSpecificData> GenderSpecific;
     SizeRange AgeRange;
     double MalePercentage;
     double FemalePercentage;

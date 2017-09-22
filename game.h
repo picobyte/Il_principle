@@ -52,10 +52,18 @@ public:
         std::uniform_int_distribution<int> dist(min, max);
         return dist(roll);
     }
+    static int Next(int max)
+    {
+        return Next(0, max);
+    }
     static int NextGaussian(double mean, double stdev)
     {
         std::normal_distribution<> d(mean, stdev);
         return d(roll);
+    }
+    static double NextDouble() {
+        std::uniform_real_distribution<> dis(0.0, 1.0);
+        return dis(roll);
     }
 };
 

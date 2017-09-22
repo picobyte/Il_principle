@@ -33,27 +33,15 @@ public:
             // *INDENT-ON*
         }
     }
-    int GetAgeForIndex(int Index)
+    int GetAgeForIndex(int Index);
+    Gender GetGenderForIndex(int Index);
+    PopulationGenerationGenderSpecificData* GetGenderSpecificDataForIndex(int Index, Gender gender)
     {
-        return std::max(MinimumAge, Game::RNG().Next(popGenData[Index].AgeRange.Min, popGenData[Index].AgeRange.Max));
-    }
-    Gender GetGenderForIndex(int Index)
-    {
-        int randomnum = Game::RNG.Next(0, round(popGenData[Index].MalePercentage + popGenData[Index].FemalePercentage +
-                                                popGenData[Index].FutanariPercentage));
-
-        if ((double)randomnum < popGenData[Index].MalePercentage)
-            return Gender::Male;
-
-        if ((double)randomnum < popGenData[Index].MalePercentage + popGenData[Index].FemalePercentage)
-            return Gender::Female;
-
-        return Gender::Futanari;
-    }
-    PopulationGenerationGenderSpecificData GetGenderSpecificDataForIndex(int Index, Gender Gender)
-    {
-        //for
-        return popGenData[Index].GenderSpecific.First((PopulationGenerationGenderSpecificData gs) => gs.Gender == Gender);
+        QList<PopulationGenerationGenderSpecificData>::iterator it;
+        QList<PopulationGenerationGenderSpecificData>& gs = popGenData[Index].GenderSpecific;
+        for (it = gs.begin(); it != gs.end(); ++it)
+            if (it->gender == gender)
+                return &(*it);
     }
     QString ToString()
     {
