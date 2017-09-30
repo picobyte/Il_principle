@@ -47,11 +47,9 @@ bool jsonLoad(QString f)
         return false;
     }
 
-    QByteArray saveData = loadFile.readAll();
-
-
-    QJsonDocument loadDoc(f.endsWith("json") ? QJsonDocument::fromJson(saveData)
-                                             : QJsonDocument::fromBinaryData(saveData));
+    QByteArray loaded = loadFile.readAll();
+    QJsonDocument loadDoc(f.endsWith("json") ? QJsonDocument::fromJson(loaded)
+                                             : QJsonDocument::fromBinaryData(loaded));
     QJsonObject d = loadDoc.object();
     QJsonObject::iterator it;
     for (it = d.begin(); it != d.end(); ++it) {

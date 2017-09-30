@@ -1,58 +1,80 @@
 #ifndef EVENTSTRUCTMANAGER_H
 #define EVENTSTRUCTMANAGER_H
 #include <QDir>
+#include "theworld.h"
 #include "json_macros.h"
 #include "eventstructdefinition.h"
 
 class EventStructManager {
-    QHash<QString, EventStructDefinition> StructDefinitions;
+    QHash<QString, QHash<QString, VarType>* > StructDefinitions;
 public:
 
-    EventStructManager(QJsonObject *d = NULL)
+    EventStructManager()
     {
-        StructDefinitions.insert("", EventStructDefinition(""));
         LoadStructDefinitions();
     }
-    void init(QJsonObject *d) {}
-    void AddStructDefinition(EventStructDefinition sd)
+    QHash<QString, VarType>* GetStructDefinition(QString& structName)
     {
-        if (!StructDefinitions.contains(sd.Name) && EventStructManager.IsValidEventStruct(sd))
-            StructDefinitions.Add(sd.Name, sd);
-    }
-    EventStructDefinition GetStructDefinition(QString structName)
-    {
-        EventStructDefinition GetStructDefinition;
-        if (StructDefinitions.ContainsKey(structName))
-            return StructDefinitions[structName];
-
-        return NULL;
+        return StructDefinitions.value(structName);
     }
     void LoadStructDefinitions()
     {
-        // checked {
-        if (Directory.Exists(Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, "StructTemplates"))) {
-
-            QString[] files = Directory.GetFiles(Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, "StructTemplates"), "*.xml");
-            for (int i = 0; i < files.Length; i++) {
-
-                EventStructDefinition sd = XMLSerialize<EventStructDefinition>.ReadFromXML(files[i]);
-                if (!StructDefinitions.ContainsKey(sd.Name))
-                    StructDefinitions.Add(sd.Name, sd);
+        QDir dir;
+        dir.setCurrent(QCoreApplication::applicationDirPath()+"/../Il_principle/Schools/"+TheWorld::FolderLocation+"/StructTemplates");
+        QDirIterator it(dir.path(), QStringList() << "*.json", QDir::Files, QDirIterator::Subdirectories);
+        while (it.hasNext()) {
+            QString fname = it.next();
+            QFile f(fname);
+            if (!f.open(QIODevice::ReadOnly)) {
+                qWarning(QString("Couldn't open file ").append(fname).toUtf8());
+                continue;
             }
-        }
-        // }
-    }
-    bool IsValidEventStruct(EventStructDefinition& sd)
-    {
-        // try {
-        for (QHash<QString, QVariant>::iterator it = sd.MemberDefinitions.keys.begin();
-                it != sd.MemberDefinitions.Keys.end(); ++it) {
+            QJsonObject d = QJsonDocument::fromJson(f.readAll()).object().value("EventStructDefinition").toObject();
+            QHash<QString, VarType>* defs = new QHash<QString, VarType>();
 
-            QString memberDef = enumerator.Current;
-            if (sd.MemberDefinitions[memberDef] == VarType.VT_Any)
-                return false;
+            foreach(QJsonValue val, d.value("Item").toArray()) {
+                QJsonObject el = val.toObject();
+                QString value = el.value("@Value").toString();
+                QString key = el.value("@Key").toString();
+
+                if (value == "VT_Any")
+                    defs->insert(key, VarType::Any);
+                else if (value == "VT_Int")
+                    defs->insert(key, VarType::Int);
+                else if (value == "VT_Dbl")
+                    defs->insert(key, VarType::Dbl);
+                else if (value == "VT_Bool")
+                    defs->insert(key, VarType::Bool);
+                else if (value == "VT_Str")
+                    defs->insert(key, VarType::Str);
+                else if (value == "VT_StrList")
+                    defs->insert(key, VarType::StrList);
+                else if (value == "VT_Date")
+                    defs->insert(key, VarType::Date);
+                else if (value == "VT_Obj")
+                    defs->insert(key, VarType::Obj);
+                else if (value == "VT_ObjList")
+                    defs->insert(key, VarType::ObjList);
+                else if (value == "VT_DblDictionary")
+                    defs->insert(key, VarType::DblDictionary);
+                else if (value == "VT_StrDictionary")
+                    defs->insert(key, VarType::StrDictionary);
+                else if (value == "VT_StructDictionary")
+                    defs->insert(key, VarType::StructDictionary);
+            }
+            StructDefinitions.insert(d.value("Name").toString(), defs);
         }
-        // }
+    }
+    bool IsValidEventStruct(QString& structName)
+    {
+        QHash<QString, QHash<QString, VarType>* >::iterator f = StructDefinitions.find(structName);
+        if (f == StructDefinitions.end())
+            return false;
+
+        foreach (VarType type, f.value()->values())
+            if (type == VarType::Any)
+                return false;
+
         return true;
     }
 };

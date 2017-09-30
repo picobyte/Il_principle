@@ -70,6 +70,22 @@ enum class OutfitType
     Work
 };
 
+enum class VarType
+{
+    Any,
+    Int,
+    Dbl,
+    Bool,
+    Str,
+    StrList,
+    Date,
+    Obj,
+    ObjList,
+    DblDictionary,
+    StrDictionary,
+    StructDictionary
+};
+
 enum class Payperiode
 {
     OneTime,

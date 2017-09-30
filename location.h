@@ -2,6 +2,7 @@
 #define LOCATION_H
 
 #include <QPoint>
+#include <QHash>
 #include "json_macros.h"
 #include "item.h"
 #include "person.h"
@@ -67,10 +68,10 @@ public:
     {
         int classindex = 0;
         // try {
-        for (QHash<int, QString>::iterator it = Game::ClassAssignments.AssignedClassrooms.Keys.begin();
-                it != Game::ClassAssignments.AssignedClassrooms.Keys.end(); ++it) {
+        for (QHash<int, QString>::iterator it = Game::ClassAssignments.AssignedClassrooms.begin();
+                it != Game::ClassAssignments.AssignedClassrooms.end(); ++it) {
 
-            if (Game::ClassAssignments.AssignedClassrooms[it.key()].Equals(Name))
+            if (it->v == Name)
                 classindex = it.key();
         }
         // }
@@ -366,7 +367,7 @@ public:
     QString GetLocationImagePath(Location *room)
     {
         if (room == NULL)
-            return QString.Empty;
+            return "";
 
         if (room->Occupants.count() > 5) {
             bool nudity = false;
