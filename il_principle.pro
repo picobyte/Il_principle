@@ -52,7 +52,8 @@ SOURCES += \
     populationgenerator.cpp \
     rulechoice.cpp \
     gamescenarioconfig.cpp \
-    statuseffect.cpp
+    statuseffect.cpp \
+    personrelationshipdatabase.cpp
 
 HEADERS += \
                 mainwindow.h \

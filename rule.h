@@ -26,7 +26,7 @@ public:
         {
             RuleChoice const *const arlc = ActiveRuleChoice();
             VisualEventManager.ExecuteNativeEvent(arlc->Name + "_Deactivated.ve.xml");
-            ActiveRuleChoiceIndex = RuleChoices.IndexOf(value);
+            ActiveRuleChoiceIndex = RuleChoices.indexOf(value);
             VisualEventManager.ExecuteNativeEvent(arlc->Name + "_Activated.ve.xml");
         }
     }
@@ -34,7 +34,7 @@ public:
     {
         int count = 0;
         if (Status == RuleStatus::Available)
-            for(QList<RuleChoice>::iterator it = RuleChoices.begin(); it != RuleChoices.end(); ++it)
+            for(QList<RuleChoice>::const_iterator it = RuleChoices.begin(); it != RuleChoices.end(); ++it)
                 if (it->Status == RuleStatus::Available)
                     ++count;
         return count;
@@ -51,7 +51,7 @@ public:
             else __IF_VAR_FROM_JSON_AS(it, Description, toString)
             else __IF_ENUM_FROM_JSON_AS(it, Status, RuleStatus)
             else __IF_VAR_FROM_JSON_AS(it, ActiveRuleChoiceIndex, toInt)
-            ObservableCollection<RuleChoice> RuleChoices
+            else __IF_OBJLIST_FROM_JSON(it, RuleChoices, RuleChoice)
         }
     }
     bool ShouldSerializeStatus()

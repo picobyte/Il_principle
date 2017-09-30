@@ -2,6 +2,7 @@
 #define EVENTSTRUCTMANAGER_H
 #include <QDir>
 #include "json_macros.h"
+#include "eventstructdefinition.h"
 
 class EventStructManager {
     QHash<QString, EventStructDefinition> StructDefinitions;
@@ -9,7 +10,7 @@ public:
 
     EventStructManager(QJsonObject *d = NULL)
     {
-        StructDefinitions[""] = EventStructDefinition("");
+        StructDefinitions.insert("", EventStructDefinition(""));
         LoadStructDefinitions();
     }
     void init(QJsonObject *d) {}
@@ -41,10 +42,10 @@ public:
         }
         // }
     }
-    bool IsValidEventStruct(EventStructDefinition sd)
+    bool IsValidEventStruct(EventStructDefinition& sd)
     {
         // try {
-        for (QHash<QString, QVariant>::iterator it = sd.MemberDefinitions.Keys.begin();
+        for (QHash<QString, QVariant>::iterator it = sd.MemberDefinitions.keys.begin();
                 it != sd.MemberDefinitions.Keys.end(); ++it) {
 
             QString memberDef = enumerator.Current;
