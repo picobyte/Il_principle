@@ -32,7 +32,7 @@ void GameCalendar::NextDay()
             it != VisualEventManager.FunctionEvents.end(); ++it)
     {
         VisualEvent Ev = *it;
-        if (Ev.XMLFileName.EndsWith("Daily_UpdateAccounts.ve.xml"))
+        if (Ev.jsonFileName.EndsWith("Daily_UpdateAccounts.ve.xml"))
         {
             Ev.Execute();
         }
@@ -81,7 +81,7 @@ void GameCalendar::NextDay()
             it != VisualEventManager.NativeEvents.end(); ++it)
     {
         VisualEvent Ev2 = enumerator3.Current;
-        if (Ev2.XMLFileName.EndsWith("Daily.ve.xml"))
+        if (Ev2.jsonFileName.EndsWith("Daily.ve.xml"))
         {
             Ev2.Execute();
         }

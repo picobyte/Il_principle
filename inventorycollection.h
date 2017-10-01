@@ -2,17 +2,21 @@
 #define INVENTORYCOLLECTION_H
 
 #include "json_macros.h"
+#include <item.h>
+
+struct InvItem
+{
+
+};
 
 class InventoryCollection {
+    QHash<QString, InvItem> inventory;
 public:
-    const bool IsEmpty() const
+    bool IsEmpty() const
     {
-        return Keys.count() == 0;
+        return inventory.count() == 0;
     }
-    /*XmlSchema GetSchema()
-    {
-        return NULL;
-    }
+    //XmlSchema GetSchema() // obsolete
     void ReadXml(XmlReader reader)
     {
         XmlSerializer keySerializer = new XmlSerializer(typeof(QString));
@@ -78,11 +82,8 @@ public:
         // }
         return NewInventory;
     }
-    int AddInventory(Item obj)
+    int AddInventory(Item& obj)
     {
-        if (obj == NULL) {
-            throw new ArgumentNullException("obj");
-        }
         if (ContainsKey(obj.DisplayName))
         {
             base[obj.DisplayName].Add(obj);
@@ -248,7 +249,7 @@ public:
             return true;
         }
         return false;
-    }*/
+    }
 
     InventoryCollection(QJsonObject *d = NULL) {}
 };

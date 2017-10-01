@@ -53,7 +53,8 @@ SOURCES += \
     rulechoice.cpp \
     gamescenarioconfig.cpp \
     statuseffect.cpp \
-    personrelationshipdatabase.cpp
+    personrelationshipdatabase.cpp \
+    visualeventmanager.cpp
 
 HEADERS += \
                 mainwindow.h \

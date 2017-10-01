@@ -17,7 +17,7 @@ public:
     bool Accepted;
     //SeqActLat_RemoteEvent ReturnRemote;
     QString Author;
-    QString XMLFileName;
+    QString jsonFileName;
     QDateTime LastModificationDate;
     unsigned UniqueID;
     int SheduledFor;
@@ -31,21 +31,21 @@ public:
     QString ChoiceName;
     QString Description;
     //readonly object dictLock;
-    /*const QString ShortXMLFileName() const
+    /*const QString ShortjsonFileName() const
     {
-        QString ShortXMLFileName;
-        if (!XMLFileName.StartsWith(Game.GamePath))
-            return XMLFileName;
+        QString ShortjsonFileName;
+        if (!jsonFileName.StartsWith(Game.GamePath))
+            return jsonFileName;
 
-        if (QString.IsNullOrEmpty(XMLFileName) || XMLFileName.Length < Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, "Events\\").Length)
+        if (QString.IsNullOrEmpty(jsonFileName) || jsonFileName.Length < Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, "Events\\").Length)
             return "";
-        return XMLFileName.Substring(Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, "Events\\").Length);
+        return jsonFileName.Substring(Path.Combine(Game.GamePath, Game.TheSchool.FolderLocation, "Events\\").Length);
     }*/
     VisualEvent(QJsonObject *d = NULL)
     {
         if (d) init(d);
         Author = "";
-        XMLFileName = "";
+        jsonFileName = "";
         UniqueID = 0u;
         Virtualize = false;
         //TriggerType = TriggerType.Location;
@@ -61,7 +61,7 @@ public:
             else*/ __IF_VAR_FROM_JSON_AS(it, Accepted, toBool)
             //else __IF_OBJ_FROM_JSON(it, ReturnRemote)
             else __IF_VAR_FROM_JSON_AS(it, Author, toString)
-            else __IF_VAR_FROM_JSON_AS(it, XMLFileName, toString)
+            else __IF_VAR_FROM_JSON_AS(it, jsonFileName, toString)
             //else __IF_OBJ_FROM_JSON(it, LastModificationDate) //QDateTime
             else __IF_VAR_FROM_JSON_AS(it, UniqueID, toInt)
             else __IF_VAR_FROM_JSON_AS(it, SheduledFor, toInt)
@@ -78,9 +78,9 @@ public:
             // *INDENT-ON*
         }
     }
-    /*bool ShouldSerializeXMLFileName()
+    /*bool ShouldSerializejsonFileName()
     {
-        return !QString.IsNullOrEmpty(XMLFileName);
+        return !QString.IsNullOrEmpty(jsonFileName);
     }
     bool ShouldSerializeLastModificationDate()
     {
@@ -377,7 +377,7 @@ public:
     }
     QString ToString()
     {
-        return "Visual Event: " + XMLFileName.Substring(checked(XMLFileName.LastIndexOf(Path.DirectorySeparatorChar) + 1));
+        return "Visual Event: " + jsonFileName.Substring(checked(jsonFileName.LastIndexOf(Path.DirectorySeparatorChar) + 1));
     }
     void HandleSeqObjectReplacement(SeqObject oldObject, QString replacement)
     {
@@ -549,7 +549,7 @@ public:
         // }
         if (unlinkedObjs.count() > 0)
         {
-            using (UnlinkedObjsWarning msgBox = new UnlinkedObjsWarning(ShortXMLFileName))
+            using (UnlinkedObjsWarning msgBox = new UnlinkedObjsWarning(ShortjsonFileName))
             {
                 msgBox.DisplayList(unlinkedObjs);
                 msgBox.ShowDialog();

@@ -48,6 +48,24 @@ public:
     }
 };
 
+enum class VisualEventKind
+{
+    NONE,
+    FunctionEvent,
+    ExtensionEvent,
+    InteractionEvent,
+    StaticEvent,
+    NativeEvent,
+    ItemEvent,
+    HelperEvent,
+    PersonAttachedEvent,
+    ClubEvent,
+    LocationEvent,
+    ResponseEvent,
+    PaperDollHandler,
+    ScheduleHandler
+};
+
 enum class StatusEffectAccumulationType
 {
     None,
